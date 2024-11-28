@@ -23,9 +23,7 @@ jobs:
           wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 18
 
       - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          version: 1.12.1
+        uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Build with CMake
         uses: ashutoshvarma/action-cmake-build@master
