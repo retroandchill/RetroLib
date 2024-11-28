@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - { name: "Ubuntu Clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18" }
+          - { name: "Ubuntu Clang", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
