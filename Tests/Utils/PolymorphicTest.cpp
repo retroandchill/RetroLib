@@ -13,6 +13,7 @@ import std;
 import RetroLib;
 #else
 #include <array>
+#include <memory>
 #include "RetroLib/Utils/Polymorphic.h"
 #endif
 
