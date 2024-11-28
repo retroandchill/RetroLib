@@ -112,7 +112,7 @@ namespace Retro {
                 requires std::derived_from<U, T> && std::constructible_from<U, A...>
             constexpr void emplace(A&&... args) noexcept {
                 if constexpr (CanFitSmallStorage<U>) {
-                    new (reinterpret_cast<U*>(&smallStorage)) U(std::forward<A>(args)...);
+                    new (reinterpret_cast<U*>(smallStorage.data())) U(std::forward<A>(args)...);
                 } else {
                     largeStorage = new U(std::forward<A>(args)...);
                 }
@@ -141,7 +141,7 @@ namespace Retro {
 
             constexpr U *getValue(OpaqueStorage &storage) const final {
                 if constexpr (CanFitSmallStorage<U>) {
-                    return reinterpret_cast<U*>(&storage.smallStorage);
+                    return reinterpret_cast<U*>(storage.smallStorage.data());
                 } else {
                     return static_cast<U*>(storage.largeStorage);
                 }
@@ -149,7 +149,7 @@ namespace Retro {
 
             constexpr const U* getValue(const OpaqueStorage &storage) const final {
                 if constexpr (CanFitSmallStorage<U>) {
-                    return reinterpret_cast<const U*>(&storage.smallStorage);
+                    return reinterpret_cast<const U*>(storage.smallStorage.data());
                 } else {
                     return static_cast<const U*>(storage.largeStorage);
                 }
@@ -157,7 +157,7 @@ namespace Retro {
 
             constexpr void destroy(OpaqueStorage &storage) const final {
                 if constexpr (CanFitSmallStorage<U>) {
-                    reinterpret_cast<const U*>(&storage.smallStorage)->~U();
+                    reinterpret_cast<const U*>(storage.smallStorage.data())->~U();
                 } else {
                     delete static_cast<const U*>(storage.largeStorage);
                 }
@@ -165,7 +165,7 @@ namespace Retro {
 
             constexpr void copy(const OpaqueStorage &src, OpaqueStorage &dest) const final {
                 if constexpr (CanFitSmallStorage<U>) {
-                    dest.emplace<U>(*reinterpret_cast<const U*>(&src.smallStorage));
+                    dest.emplace<U>(*reinterpret_cast<const U*>(src.smallStorage.data()));
                 } else {
                     dest.emplace<U>(*static_cast<const U*>(src.largeStorage));
                 }
@@ -173,7 +173,7 @@ namespace Retro {
 
             constexpr void copyAssign(const OpaqueStorage &src, OpaqueStorage &dest) const override {
                 if constexpr (CanFitSmallStorage<U>) {
-                    *reinterpret_cast<U*>(&dest.smallStorage) = *reinterpret_cast<const U*>(&src.smallStorage);
+                    *reinterpret_cast<U*>(dest.smallStorage.data()) = *reinterpret_cast<const U*>(src.smallStorage.data());
                 } else {
                     *static_cast<U*>(dest.largeStorage) = *static_cast<const U*>(src.largeStorage);
                 }
@@ -181,17 +181,17 @@ namespace Retro {
 
             constexpr void move(OpaqueStorage &src, OpaqueStorage &dest) const final {
                 if constexpr (CanFitSmallStorage<U>) {
-                    dest.emplace<U>(std::move(*reinterpret_cast<U*>(&src.smallStorage)));
+                    dest.emplace<U>(std::move(*reinterpret_cast<U*>(src.smallStorage.data())));
                 } else {
                     dest.emplace<U>(std::move(*static_cast<U*>(src.largeStorage)));
                 }
             }
 
             constexpr void moveAssign(OpaqueStorage &src, OpaqueStorage &dest) const override {
-                if constexpr (CanFitSmallStorage<T>) {
-                    *reinterpret_cast<T*>(&dest.smallStorage) = std::move(*reinterpret_cast<T*>(&src.smallStorage));
+                if constexpr (CanFitSmallStorage<U>) {
+                    *reinterpret_cast<U*>(dest.smallStorage.data()) = std::move(*reinterpret_cast<U*>(src.smallStorage.data()));
                 } else {
-                    *static_cast<T*>(dest.largeStorage) = std::move(*static_cast<T*>(src.largeStorage));
+                    *static_cast<U*>(dest.largeStorage) = std::move(*static_cast<U*>(src.largeStorage));
                 }
             }
         };
