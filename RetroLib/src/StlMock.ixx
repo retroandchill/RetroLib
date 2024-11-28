@@ -1,7 +1,12 @@
-// TODO: This is a workaround implementation for std module
-// to ease the use of modules. Please replace this with the official std module
-// when that is available.
-// Credit to
+/**
+ * @file StdMock.h
+ * @brief This is a workaround implementation for std module to ease the use of modules.
+ *
+ * TODO: Please replace this with the official std module
+ *
+ * @author Alibaba
+ * https://github.com/alibaba
+ */
 module;
 #include <algorithm>
 #include <array>

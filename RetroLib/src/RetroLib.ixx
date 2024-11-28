@@ -1,7 +1,10 @@
-//
-// Created by fcors on 11/28/2024.
-//
-
+/**
+ * @file RetroLib.ixx
+ * @brief Module declaration for RetroLib.
+ *
+ * @author Retro & Chill
+ * https://github.com/retroandchill
+ */
 export module RetroLib;
 
 import std;
