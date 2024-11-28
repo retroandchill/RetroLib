@@ -29,7 +29,6 @@ module;
 #include <memory>
 #include <mutex>
 #include <new>
-#include <bit>
 #include <optional>
 #include <queue>
 #include <ranges>
@@ -304,7 +303,6 @@ export namespace std {
     using std::bit_not;
     using std::bit_or;
     using std::bit_xor;
-    using std::bit_cast;
     using std::compare_three_way;
     using std::cref;
     using std::divides;

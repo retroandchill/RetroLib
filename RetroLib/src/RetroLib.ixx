@@ -16,6 +16,6 @@ import std;
 #define RETROLIB_EXPORT export
 
 #include "RetroLib/Concepts/Inheritance.h"
+#include "RetroLib/Concepts/OpaqueStorage.h"
 
-#include "RetroLib/Utils/OpaqueStorage.h"
 #include "RetroLib/Utils/Polymorphic.h"
