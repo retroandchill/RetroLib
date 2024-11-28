@@ -18,6 +18,12 @@ jobs:
           sudo apt-get install -y python3
           pip install conan
 
+      - name: Set up Clang
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: latest
+          platform: x64
+
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
         with:
