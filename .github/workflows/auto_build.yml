@@ -21,7 +21,7 @@ jobs:
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
         with:
-          version: 1.12.1Fi
+          version: 1.12.1
 
       - name: Build with CMake
         uses: ashutoshvarma/action-cmake-build@master
