@@ -6,3 +6,6 @@ target_sources(RetroLib
     FILES
         src/RetroLib.ixx
         src/StlMock.ixx)
+target_include_directories(RetroLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include)
