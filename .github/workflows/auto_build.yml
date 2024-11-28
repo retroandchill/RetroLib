@@ -16,3 +16,6 @@ jobs:
 
       - name: Build Project
         uses: threeal/cmake-action@v2.0.0
+        with:
+          options: |
+              CMAKE_BUILD_TYPE=Release
