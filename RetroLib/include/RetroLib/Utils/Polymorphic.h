@@ -109,16 +109,15 @@ namespace Retro {
             void *largeStorage;
 
             template <typename U, typename... A>
-                requires std::derived_from<U, T> && std::constructible_from<T, A...>
+                requires std::derived_from<U, T> && std::constructible_from<U, A...>
             constexpr void emplace(A&&... args) noexcept {
-                if constexpr (CanFitSmallStorage<T>) {
-                    new (reinterpret_cast<T*>(&smallStorage)) T(std::forward<A>(args)...);
+                if constexpr (CanFitSmallStorage<U>) {
+                    new (reinterpret_cast<U*>(&smallStorage)) U(std::forward<A>(args)...);
                 } else {
-                    largeStorage = new T(std::forward<A>(args)...);
+                    largeStorage = new U(std::forward<A>(args)...);
                 }
             }
         };
-
 
         struct VTable {
             constexpr virtual ~VTable() = default;
