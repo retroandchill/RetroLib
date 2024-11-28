@@ -31,5 +31,5 @@ jobs:
           build-dir: ${{ runner.workspace }}/build
           cc: ${{ matrix.config.cc }}
           cxx: ${{ matrix.config.cxx }}
-          configure-options: -G Ninja
+          configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18
           build-type: Release
