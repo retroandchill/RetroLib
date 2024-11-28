@@ -193,7 +193,7 @@ namespace Retro {
          *
          * @note The operation is noexcept, ensuring that it does not throw exceptions.
          */
-        constexpr Polymorphic& operator=(const Polymorphic&& other) noexcept {
+        constexpr Polymorphic& operator=(Polymorphic&& other) noexcept {
             if (vtable->getType() == other.vtable->getType()) {
                 vtable = other.vtable;
                 vtable->moveAssign(other.storage, storage);
@@ -221,7 +221,8 @@ namespace Retro {
         template <typename U>
             requires std::derived_from<std::decay_t<U>, T>
         constexpr Polymorphic& operator=(U&& value) noexcept {
-
+            emplace<std::decay_t<U>>(std::forward<U>(value));
+            return *this;
         }
 
         /**
@@ -298,6 +299,18 @@ namespace Retro {
          */
         constexpr const T& operator*() const {
             return *get();
+        }
+
+        template <typename U, typename... A>
+            requires std::derived_from<U, T>
+        constexpr void emplace(A&&... args) noexcept {
+            vtable->destroy(storage);
+            vtable = getVTable<U>();
+            if constexpr (CanFitSmallStorage<U>) {
+                new (reinterpret_cast<U*>(storage.smallStorage.data())) U(std::forward<A>(args)...);
+            } else {
+                storage.largeStorage = new U(std::forward<A>(args)...);
+            }
         }
 
       private:

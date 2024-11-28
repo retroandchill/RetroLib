@@ -7,14 +7,22 @@
  */
 #include <catch2/catch_test_macros.hpp>
 
+
+#ifndef RETROLIB_WITH_MODULES
 import std;
 import RetroLib;
+#else
+#include <array>
+#include "RetroLib/Utils/Polymorphic.h"
+#endif
 
 class Base {
 public:
     virtual ~Base() = default;
 
-    virtual int getValue() const = 0;
+    virtual int getValue() const {
+        return 0;
+    }
 };
 
 class Derived1 : public Base {
@@ -45,6 +53,18 @@ private:
     std::array<int, 15> values;
 };
 
+class Derived3 : public Base {
+public:
+    explicit Derived3(std::shared_ptr<int> value) : value(std::move(value)) {}
+
+    int getValue() const override {
+        return *value;
+    }
+
+private:
+    std::shared_ptr<int> value;
+};
+
 TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     Retro::Polymorphic<Base> polymorphic1 = Derived1(42);
     CHECK(polymorphic1->getValue() == 42);
@@ -55,4 +75,13 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
 
     polymorphic1 = polymorphic2;
     CHECK(polymorphic1->getValue() == 120);
+
+    auto value = std::make_shared<int>(4);
+    std::weak_ptr<int> weakValue = value;
+    polymorphic1 = Derived3(std::move(value));
+    CHECK(polymorphic1->getValue() == 4);
+
+    polymorphic1 = Retro::Polymorphic<Base>();
+    CHECK(polymorphic1->getValue() == 0);
+    CHECK(weakValue.expired());
 }
