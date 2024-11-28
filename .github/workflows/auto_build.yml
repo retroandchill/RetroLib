@@ -21,7 +21,7 @@ jobs:
       - name: Set up Clang
         run: |
           sudo apt-get update
-          sudo apt-get install -y llvm-18 clang-18 clang-tools-18
+          sudo apt-get upgrade -y llvm clang clang-tools
 
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
