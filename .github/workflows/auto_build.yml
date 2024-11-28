@@ -9,10 +9,19 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
 
-      - name: Install Ninja & Conan
+      - name: Install Conan
         run: |
-          sudo apt-get install -y ninja-build python3
+          sudo apt-get install -y python3
           pip install conan
+
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Build Ninja
+        run: |
+          mkdir build
+          cd build
+          cmake -G Ninja ..|
+          cmake --build build
 
       - name: Build Project
         uses: threeal/cmake-action@v2.0.0
