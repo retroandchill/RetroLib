@@ -9,8 +9,9 @@
 
 #ifndef RETROLIB_EXPORT
 #include "RetroLib/Concepts/Inheritance.h"
-#include "RetroLib/Utils/OpaqueStorage.h"
+#include "RetroLib/Concepts/OpaqueStorage.h"
 #include <typeinfo>
+#include <utility>
 
 #define RETROLIB_EXPORT
 #endif
@@ -42,7 +43,7 @@ namespace Retro {
          * @throws No exceptions are thrown. The constructor is marked noexcept.
          */
         constexpr Polymorphic() noexcept requires std::is_default_constructible_v<T> {
-            storage.emplace<T>();
+            storage.template emplace<T>();
         }
 
         /**
@@ -65,8 +66,8 @@ namespace Retro {
          */
         template <typename U>
             requires std::derived_from<std::decay_t<U>, T>
-        explicit constexpr Polymorphic(U&& value) noexcept : vtable(getVTable<U>()) {
-            storage.emplace<std::decay_t<U>>(std::forward<U>(value));
+        explicit(false) constexpr Polymorphic(U&& value) noexcept : vtable(getVTable<U>()) {
+            storage.template emplace<std::decay_t<U>>(std::forward<U>(value));
         }
 
         /**
@@ -94,7 +95,7 @@ namespace Retro {
         template <typename U, typename... A>
             requires std::derived_from<U, T> && std::constructible_from<U, A...>
         explicit constexpr Polymorphic(std::in_place_type_t<U>, A&&... args) noexcept : vtable(getVTable<U>()) {
-            storage.emplace<U>(std::forward<A>(args)...);
+            storage.template emplace<U>(std::forward<A>(args)...);
         }
 
         /**
@@ -318,6 +319,7 @@ namespace Retro {
         struct VTable {
             constexpr virtual ~VTable() = default;
             constexpr virtual const std::type_info& getType() const = 0;
+            constexpr virtual size_t getSize() const = 0;
             constexpr virtual T* getValue(OpaqueStorage& storage) const = 0;
             constexpr virtual const T* getValue(const OpaqueStorage& storage) const = 0;
             constexpr virtual void destroy(OpaqueStorage& storage) const = 0;
@@ -333,6 +335,10 @@ namespace Retro {
         struct VTableImpl : VTable {
             constexpr const std::type_info & getType() const final {
                 return typeid(U);
+            }
+
+            constexpr size_t getSize() const final {
+                return sizeof(U);
             }
 
             constexpr U *getValue(OpaqueStorage &data) const final {
