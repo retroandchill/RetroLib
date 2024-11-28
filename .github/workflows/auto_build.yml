@@ -11,7 +11,7 @@ jobs:
 
       - name: Install Conan
         run: |
-          apt-get install -y python
+          sudo apt-get install -y python
           pip install conan
 
       - name: Build Project
