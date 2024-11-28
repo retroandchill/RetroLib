@@ -16,16 +16,9 @@ jobs:
 
       - uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Build Ninja
+      - name: Build Project
         run: |
           mkdir build
           cd build
-          cmake -G Ninja ..|
+          cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
           cmake --build build
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.0.0
-        with:
-          generator: Ninja
-          options: |
-              CMAKE_BUILD_TYPE=Release
