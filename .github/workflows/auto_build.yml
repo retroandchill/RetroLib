@@ -20,12 +20,7 @@ jobs:
 
       - name: Set up Clang
         run: |
-          sudo add-apt-repository -y "deb http://apt.llvm.org/unstable/ llvm-toolchain main"
-          sudo add-apt-repository -y "deb-src http://apt.llvm.org/unstable/ llvm-toolchain main"
-          sudo add-apt-repository -y "deb http://apt.llvm.org/unstable/ llvm-toolchain-18 main" || true
-          sudo add-apt-repository -y "deb-src http://apt.llvm.org/unstable/ llvm-toolchain-18 main" || true
-          sudo apt-get update -y
-          sudo apt-get install -y clang-18 clang-tools-18
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 18
 
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
