@@ -9,5 +9,10 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
 
+      - name: Install Conan
+        run: |
+          apt-get install -y python
+          pip install conan
+
       - name: Build Project
         uses: threeal/cmake-action@v2.0.0
