@@ -2,9 +2,15 @@ name: Build
 on:
   push:
 jobs:
-  build-project:
+  build:
     name: Build Project
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
+          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
+          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
@@ -14,11 +20,16 @@ jobs:
           sudo apt-get install -y python3
           pip install conan
 
-      - uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.11.4
 
-      - name: Build Project
-        run: |
-          mkdir build
-          cd build
-          cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
-          cmake --build build
+      - name: Build with CMake
+        uses: ashutoshvarma/action-cmake-build@master
+        with:
+          build-dir: ${{ runner.workspace }}/build
+          cc: ${{ matrix.config.cc }}
+          cxx: ${{ matrix.config.cxx }}
+          configure-options: -G Ninja
+          build-type: Release
