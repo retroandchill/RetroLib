@@ -16,6 +16,9 @@
 namespace Retro {
 
     RETROLIB_EXPORT template <typename T>
+    concept ClassType = std::is_class_v<T> && (!std::is_union_v<T>);
+
+    RETROLIB_EXPORT template <typename T>
     concept PolymorphicType = std::is_class_v<T> && std::has_virtual_destructor_v<T>;
 
 }

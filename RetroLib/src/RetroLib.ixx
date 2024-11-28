@@ -5,8 +5,17 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
+module;
+
+#include <typeinfo>
+
 export module RetroLib;
 
 import std;
 
 #define RETROLIB_EXPORT export
+
+#include "RetroLib/Concepts/Inheritance.h"
+
+#include "RetroLib/Utils/OpaqueStorage.h"
+#include "RetroLib/Utils/Polymorphic.h"
