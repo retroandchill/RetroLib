@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - { name: "Ubuntu Clang", os: ubuntu-latest, cc: "clang", cxx: "clang++" }
+          - { name: "Ubuntu Clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18" }
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
@@ -19,10 +19,8 @@ jobs:
           pip install conan
 
       - name: Set up Clang
-        uses: egor-tensin/setup-clang@v1
-        with:
-          version: latest
-          platform: x64
+        run: |
+          apt-get install -y llvm clang clang-tools
 
       - name: Setup Ninja
         uses: ashutoshvarma/setup-ninja@master
