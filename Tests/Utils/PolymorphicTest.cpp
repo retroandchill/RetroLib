@@ -31,7 +31,7 @@ private:
 
 class Derived2 : public Base {
 public:
-    explicit Derived2(const std::array<int, 10>& values) : values(values) {}
+    explicit Derived2(const std::array<int, 15>& values) : values(values) {}
 
     int getValue() const override {
         int value = 0;
@@ -42,16 +42,17 @@ public:
     }
 
 private:
-    std::array<int, 10> values;
+    std::array<int, 15> values;
 };
 
 TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     Retro::Polymorphic<Base> polymorphic1 = Derived1(42);
     CHECK(polymorphic1->getValue() == 42);
 
-    Retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>, std::array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-    CHECK(polymorphic2->getValue() == 55);
+    Retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>,
+            std::array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    CHECK(polymorphic2->getValue() == 120);
 
     polymorphic1 = polymorphic2;
-    CHECK(polymorphic1->getValue() == 55);
+    CHECK(polymorphic1->getValue() == 120);
 }

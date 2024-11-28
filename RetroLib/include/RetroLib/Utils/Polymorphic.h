@@ -353,7 +353,7 @@ namespace Retro {
                 if constexpr (CanFitSmallStorage<U>) {
                     return reinterpret_cast<const U*>(data.smallStorage.data());
                 } else {
-                    return static_cast<const U*>(storage.largeStorage);
+                    return static_cast<const U*>(data.largeStorage);
                 }
             }
 
