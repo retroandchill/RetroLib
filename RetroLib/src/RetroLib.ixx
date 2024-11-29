@@ -20,10 +20,15 @@ import std;
 
 // clang-format off
 
+#include "RetroLib/TypeTraits.h"
+
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
 
+#include "RetroLib/Utils/ForwardLike.h"
 #include "RetroLib/Utils/Polymorphic.h"
+
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 #include "RetroLib/Ranges/Views/AnyView.h"
 
