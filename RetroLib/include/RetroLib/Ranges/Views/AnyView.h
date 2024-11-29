@@ -8,11 +8,12 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include <ranges>
-#include <type_traits>
-#include <memory>
 #include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Utils/Polymorphic.h"
+
+#include <memory>
+#include <ranges>
+#include <type_traits>
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -40,9 +41,8 @@ namespace Retro::Views {
      * optimizations based on the type parameter specified in the template
      * argument.
      */
-    template<typename>
-    struct RttiTag {
-    };
+    template <typename>
+    struct RttiTag {};
 
     /**
      * @class AnyRef
@@ -59,15 +59,18 @@ namespace Retro::Views {
      *
      * Constructor:
      * - `AnyRef()`: Constructs an empty `AnyRef` instance.
-     * - `template<typename T> explicit(false) constexpr AnyRef(T &obj) noexcept`: Constructs an `AnyRef` with a reference to the specified object `obj` and stores its type information.
+     * - `template<typename T> explicit(false) constexpr AnyRef(T &obj) noexcept`: Constructs an `AnyRef` with a
+     * reference to the specified object `obj` and stores its type information.
      *
      * Member Functions:
-     * - `template<typename T> T &get() const noexcept`: Returns a reference to the stored object of type `T`. The function will assert if the stored object's type does not match `T` or if the `AnyRef` is empty.
+     * - `template<typename T> T &get() const noexcept`: Returns a reference to the stored object of type `T`. The
+     * function will assert if the stored object's type does not match `T` or if the `AnyRef` is empty.
      *
-     * Usage of such a class can be particularly beneficial in scenarios where type erasure is needed, or when dynamic polymorphism or containers storing heterogeneous object types are involved.
+     * Usage of such a class can be particularly beneficial in scenarios where type erasure is needed, or when dynamic
+     * polymorphism or containers storing heterogeneous object types are involved.
      */
     class AnyRef {
-    public:
+      public:
         /**
          * @brief Default constructor for the AnyRef class.
          *
@@ -99,8 +102,9 @@ namespace Retro::Views {
          * @note The constructor is noexcept, guaranteeing that no exceptions will be thrown
          *       during its execution.
          */
-        template<typename T>
-        explicit(false) constexpr AnyRef(T &obj) noexcept : ptr(std::addressof(obj)), info(&typeid(RttiTag<T>)) {}
+        template <typename T>
+        explicit(false) constexpr AnyRef(T &obj) noexcept : ptr(std::addressof(obj)), info(&typeid(RttiTag<T>)) {
+        }
 
         /**
          * @brief Retrieves a reference to the stored object of the specified type.
@@ -123,13 +127,13 @@ namespace Retro::Views {
          *      the function contains assertions that may trigger if these conditions are not met.
          * @post Returns a non-const reference to the stored object, allowing modification if desired.
          */
-        template<typename T>
+        template <typename T>
         T &get() const noexcept {
             RETROLIB_ASSERT(ptr != nullptr && info != nullptr && *info == typeid(RttiTag<T>));
             return *const_cast<T *>(static_cast<const volatile T *>(ptr));
         }
 
-    private:
+      private:
         const volatile void *ptr = nullptr;
         const std::type_info *info = nullptr;
     };
@@ -153,10 +157,10 @@ namespace Retro::Views {
      * container types, leveraging type erasure to hide the container's actual type from the users of the interface.
      */
     class ErasedView {
-    protected:
+      protected:
         ~ErasedView() = default;
 
-    public:
+      public:
         /**
          * @brief Determines if the referenced iterable object is at its end.
          *
@@ -170,7 +174,6 @@ namespace Retro::Views {
          */
         virtual bool atEnd(AnyRef ref) = 0;
     };
-
 
     /**
      * @class AnyViewSentinel
@@ -191,7 +194,7 @@ namespace Retro::Views {
      * proper initialization with a valid ErasedView reference.
      */
     RETROLIB_EXPORT class AnyViewSentinel {
-    public:
+      public:
         /**
          * Default constructor for the AnyViewSentinel class.
          *
@@ -212,10 +215,10 @@ namespace Retro::Views {
          *       in constant expressions and preventing implicit conversions, respectively. The `noexcept`
          *       specifier indicates that this constructor is guaranteed not to throw exceptions.
          */
-        constexpr explicit AnyViewSentinel(ErasedView& view) noexcept : view(&view) {
+        constexpr explicit AnyViewSentinel(ErasedView &view) noexcept : view(&view) {
         }
 
-    private:
+      private:
         template <typename>
         friend class AnyViewIterator;
 
@@ -235,7 +238,7 @@ namespace Retro::Views {
      */
     template <typename T>
     class AnyViewIteratorInterface {
-    public:
+      public:
         /**
          * @brief Virtual destructor for the AnyViewIteratorInterface.
          *
@@ -243,7 +246,6 @@ namespace Retro::Views {
          * object is deleted through a pointer to this interface.
          */
         virtual ~AnyViewIteratorInterface() = default;
-
 
         /**
          * @brief Returns a reference to the iterator itself.
@@ -280,7 +282,7 @@ namespace Retro::Views {
          * @param other An instance of AnyViewIteratorInterface to compare against.
          * @return True if the iterators are considered equal, false otherwise.
          */
-        virtual bool equal(const AnyViewIteratorInterface& other) const = 0;
+        virtual bool equal(const AnyViewIteratorInterface &other) const = 0;
 
         /**
          * @brief Advances the iterator to the next element in the sequence.
@@ -309,9 +311,9 @@ namespace Retro::Views {
      *           the value type of the iterator `I`.
      *
      * Constructor:
-     * - `template <typename A> requires std::same_as<std::decay_t<A>, I> && (!std::same_as<std::decay_t<A>, AnyViewIteratorImpl>)
-     *   constexpr explicit AnyViewIteratorImpl(A&& iter)`: Constructs the iterator implementation with a given iterator.
-     *   This constructor is enabled for types that decay to `I` and are not `AnyViewIteratorImpl`.
+     * - `template <typename A> requires std::same_as<std::decay_t<A>, I> && (!std::same_as<std::decay_t<A>,
+     * AnyViewIteratorImpl>) constexpr explicit AnyViewIteratorImpl(A&& iter)`: Constructs the iterator implementation
+     * with a given iterator. This constructor is enabled for types that decay to `I` and are not `AnyViewIteratorImpl`.
      *
      * - `constexpr explicit AnyViewIteratorImpl(std::nullptr_t) requires std::is_pointer_v<I>`: Constructs an iterator
      *   implementation for pointer types with a null pointer.
@@ -328,7 +330,7 @@ namespace Retro::Views {
      */
     template <typename I, typename T = std::iter_value_t<I>>
     class AnyViewIteratorImpl : public AnyViewIteratorInterface<T> {
-    public:
+      public:
         /**
          * @brief Constructs an AnyViewIteratorImpl with a specified iterator.
          *
@@ -344,7 +346,8 @@ namespace Retro::Views {
          */
         template <typename A>
             requires std::same_as<std::decay_t<A>, I> && (!std::same_as<std::decay_t<A>, AnyViewIteratorImpl>)
-        constexpr explicit AnyViewIteratorImpl(A&& iter) : iter(std::forward<A>(iter)) {}
+        constexpr explicit AnyViewIteratorImpl(A &&iter) : iter(std::forward<A>(iter)) {
+        }
 
         /**
          * @brief Constructs a null AnyViewIteratorImpl for pointer types.
@@ -356,7 +359,10 @@ namespace Retro::Views {
          * @requires The template parameter `I` must be a pointer type as determined
          *           by `std::is_pointer_v<I>`.
          */
-        constexpr explicit AnyViewIteratorImpl(std::nullptr_t) requires std::is_pointer_v<I> : iter(nullptr) {}
+        constexpr explicit AnyViewIteratorImpl(std::nullptr_t)
+            requires std::is_pointer_v<I>
+            : iter(nullptr) {
+        }
 
         AnyRef iterator() const override {
             return AnyRef(iter);
@@ -370,14 +376,14 @@ namespace Retro::Views {
 #ifdef RTTI_ENABLED
             RETROLIB_ASSERT(typeid(this) == typeid(other));
 #endif
-            return iter == static_cast<const AnyViewIteratorImpl<I, T>&>(other).iter;
+            return iter == static_cast<const AnyViewIteratorImpl<I, T> &>(other).iter;
         }
 
         void next() override {
             ++iter;
         }
 
-    private:
+      private:
         I iter;
     };
 
@@ -395,9 +401,9 @@ namespace Retro::Views {
      *
      * @tparam T The type of elements that the iterator operates over.
      */
-    RETROLIB_EXPORT template<typename T>
+    RETROLIB_EXPORT template <typename T>
     class AnyViewIterator {
-    public:
+      public:
         using difference_type = std::ptrdiff_t;
         using value_type = T;
 
@@ -423,8 +429,10 @@ namespace Retro::Views {
          * @param iterator An iterator instance to initialize and adapt within this AnyViewIterator.
          */
         template <typename I>
-            requires (!std::same_as<std::decay_t<I>, AnyViewIterator>) && std::same_as<std::iter_value_t<I>, T>
-        constexpr explicit AnyViewIterator(I&& iterator) : delegate(std::in_place_type<AnyViewIteratorImpl<std::decay_t<I>>>, std::forward<I>(iterator)) {}
+            requires(!std::same_as<std::decay_t<I>, AnyViewIterator>) && std::same_as<std::iter_value_t<I>, T>
+        constexpr explicit AnyViewIterator(I &&iterator)
+            : delegate(std::in_place_type<AnyViewIteratorImpl<std::decay_t<I>>>, std::forward<I>(iterator)) {
+        }
 
         /**
          * @brief Compares two AnyViewIterator objects for equality.
@@ -452,7 +460,7 @@ namespace Retro::Views {
          * @return true if the current iterator has reached the end of the view, false otherwise.
          */
         constexpr bool operator==(const AnyViewSentinel &other) const {
-           return other.view->atEnd(delegate->iterator());
+            return other.view->atEnd(delegate->iterator());
         }
 
         /**
@@ -500,8 +508,8 @@ namespace Retro::Views {
             return temp;
         }
 
-    private:
-        Polymorphic<AnyViewIteratorInterface<T>> delegate = AnyViewIteratorImpl<T*>(nullptr);
+      private:
+        Polymorphic<AnyViewIteratorInterface<T>> delegate = AnyViewIteratorImpl<T *>(nullptr);
     };
 
     /**
@@ -524,9 +532,9 @@ namespace Retro::Views {
      * - Supports polymorphic iteration start-point specification. Derived classes need to define their
      *   own mechanism for retrieving the starting iterator.
      */
-    template<typename T>
+    template <typename T>
     class AnyViewInterface : public ErasedView {
-    public:
+      public:
         /**
          * @brief Destructor for AnyViewInterface.
          *
@@ -535,7 +543,6 @@ namespace Retro::Views {
          * are deleted through a pointer to this abstract interface.
          */
         virtual ~AnyViewInterface() = default;
-
 
         /**
          * @brief Pure virtual function to obtain the beginning iterator of the view.
@@ -568,7 +575,7 @@ namespace Retro::Views {
      */
     template <typename R, typename T = std::ranges::range_value_t<R>>
     class AnyViewImpl : public AnyViewInterface<T> {
-    public:
+      public:
         /**
          * @brief Constructs an AnyViewImpl object with the given range.
          *
@@ -584,8 +591,9 @@ namespace Retro::Views {
          * of R, to ensure type safety and correctness.
          */
         template <typename E>
-            requires (!std::same_as<std::decay_t<E>, T>) && std::same_as<std::decay_t<E>, R>
-        constexpr explicit AnyViewImpl(E&& range) : range(std::forward<E>(range)) {}
+            requires(!std::same_as<std::decay_t<E>, T>) && std::same_as<std::decay_t<E>, R>
+        constexpr explicit AnyViewImpl(E &&range) : range(std::forward<E>(range)) {
+        }
 
         /**
          * @brief Returns an iterator to the beginning of the encapsulated range.
@@ -620,7 +628,7 @@ namespace Retro::Views {
             return it == std::ranges::end(range);
         }
 
-    private:
+      private:
         R range;
     };
 
@@ -648,10 +656,10 @@ namespace Retro::Views {
      * range types are accepted. Internally, it encapsulates the polymorphic behavior through
      * a `Polymorphic<AnyViewInterface<T>>` member, initializing with an empty view by default.
      */
-    RETROLIB_EXPORT template<typename T>
+    RETROLIB_EXPORT template <typename T>
     class AnyView : public std::ranges::view_interface<AnyView<T>> {
 
-    public:
+      public:
         /**
          * @brief Default constructor for AnyView.
          *
@@ -676,10 +684,10 @@ namespace Retro::Views {
          * @note This constructor is explicit with a boolean condition (usually `false`)
          *       to prevent implicit conversions and ensure intentional construction.
          */
-        template<typename R>
-            requires (!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R>
-        explicit(false) AnyView(R &&range) : data(std::in_place_type<AnyViewImpl<std::decay_t<R>>>, std::forward<R>(range)) {
-
+        template <typename R>
+            requires(!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R>
+        explicit(false) AnyView(R &&range)
+            : data(std::in_place_type<AnyViewImpl<std::decay_t<R>>>, std::forward<R>(range)) {
         }
 
         /**
@@ -700,9 +708,9 @@ namespace Retro::Views {
          * @return A reference to the modified `AnyView` object, allowing for chaining
          *         assignments and further manipulations.
          */
-        template<typename R>
-            requires (!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R>
-        AnyView& operator=(R&& range) {
+        template <typename R>
+            requires(!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R>
+        AnyView &operator=(R &&range) {
             data = AnyViewImpl<std::decay_t<R>>(std::forward<R>(range));
             return *this;
         }
@@ -733,7 +741,7 @@ namespace Retro::Views {
             return AnyViewSentinel(*data);
         }
 
-    private:
+      private:
         Polymorphic<AnyViewInterface<T>> data = AnyViewImpl<std::ranges::empty_view<T>>(std::views::empty<T>);
     };
-}
+} // namespace Retro::Views

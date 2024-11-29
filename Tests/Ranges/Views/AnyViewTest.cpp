@@ -12,6 +12,7 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Ranges/Views/AnyView.h"
+
 #include <vector>
 #endif
 
@@ -33,7 +34,7 @@ TEST_CASE("Any view can take in a view of any type and iterate over it", "[views
         }
         CHECK(count == 10);
 
-        std::array values = { 1, 2, 3, 4, 5 };
+        std::array values = {1, 2, 3, 4, 5};
         view = values;
         count = 0;
         for (auto value : view) {
@@ -43,9 +44,8 @@ TEST_CASE("Any view can take in a view of any type and iterate over it", "[views
     }
 
     SECTION("Can iterate over a range pipe") {
-        std::array values = { 1, 2, 3, 4, 5 };
-        Retro::Views::AnyView<int> view = values |
-                std::ranges::views::transform([](int value) { return value * 2; });
+        std::array values = {1, 2, 3, 4, 5};
+        Retro::Views::AnyView<int> view = values | std::ranges::views::transform([](int value) { return value * 2; });
         int count = 0;
         for (auto value : view) {
             count += value;
