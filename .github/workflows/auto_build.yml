@@ -35,3 +35,9 @@ jobs:
           configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18
           build-type: Release
           run-test: true
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: ./**/*.profraw
