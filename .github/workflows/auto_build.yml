@@ -60,8 +60,7 @@ jobs:
 
       - name: Merge counters from different runs and convert the result into an llvm-cov-compatible form
         run: |
-          ls ninja-build
-          llvm-profdata-18 merge -o merged.profdata ninja-build/Tests/*.profraw
+          llvm-profdata-18 merge -o merged.profdata ./**/*.profraw
 
       - name: Collect the coverage
         run: |
