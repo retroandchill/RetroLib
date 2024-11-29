@@ -7,6 +7,7 @@
  */
 module;
 
+#include "RetroLib/RetroLibMacros.h"
 #include <typeinfo>
 
 export module RetroLib;
@@ -19,3 +20,5 @@ import std;
 #include "RetroLib/Concepts/OpaqueStorage.h"
 
 #include "RetroLib/Utils/Polymorphic.h"
+
+#include "RetroLib/Ranges/Views/AnyView.h"

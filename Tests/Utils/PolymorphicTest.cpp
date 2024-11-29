@@ -8,7 +8,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 
-#ifdef RETROLIB_WITH_MODULES
+#if RETROLIB_WITH_MODULES
 import std;
 import RetroLib;
 #else

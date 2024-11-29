@@ -7,12 +7,15 @@
  */
 #pragma once
 
-#ifndef RETROLIB_EXPORT
+#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
+#include <array>
 #include <typeinfo>
 #include <utility>
+#endif
 
+#ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
 #endif
 
