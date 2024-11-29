@@ -13,7 +13,7 @@ endif()
 
 if (RETROLIB_WITH_TESTS)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        list(APPEND CMAKE_CXX_FLAGS -fprofile-instr-generate -fcoverage-mapping)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
     endif()
 endif()
 
