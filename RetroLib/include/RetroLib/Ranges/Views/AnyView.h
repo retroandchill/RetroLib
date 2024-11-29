@@ -23,6 +23,20 @@
 namespace Retro::Views {
 
     /**
+     * @brief A concept to check if a range is compatible with a given type.
+     *
+     * The CompatibleRange concept ensures that the reference type of a range
+     * is convertible to a specified type T. This concept is useful for
+     * determining if elements of a range can be used as or transformed into
+     * another type, T, thus ensuring compatibility.
+     *
+     * @tparam R The range type to be checked.
+     * @tparam T The type to which the range's reference type should be convertible.
+     */
+    template <typename R, typename T>
+    concept CompatibleRange = std::convertible_to<std::ranges::range_reference_t<R>, T>;
+
+    /**
      * A templated structure that represents a runtime type information (RTTI) tag.
      *
      * This structure is intended to be used as a marker or tag for RTTI purposes
@@ -374,7 +388,7 @@ namespace Retro::Views {
 
         bool equal(const AnyViewIteratorInterface<T> &other) const override {
 #ifdef RTTI_ENABLED
-            RETROLIB_ASSERT(typeid(this) == typeid(other));
+            RETROLIB_ASSERT(typeid(*this) == typeid(other));
 #endif
             return iter == static_cast<const AnyViewIteratorImpl<I, T> &>(other).iter;
         }
@@ -685,7 +699,7 @@ namespace Retro::Views {
          *       to prevent implicit conversions and ensure intentional construction.
          */
         template <typename R>
-            requires(!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R>
+            requires(!std::same_as<std::decay_t<R>, AnyView>) && std::ranges::input_range<R> && CompatibleRange<R, T>
         explicit(false) AnyView(R &&range)
             : data(std::in_place_type<AnyViewImpl<std::decay_t<R>>>, std::forward<R>(range)) {
         }

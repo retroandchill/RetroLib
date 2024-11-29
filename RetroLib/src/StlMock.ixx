@@ -487,8 +487,6 @@ export namespace std {
         namespace _Pipe {
             using std::ranges::_Pipe::operator|;
         }
-#elif __clang__
-
 #endif
     } // namespace ranges
     using std::all_of;
