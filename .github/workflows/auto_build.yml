@@ -34,3 +34,6 @@ jobs:
           cxx: ${{ matrix.config.cxx }}
           configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18
           build-type: Release
+
+      - name: Test Project
+        uses: threeal/ctest-action@v1.1.0
