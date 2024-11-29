@@ -251,7 +251,7 @@ namespace Retro {
          * @return A pointer to the stored value of type T.
          */
         constexpr const T* get() const {
-            return vtable->getValue(storage);
+            return vtable->getConstValue(storage);
         }
 
         /**
@@ -335,31 +335,30 @@ namespace Retro {
         };
 
         struct VTable {
-            constexpr virtual ~VTable() = default;
-            constexpr virtual const std::type_info& getType() const = 0;
-            constexpr virtual size_t getSize() const = 0;
-            constexpr virtual T* getValue(OpaqueStorage& storage) const = 0;
-            constexpr virtual const T* getValue(const OpaqueStorage& storage) const = 0;
-            constexpr virtual void destroy(OpaqueStorage& storage) const = 0;
-            constexpr virtual void copy(const OpaqueStorage& src, OpaqueStorage& dest) const = 0;
-            constexpr virtual void copyAssign(const OpaqueStorage& src, OpaqueStorage& dest) const = 0;
-            constexpr virtual void move(OpaqueStorage& src, OpaqueStorage& dest) const = 0;
-            constexpr virtual void moveAssign(OpaqueStorage& src, OpaqueStorage& dest) const = 0;
+            const std::type_info& (*getType)();
+            size_t (*getSize)();
+            T* (*getValue)(OpaqueStorage& storage);
+            const T* (*getConstValue)(const OpaqueStorage& storage);
+            void (*destroy)(OpaqueStorage& storage);
+            void (*copy)(const OpaqueStorage& src, OpaqueStorage& dest);
+            void (*copyAssign)(const OpaqueStorage& src, OpaqueStorage& dest);
+            void (*move)(OpaqueStorage& src, OpaqueStorage& dest);
+            void (*moveAssign)(OpaqueStorage& src, OpaqueStorage& dest);
 
         };
 
         template <typename U>
             requires std::derived_from<U, T>
-        struct VTableImpl : VTable {
-            constexpr const std::type_info & getType() const final {
+        struct VTableImpl {
+            static constexpr const std::type_info & getType() {
                 return typeid(U);
             }
 
-            constexpr size_t getSize() const final {
+            static constexpr size_t getSize() {
                 return sizeof(U);
             }
 
-            constexpr U *getValue(OpaqueStorage &data) const final {
+            static constexpr T *getValue(OpaqueStorage &data) {
                 if constexpr (fitsSmallStorage<U>) {
                     return reinterpret_cast<U*>(data.smallStorage.data());
                 } else {
@@ -367,7 +366,7 @@ namespace Retro {
                 }
             }
 
-            constexpr const U* getValue(const OpaqueStorage &data) const final {
+            static constexpr const T* getConstValue(const OpaqueStorage &data) {
                 if constexpr (fitsSmallStorage<U>) {
                     return reinterpret_cast<const U*>(data.smallStorage.data());
                 } else {
@@ -375,7 +374,7 @@ namespace Retro {
                 }
             }
 
-            constexpr void destroy(OpaqueStorage &data) const final {
+            static constexpr void destroy(OpaqueStorage &data) {
                 if constexpr (fitsSmallStorage<U>) {
                     reinterpret_cast<const U*>(data.smallStorage.data())->~U();
                 } else {
@@ -383,7 +382,7 @@ namespace Retro {
                 }
             }
 
-            constexpr void copy(const OpaqueStorage &src, OpaqueStorage &dest) const final {
+            static constexpr void copy(const OpaqueStorage &src, OpaqueStorage &dest) {
                 if constexpr (fitsSmallStorage<U>) {
                     dest.template emplace<U>(*reinterpret_cast<const U*>(src.smallStorage.data()));
                 } else {
@@ -391,7 +390,7 @@ namespace Retro {
                 }
             }
 
-            constexpr void copyAssign(const OpaqueStorage &src, OpaqueStorage &dest) const override {
+            static constexpr void copyAssign(const OpaqueStorage &src, OpaqueStorage &dest) {
                 if constexpr (fitsSmallStorage<U>) {
                     *reinterpret_cast<U*>(dest.smallStorage.data()) = *reinterpret_cast<const U*>(src.smallStorage.data());
                 } else {
@@ -399,7 +398,7 @@ namespace Retro {
                 }
             }
 
-            constexpr void move(OpaqueStorage &src, OpaqueStorage &dest) const final {
+            static constexpr void move(OpaqueStorage &src, OpaqueStorage &dest) {
                 if constexpr (fitsSmallStorage<U>) {
                     dest.template emplace<U>(std::move(*reinterpret_cast<U*>(src.smallStorage.data())));
                 } else {
@@ -407,7 +406,7 @@ namespace Retro {
                 }
             }
 
-            constexpr void moveAssign(OpaqueStorage &src, OpaqueStorage &dest) const override {
+            static constexpr void moveAssign(OpaqueStorage &src, OpaqueStorage &dest) {
                 if constexpr (fitsSmallStorage<U>) {
                     *reinterpret_cast<U*>(dest.smallStorage.data()) = std::move(*reinterpret_cast<U*>(src.smallStorage.data()));
                 } else {
@@ -417,8 +416,20 @@ namespace Retro {
         };
 
         template <typename U>
+            requires std::derived_from<U, T>
         static const VTable* getVTable() {
-            static constexpr VTableImpl<U> vtable;
+            using ImplType = VTableImpl<U>;
+            static constexpr VTable vtable = {
+                    .getType = &ImplType::getType,
+                    .getSize = &ImplType::getSize,
+                    .getValue = &ImplType::getValue,
+                    .getConstValue = &ImplType::getConstValue,
+                    .destroy = &ImplType::destroy,
+                    .copy = &ImplType::copy,
+                    .copyAssign = &ImplType::copyAssign,
+                    .move = &ImplType::move,
+                    .moveAssign = &ImplType::moveAssign
+            };
             return &vtable;
         }
 
