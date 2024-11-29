@@ -61,7 +61,7 @@ jobs:
       - name: Merge counters from different runs and convert the result into an llvm-cov-compatible form
         run: |
           ls
-          llvm-profdata-18 merge -o merged.profdata Tests/*.profraw
+          llvm-profdata-18 merge -o merged.profdata build/Tests/*.profraw
 
       - name: Collect the coverage
         run: |
@@ -71,4 +71,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: /home/runner/work/RetroLib/build/coverage.txt
+          path: coverage.txt
