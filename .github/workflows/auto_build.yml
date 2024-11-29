@@ -52,8 +52,8 @@ jobs:
             /home/runner/.conan2
           key: ${{ steps.cache-conan-restore.outputs.cache-primary-key }}
 
-      - name: Archive code coverage results
+      - name: Archive build folder
         uses: actions/upload-artifact@v4
         with:
-          name: code-coverage-report
-          path: ./**/*.profraw
+          name: build-folder
+          path: /home/runner/work/RetroLib/build
