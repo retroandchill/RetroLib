@@ -16,7 +16,7 @@
 #define RETROLIB_EXPORT
 #endif
 
-namespace Retro {
+namespace Retro::Optionals {
 
     /**
      * @struct OptionalTraits
@@ -55,5 +55,10 @@ namespace Retro {
 
     RETROLIB_EXPORT template <typename T>
     concept OptionalType = typename OptionalTraits<T>::IsValid;
+
+    template <OptionalType O>
+    constexpr decltype(auto) get(O&& optional) {
+        return std::forward<O>(optional).value();
+    }
 
 };
