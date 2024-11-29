@@ -46,16 +46,24 @@ jobs:
           build-type: Release
           run-test: true
 
-      - name: Save Primes
-        id: cache-primes-save
+      - name: Save Conan Data
+        id: cache-conan-save
         uses: actions/cache/save@v4
         with:
           path: |
             /home/runner/.conan2
           key: ${{ steps.cache-conan-restore.outputs.cache-primary-key }}
 
+      - name: Merge counters from different runs and convert the result into an llvm-cov-compatible form
+        run: |
+          llvm-profdata merge -o merged.profdata *.profraw
+
+      - name: Collect the coverage
+        run: |
+          llvm-cov show --show-branches=count --instr-profile merged.profdata build/coverage_test1 -object build/coverage_test2 > coverage.txt
+
       - name: Archive build folder
         uses: actions/upload-artifact@v4
         with:
           name: build-folder
-          path: /home/runner/work/RetroLib/build
+          path: /home/runner/work/RetroLib/build/Tests/*.profraw
