@@ -14,5 +14,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(RetroLib)
 
 if(RETROLIB_WITH_TESTS)
+    enable_testing()
     add_subdirectory(Tests)
 endif()

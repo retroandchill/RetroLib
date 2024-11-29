@@ -26,10 +26,11 @@ namespace Retro {
      * @tparam T The base class type which all stored objects must derive from. Must satisfy the ClassType concept.
      */
     RETROLIB_EXPORT template <ClassType T, size_t SmallStorageSize = DEFAULT_SMALL_STORAGE_SIZE>
+        requires (SmallStorageSize >= sizeof(void*))
     class Polymorphic {
          template<typename U>
             requires std::derived_from<U, T>
-        static constexpr bool fitsSmallStorage = sizeof(T) <= SmallStorageSize;
+        static constexpr bool fitsSmallStorage = sizeof(U) <= SmallStorageSize;
 
       public:
         /**
