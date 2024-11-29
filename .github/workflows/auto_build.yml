@@ -26,7 +26,7 @@ jobs:
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Build with CMake
+      - name: Build & Test
         uses: ashutoshvarma/action-cmake-build@master
         with:
           build-dir: ${{ runner.workspace }}/build
@@ -34,6 +34,4 @@ jobs:
           cxx: ${{ matrix.config.cxx }}
           configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18
           build-type: Release
-
-      - name: Test Project
-        uses: threeal/ctest-action@v1.1.0
+          run-test: true
