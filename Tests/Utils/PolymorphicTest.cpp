@@ -70,10 +70,12 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     // We want to test that we can assign different polymorphic values into each other
     Retro::Polymorphic<Base> polymorphic1 = Derived1(42);
     CHECK(polymorphic1->getValue() == 42);
+    CHECK(polymorphic1.getSize() == sizeof(Derived1));
 
     Retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>,
             std::array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
     CHECK(polymorphic2->getValue() == 120);
+    CHECK(polymorphic2.getSize() == sizeof(Derived2));
 
     polymorphic1 = polymorphic2;
     CHECK(polymorphic1->getValue() == 120);
@@ -110,4 +112,18 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>,
             std::array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
     CHECK(polymorphic1->getValue() == 120);
+
+    // Check that dereferencing works correctly
+    auto& dereferenced1 = *polymorphic1;
+    CHECK(dereferenced1.getValue() == 120);
+
+    const Retro::Polymorphic<Base> polymorphic3 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
+    auto& dereferenced2 = *polymorphic3;
+    CHECK(dereferenced2.getValue() == 150);
+
+    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>,
+            std::array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    const Retro::Polymorphic<Base> polymorphic4 = polymorphic1;
+    auto& dereferenced3 = *polymorphic4;
+    CHECK(dereferenced3.getValue() == 120);
 }

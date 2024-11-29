@@ -306,6 +306,22 @@ namespace Retro {
             return *get();
         }
 
+        /**
+         * Replaces the current object stored in the polymorphic object storage
+         * with a new instance of the specified derived type U, constructed
+         * with the provided arguments.
+         *
+         * @tparam U The type of the new object to be stored. Must be a type derived from T.
+         * @tparam A The types of the constructor arguments for the new object.
+         * @param args The arguments to be forwarded to the constructor of the new object.
+         *
+         * @note This function first destroys the current object residing in the storage.
+         *       It then checks if the new object fits in small storage. If it does,
+         *       the object is constructed in-place within the small storage. Otherwise,
+         *       it is allocated in the large storage.
+         *
+         * @requires U Must be a type derived from T.
+         */
         template <typename U, typename... A>
             requires std::derived_from<U, T>
         constexpr void emplace(A&&... args) noexcept {
@@ -316,6 +332,15 @@ namespace Retro {
             } else {
                 storage.largeStorage = new U(std::forward<A>(args)...);
             }
+        }
+
+        /**
+         * Retrieves the size from the vtable.
+         *
+         * @return The size as a constant expression.
+         */
+        constexpr size_t getSize() const {
+            return vtable->getSize();
         }
 
       private:
