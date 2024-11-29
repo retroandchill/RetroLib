@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - { name: "Ubuntu Clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18" }
+          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18" }
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.1
@@ -26,6 +26,14 @@ jobs:
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Restore cached conan dependencies
+        id: cache-conan-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /home/runner/.conan2
+          key: ${{ matrix.config.name }}-conan-deps
+
       - name: Build & Test
         uses: ashutoshvarma/action-cmake-build@master
         with:
@@ -35,6 +43,14 @@ jobs:
           configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18
           build-type: Release
           run-test: true
+
+      - name: Save Primes
+        id: cache-primes-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /home/runner/.conan2
+          key: ${{ steps.cache-conan-restore.outputs.cache-primary-key }}
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
