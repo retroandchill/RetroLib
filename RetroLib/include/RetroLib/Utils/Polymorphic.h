@@ -25,8 +25,12 @@ namespace Retro {
      *
      * @tparam T The base class type which all stored objects must derive from. Must satisfy the ClassType concept.
      */
-    RETROLIB_EXPORT template <ClassType T>
+    RETROLIB_EXPORT template <ClassType T, size_t SmallStorageSize = DEFAULT_SMALL_STORAGE_SIZE>
     class Polymorphic {
+         template<typename U>
+            requires std::derived_from<U, T>
+        static constexpr bool fitsSmallStorage = sizeof(T) <= SmallStorageSize;
+
       public:
         /**
          * Default constructor for the Polymorphic class.
@@ -306,7 +310,7 @@ namespace Retro {
         constexpr void emplace(A&&... args) noexcept {
             vtable->destroy(storage);
             vtable = getVTable<U>();
-            if constexpr (CanFitSmallStorage<U>) {
+            if constexpr (fitsSmallStorage<U>) {
                 new (reinterpret_cast<U*>(storage.smallStorage.data())) U(std::forward<A>(args)...);
             } else {
                 storage.largeStorage = new U(std::forward<A>(args)...);
@@ -315,13 +319,13 @@ namespace Retro {
 
       private:
         union OpaqueStorage {
-            std::array<std::byte, SMALL_STORAGE_SIZE> smallStorage;
+            std::array<std::byte, SmallStorageSize> smallStorage;
             void *largeStorage;
 
             template <typename U, typename... A>
                 requires std::derived_from<U, T> && std::constructible_from<U, A...>
             constexpr void emplace(A&&... args) noexcept {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     new (reinterpret_cast<U*>(smallStorage.data())) U(std::forward<A>(args)...);
                 } else {
                     largeStorage = new U(std::forward<A>(args)...);
@@ -355,7 +359,7 @@ namespace Retro {
             }
 
             constexpr U *getValue(OpaqueStorage &data) const final {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     return reinterpret_cast<U*>(data.smallStorage.data());
                 } else {
                     return static_cast<U*>(data.largeStorage);
@@ -363,7 +367,7 @@ namespace Retro {
             }
 
             constexpr const U* getValue(const OpaqueStorage &data) const final {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     return reinterpret_cast<const U*>(data.smallStorage.data());
                 } else {
                     return static_cast<const U*>(data.largeStorage);
@@ -371,7 +375,7 @@ namespace Retro {
             }
 
             constexpr void destroy(OpaqueStorage &data) const final {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     reinterpret_cast<const U*>(data.smallStorage.data())->~U();
                 } else {
                     delete static_cast<const U*>(data.largeStorage);
@@ -379,7 +383,7 @@ namespace Retro {
             }
 
             constexpr void copy(const OpaqueStorage &src, OpaqueStorage &dest) const final {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     dest.template emplace<U>(*reinterpret_cast<const U*>(src.smallStorage.data()));
                 } else {
                     dest.template emplace<U>(*static_cast<const U*>(src.largeStorage));
@@ -387,7 +391,7 @@ namespace Retro {
             }
 
             constexpr void copyAssign(const OpaqueStorage &src, OpaqueStorage &dest) const override {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     *reinterpret_cast<U*>(dest.smallStorage.data()) = *reinterpret_cast<const U*>(src.smallStorage.data());
                 } else {
                     *static_cast<U*>(dest.largeStorage) = *static_cast<const U*>(src.largeStorage);
@@ -395,7 +399,7 @@ namespace Retro {
             }
 
             constexpr void move(OpaqueStorage &src, OpaqueStorage &dest) const final {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     dest.template emplace<U>(std::move(*reinterpret_cast<U*>(src.smallStorage.data())));
                 } else {
                     dest.template emplace<U>(std::move(*static_cast<U*>(src.largeStorage)));
@@ -403,7 +407,7 @@ namespace Retro {
             }
 
             constexpr void moveAssign(OpaqueStorage &src, OpaqueStorage &dest) const override {
-                if constexpr (CanFitSmallStorage<U>) {
+                if constexpr (fitsSmallStorage<U>) {
                     *reinterpret_cast<U*>(dest.smallStorage.data()) = std::move(*reinterpret_cast<U*>(src.smallStorage.data()));
                 } else {
                     *static_cast<U*>(dest.largeStorage) = std::move(*static_cast<U*>(src.largeStorage));
