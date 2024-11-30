@@ -22,6 +22,10 @@
 #endif
 
 namespace retro {
+    template <typename T, typename M>
+    concept CanBindMethod = Method<M> && (std::convertible_to<T, RefQualifiedClassType<M>> ||
+                                          (Dereferenceable<T> && std::convertible_to<DereferencedType<T>, RefQualifiedClassType<M>>));
+
     /**
      * @brief A class template for binding a method to an object with pre-specified arguments.
      *
@@ -45,7 +49,7 @@ namespace retro {
      * @tparam U... Types of the additional arguments passed at construction. Must be constructible into ArgsTuple.
      */
     template <typename C, auto Functor, typename... A>
-        requires Method<decltype(Functor)>
+        requires CanBindMethod<C, decltype(Functor)>
     struct MethodBinding {
         using F = decltype(Functor);
         using ArgsTuple = std::tuple<A...>;
@@ -170,7 +174,7 @@ namespace retro {
      * @tparam A The type of the pre-bound argument to be used when invoking the method.
      */
     template <typename C, auto Functor, typename A>
-        requires Method<decltype(Functor)>
+        requires CanBindMethod<C, decltype(Functor)>
     struct MethodBinding<C, Functor, A> {
         using F = decltype(Functor);
 
@@ -300,7 +304,7 @@ namespace retro {
      * respective context.
      */
     template <typename C, auto Functor, typename A, typename B>
-        requires Method<decltype(Functor)>
+        requires CanBindMethod<C, decltype(Functor)>
     struct MethodBinding<C, Functor, A, B> {
         using F = decltype(Functor);
 

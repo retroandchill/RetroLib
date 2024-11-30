@@ -30,7 +30,7 @@ namespace retro {
      *
      * @tparam T The base class type which all stored objects must derive from. Must satisfy the ClassType concept.
      */
-    RETROLIB_EXPORT template <ClassType T, size_t SmallStorageSize = DEFAULT_SMALL_STORAGE_SIZE>
+    RETROLIB_EXPORT template <Class T, size_t SmallStorageSize = DEFAULT_SMALL_STORAGE_SIZE>
         requires(SmallStorageSize >= sizeof(void *))
     class Polymorphic {
         template <typename U>

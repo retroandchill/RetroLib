@@ -127,11 +127,12 @@ namespace retro {
      *
      * @tparam R The return type of the function.
      * @tparam Free Indicates if this is a free function.
+     * @tparam NoExcept A boolean value representing whether the member function is noexcept.
      * @tparam A The argument types of the function.
      *
      * This structure derives from ValidType to indicate it represents a valid function type.
      */
-    template <typename R, bool Free, typename... A>
+    template <typename R, bool Free, bool NoExcept, typename... A>
     struct FunctionTraitsBase : ValidType {
         /**
          * Indicates if this is a free function.
@@ -157,6 +158,11 @@ namespace retro {
         template <size_t N>
             requires(N < arg_count)
         using Arg = std::tuple_element_t<N, std::tuple<A...>>;
+
+        /**
+         * A boolean value representing whether the member function is noexcept.
+         */
+        static constexpr bool is_noexcept = NoExcept;
     };
 
     /**
@@ -202,7 +208,7 @@ namespace retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, bool Const, RefQualifier Ref, bool NoExcept, typename... A>
-    struct MethodTraitsBase : FunctionTraitsBase<R, false, A...> {
+    struct MethodTraitsBase : FunctionTraitsBase<R, false, NoExcept, A...> {
         /**
          * The class type to which the member function belongs.
          */
@@ -217,11 +223,6 @@ namespace retro {
          * The reference qualifier (lvalue, rvalue, or none) of the member function.
          */
         static constexpr RefQualifier ref_qualifier = Ref;
-
-        /**
-         * A boolean value representing whether the member function is noexcept.
-         */
-        static constexpr bool is_noexcept = NoExcept;
     };
 
     /**
@@ -255,7 +256,22 @@ namespace retro {
      * like return type and the number of arguments from a function pointer type.
      */
     template <typename R, typename... A>
-    struct FunctionTraits<R (*)(A...)> : FunctionTraitsBase<R, true, A...> {};
+    struct FunctionTraits<R (*)(A...)> : FunctionTraitsBase<R, true, false, A...> {};
+
+    /**
+     * FunctionTraits is a template specialization of FunctionTraitsBase used to
+     * derive traits for free functions that are marked with noexcept.
+     *
+     * This specialization provides compile-time introspection capabilities for
+     * such function pointers by inheriting from FunctionTraitsBase. These capabilities
+     * include identifying the return type, argument types, and properties such as
+     * whether the function is noexcept.
+     *
+     * @tparam R The return type of the function.
+     * @tparam A The types of the arguments accepted by the function.
+     */
+    template <typename R, typename... A>
+    struct FunctionTraits<R (*)(A...) noexcept> : FunctionTraitsBase<R, true, true, A...> {};
 
     /**
      * @brief FunctionTraits provides type traits for non-const member functions.
@@ -511,7 +527,7 @@ namespace retro {
      * @tparam T The functional type
      */
     RETROLIB_EXPORT template <FunctionalType T>
-    using ReturnType = typename T::ReturnType;
+    using ReturnType = typename FunctionTraits<T>::ReturnType;
 
     /**
      * The argument count of the given functional type.
@@ -519,7 +535,7 @@ namespace retro {
      * @tparam T The functional type
      */
     RETROLIB_EXPORT template <FunctionalType T>
-    constexpr size_t argument_count = T::arg_count;
+    constexpr size_t argument_count = FunctionTraits<T>::arg_count;
 
     /**
      * The N-th argument count of the given functional type.
@@ -529,7 +545,7 @@ namespace retro {
      */
     RETROLIB_EXPORT template <FunctionalType T, size_t N>
         requires(N < argument_count<T>)
-    using Argument = typename T::template Arg<N>;
+    using Argument = typename FunctionTraits<T>::template Arg<N>;
 
     /**
      * The owning class of the given method.
@@ -537,7 +553,7 @@ namespace retro {
      * @tparam T The method type
      */
     RETROLIB_EXPORT template <Method T>
-    using ClassType = typename T::ClassType;
+    using ClassType = typename FunctionTraits<T>::ClassType;
 
     /**
      * @brief Concept to check for const-qualified types.
@@ -552,7 +568,7 @@ namespace retro {
      * @tparam T The type to be checked for const qualification and conformity to Method<T>.
      */
     RETROLIB_EXPORT template <typename T>
-    concept ConstQualified = Method<T> && T::is_const;
+    concept ConstQualified = Method<T> && FunctionTraits<T>::is_const;
 
     /**
      * @brief Concept to check if a type T has a method and is lvalue-qualified.
@@ -565,7 +581,7 @@ namespace retro {
      * @tparam T The type to be checked against the concept requirements.
      */
     RETROLIB_EXPORT template <typename T>
-    concept LValueQualified = Method<T> && (T::ref_qualifier == RefQualifier::LValue);
+    concept LValueQualified = Method<T> && (FunctionTraits<T>::ref_qualifier == RefQualifier::LValue);
 
     /**
      * Concept to determine if a given type `T` is qualified with an rvalue reference.
@@ -578,7 +594,24 @@ namespace retro {
      * @tparam T The type to be checked against the concept.
      */
     RETROLIB_EXPORT template <typename T>
-    concept RValueQualified = Method<T> && (T::ref_qualifier == RefQualifier::RValue);
+    concept RValueQualified = Method<T> && (FunctionTraits<T>::ref_qualifier == RefQualifier::RValue);
+
+    /**
+     * Get the type of the owning class of a method, adding const to the type, if the method is const-qualified.
+     *
+     * @tparam T The method type in question
+     */
+    template <Method T>
+    using ConstQualifiedClassType = std::conditional_t<ConstQualified<T>, const ClassType<T>, ClassType<T>>;
+
+    /**
+     * Get the reference type of the owning class of a method, adding const to the type, if the method is const-qualified.
+     *
+     * @tparam T The method type in question
+     */
+    template <Method T>
+    using RefQualifiedClassType = std::conditional_t<RValueQualified<T>, ConstQualifiedClassType<T>&&, ConstQualifiedClassType<T>&>;
+
 
     /**
      * A concept that checks if a given type T satisfies two conditions:
@@ -594,6 +627,6 @@ namespace retro {
      * - T: The type to check against the NoExcept concept.
      */
     RETROLIB_EXPORT template <typename T>
-    concept NoExcept = Method<T> && T::is_noexcept;
+    concept NoExcept = Method<T> && FunctionTraits<T>::is_noexcept;
 
 } // namespace retro
