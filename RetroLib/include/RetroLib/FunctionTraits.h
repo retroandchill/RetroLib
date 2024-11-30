@@ -601,7 +601,7 @@ namespace retro {
      *
      * @tparam T The method type in question
      */
-    template <Method T>
+    RETROLIB_EXPORT template <Method T>
     using ConstQualifiedClassType = std::conditional_t<ConstQualified<T>, const ClassType<T>, ClassType<T>>;
 
     /**
@@ -609,7 +609,7 @@ namespace retro {
      *
      * @tparam T The method type in question
      */
-    template <Method T>
+    RETROLIB_EXPORT template <Method T>
     using RefQualifiedClassType = std::conditional_t<RValueQualified<T>, ConstQualifiedClassType<T>&&, ConstQualifiedClassType<T>&>;
 
 
