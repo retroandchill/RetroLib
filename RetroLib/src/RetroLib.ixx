@@ -9,6 +9,7 @@ module;
 
 #include "RetroLib/RetroLibMacros.h"
 
+#include <bit>
 #include <cassert>
 #include <typeinfo>
 
