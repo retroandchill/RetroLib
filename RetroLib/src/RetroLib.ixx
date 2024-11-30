@@ -11,6 +11,7 @@ module;
 
 #include <bit>
 #include <cassert>
+#include <ranges>
 #include <typeinfo>
 
 export module RetroLib;
@@ -35,6 +36,9 @@ import std;
 #include "RetroLib/Utils/ForwardLike.h"
 #include "RetroLib/Utils/Polymorphic.h"
 
+#include "RetroLib/Ranges/Concepts/Containers.h"
+
+#include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/AnyView.h"
 
 // clang-format on
