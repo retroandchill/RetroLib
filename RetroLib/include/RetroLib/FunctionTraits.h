@@ -384,7 +384,8 @@ namespace retro {
      *
      * This class template is a specialization of the FunctionTraits structure, providing type traits specifically
      * for member functions of a class that are qualified with an lvalue reference (&) and specified as noexcept.
-     * It derives from MethodTraitsBase, inheriting traits and extending them for member functions that fit these criteria.
+     * It derives from MethodTraitsBase, inheriting traits and extending them for member functions that fit these
+     * criteria.
      *
      * @tparam C The class type to which the member function belongs.
      * @tparam R The return type of the member function.
@@ -527,7 +528,7 @@ namespace retro {
      * @tparam N The index of the argument
      */
     RETROLIB_EXPORT template <FunctionalType T, size_t N>
-        requires (N < argument_count<T>)
+        requires(N < argument_count<T>)
     using Argument = typename T::template Arg<N>;
 
     /**
@@ -563,7 +564,7 @@ namespace retro {
      *
      * @tparam T The type to be checked against the concept requirements.
      */
-    RETROLIB_EXPORT template <typename  T>
+    RETROLIB_EXPORT template <typename T>
     concept LValueQualified = Method<T> && (T::ref_qualifier == RefQualifier::LValue);
 
     /**
@@ -571,11 +572,12 @@ namespace retro {
      *
      * This concept checks two conditions:
      * 1. `T` must satisfy the `Method` concept.
-     * 2. `T` must have an rvalue reference qualifier, indicated by `T::ref_qualifier` being equal to `RefQualifier::RValue`.
+     * 2. `T` must have an rvalue reference qualifier, indicated by `T::ref_qualifier` being equal to
+     * `RefQualifier::RValue`.
      *
      * @tparam T The type to be checked against the concept.
      */
-    RETROLIB_EXPORT template <typename  T>
+    RETROLIB_EXPORT template <typename T>
     concept RValueQualified = Method<T> && (T::ref_qualifier == RefQualifier::RValue);
 
     /**

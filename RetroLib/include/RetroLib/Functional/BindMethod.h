@@ -9,6 +9,7 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/ParameterPacks.h"
+#include "RetroLib/Functional/BindFront.h"
 #include "RetroLib/FunctionTraits.h"
 #include "RetroLib/Utils/ForwardLike.h"
 
@@ -25,16 +26,17 @@ namespace retro {
      * @brief A class template for binding a method to an object with pre-specified arguments.
      *
      * @tparam C The type of the class object to which the method is bound.
-     * @tparam Functor A compile-time constant that must satisfy the Method concept, representing the member function pointer.
+     * @tparam Functor A compile-time constant that must satisfy the Method concept, representing the member function
+     * pointer.
      * @tparam A Variadic template parameters representing the types of the pre-specified arguments.
      *
      * @requires The Functor must satisfy the Method concept.
      *
-     * This template class allows binding a member function (specified by Functor) to an instance of a class (specified by C),
-     * along with a set of arguments (specified by A...) that will be used each time the method is invoked.
+     * This template class allows binding a member function (specified by Functor) to an instance of a class (specified
+     * by C), along with a set of arguments (specified by A...) that will be used each time the method is invoked.
      *
-     * The class template supports invocation with additional arguments provided at call time, combined with the pre-specified ones.
-     * It ensures the object and arguments match the requirements of the specified member function.
+     * The class template supports invocation with additional arguments provided at call time, combined with the
+     * pre-specified ones. It ensures the object and arguments match the requirements of the specified member function.
      *
      * @note This class ensures that the object and pre-specified arguments are stored and used in the invocation
      * of the method when called, honoring value categories and noexcept specifications.
@@ -62,8 +64,10 @@ namespace retro {
          *           constructed into ArgsTuple.
          */
         template <typename T, typename... U>
-            requires std::convertible_to<C, T> && std::constructible_from<ArgsTuple, U...> && (!std::same_as<std::decay_t<T>, MethodBinding>)
-        constexpr explicit MethodBinding(T&& object, U &&...args) : object(std::forward<T>(object)), args(std::forward<U>(args)...) {
+            requires std::convertible_to<C, T> && std::constructible_from<ArgsTuple, U...> &&
+                         (!std::same_as<std::decay_t<T>, MethodBinding>)
+        constexpr explicit MethodBinding(T &&object, U &&...args)
+            : object(std::forward<T>(object)), args(std::forward<U>(args)...) {
         }
 
         /**
@@ -83,7 +87,8 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C&, T..., A &...>) {
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C &, T..., A &...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
                     return std::invoke(Functor, object, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
@@ -108,7 +113,8 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) const& noexcept(std::is_nothrow_invocable_v<F, const C&, T..., const A &...>) {
+        constexpr decltype(auto)
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<F, const C &, T..., const A &...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
                     return std::invoke(Functor, object, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
@@ -133,10 +139,12 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A...>) {
+        constexpr decltype(auto)
+        operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
-                    return std::invoke(Functor, std::move(object), std::forward<T>(call_args)..., std::forward<U>(final_args)...);
+                    return std::invoke(Functor, std::move(object), std::forward<T>(call_args)...,
+                                       std::forward<U>(final_args)...);
                 },
                 std::move(args));
         }
@@ -184,7 +192,8 @@ namespace retro {
          */
         template <typename T, typename U>
             requires std::convertible_to<T, C> && std::convertible_to<U, A>
-        constexpr explicit MethodBinding(T&& object, U && arg) : object(std::forward<T>(object)), arg(std::forward<U>(arg)) {
+        constexpr explicit MethodBinding(T &&object, U &&arg)
+            : object(std::forward<T>(object)), arg(std::forward<U>(arg)) {
         }
 
         /**
@@ -204,7 +213,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C&, T..., A &>) {
+            requires std::invocable<F, C &, T..., A &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C &, T..., A &>) {
             return std::invoke(Functor, object, std::forward<T>(call_args)..., arg);
         }
 
@@ -225,7 +236,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) const& noexcept(std::is_nothrow_invocable_v<F, const C&, T..., const A &>) {
+            requires std::invocable<F, const C &, T..., const A &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<F, const C &, T..., const A &>) {
             return std::invoke(Functor, object, std::forward<T>(call_args)..., arg);
         }
 
@@ -246,6 +259,7 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
+            requires std::invocable<F, C, T..., A>
         constexpr decltype(auto) operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A>) {
             return std::invoke(Functor, std::move(object), std::forward<T>(call_args)..., std::move(arg));
         }
@@ -303,12 +317,13 @@ namespace retro {
          * @param object The object to which the method is bound.
          * @param arg1 The first argument to be bound to the method.
          *
-         * @note The constructor is explicit and constexpr, ensuring that the binding operation is executed at compile-time for
-         * qualified contexts and preventing unintended implicit conversions.
+         * @note The constructor is explicit and constexpr, ensuring that the binding operation is executed at
+         * compile-time for qualified contexts and preventing unintended implicit conversions.
          */
         template <typename T, typename U, typename W>
             requires std::convertible_to<T, C> && std::convertible_to<U, A> && std::convertible_to<W, B>
-        constexpr explicit MethodBinding(T&& object, U && arg1, W&& arg2) : object(std::forward<T>(object)), arg1(std::forward<U>(arg1)), arg2(std::forward<W>(arg2)) {
+        constexpr explicit MethodBinding(T &&object, U &&arg1, W &&arg2)
+            : object(std::forward<T>(object)), arg1(std::forward<U>(arg1)), arg2(std::forward<W>(arg2)) {
         }
 
         /**
@@ -328,7 +343,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C&, T..., A &, B&>) {
+            requires std::invocable<F, C &, T..., A &, B &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C &, T..., A &, B &>) {
             return std::invoke(Functor, object, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -349,7 +366,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) const& noexcept(std::is_nothrow_invocable_v<F, const C&, T..., const A &, const B&>) {
+            requires std::invocable<F, C, T..., const A &, const B &>
+        constexpr decltype(auto) operator()(T &&...call_args) const & noexcept(
+            std::is_nothrow_invocable_v<F, const C &, T..., const A &, const B &>) {
             return std::invoke(Functor, object, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -370,8 +389,11 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-        constexpr decltype(auto) operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A, B>) {
-            return std::invoke(Functor, std::move(object), std::forward<T>(call_args)..., std::move(arg1), std::move(arg2));
+            requires std::invocable<F, C, T..., A, B>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A, B>) {
+            return std::invoke(Functor, std::move(object), std::forward<T>(call_args)..., std::move(arg1),
+                               std::move(arg2));
         }
 
       private:
@@ -413,11 +435,12 @@ namespace retro {
      */
     RETROLIB_EXPORT template <auto Functor, typename C, typename... A>
         requires Method<decltype(Functor)>
-    constexpr auto bind_method(C&& object, A&&... args) {
+    constexpr auto bind_method(C &&object, A &&...args) {
         if constexpr (sizeof...(A) == 0) {
-            return std::bind_front(Functor, std::forward<C>(object));
+            return bind_front<Functor>(std::forward<C>(object));
         } else {
-            return MethodBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(object), std::forward<A>(args)...);
+            return MethodBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(object),
+                                                                               std::forward<A>(args)...);
         }
     }
-} // namespace Retro
+} // namespace retro

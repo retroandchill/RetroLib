@@ -27,6 +27,7 @@ import std;
 #include "RetroLib/Concepts/ParameterPacks.h"
 
 #include "RetroLib/Functional/BindBack.h"
+#include "RetroLib/Functional/BindFront.h"
 #include "RetroLib/Functional/BindMethod.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 
