@@ -16,7 +16,7 @@
 #define RETROLIB_EXPORT
 #endif
 
-namespace Retro::Optionals {
+namespace retro::optionals {
 
     /**
      * @struct OptionalTraits
@@ -49,12 +49,10 @@ namespace Retro::Optionals {
      * traits-based system where different types are adapted through their specialized trait structures.
      */
     RETROLIB_EXPORT template <typename T>
-    struct OptionalTraits<std::optional<T>> : ValidType {
-
-    };
+    struct OptionalTraits<std::optional<T>> : ValidType {};
 
     RETROLIB_EXPORT template <typename T>
-    concept OptionalType = typename OptionalTraits<T>::IsValid;
+    concept OptionalType = OptionalTraits<T>::is_valid;
 
     template <OptionalType O>
     constexpr decltype(auto) get(O&& optional) {

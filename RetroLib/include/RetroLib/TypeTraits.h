@@ -16,7 +16,7 @@
 #define RETROLIB_EXPORT
 #endif
 
-namespace Retro {
+namespace retro {
 
     /**
      * @struct InvalidType
@@ -36,7 +36,7 @@ namespace Retro {
      * @see IsValid
      */
     RETROLIB_EXPORT struct InvalidType {
-        static constexpr bool IsValid = false;
+        static constexpr bool is_valid = false;
     };
 
     /**
@@ -50,7 +50,7 @@ namespace Retro {
      * of the type.
      */
     RETROLIB_EXPORT struct ValidType {
-        static constexpr bool IsValid = true;
+        static constexpr bool is_valid = true;
     };
 
 
