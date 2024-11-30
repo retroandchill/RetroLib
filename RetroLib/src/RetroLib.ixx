@@ -23,7 +23,9 @@ import std;
 
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
+#include "RetroLib/Concepts/ParameterPacks.h"
 
+#include "RetroLib/Functional/BindBack.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 
 #include "RetroLib/Utils/ForwardLike.h"
