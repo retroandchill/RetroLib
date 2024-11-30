@@ -12,6 +12,7 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Functional/BindBack.h"
+
 #include <vector>
 #endif
 
@@ -25,7 +26,7 @@ void add_to_shared_back(int a, std::shared_ptr<int> ptr) {
 
 struct FunctionalObject {
 
-    std::vector<int>& operator()(std::vector<int>& vector, int a, int b) const {
+    std::vector<int> &operator()(std::vector<int> &vector, int a, int b) const {
         vector.emplace_back(a);
         vector.emplace_back(b);
         return vector;

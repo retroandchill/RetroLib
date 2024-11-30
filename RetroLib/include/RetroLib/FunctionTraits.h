@@ -94,10 +94,11 @@ namespace retro {
      * @tparam T The type to be checked for the function call operator presence.
      */
     RETROLIB_EXPORT template <typename T>
-    concept HasFunctionCallOperator = std::is_pointer_v<T> || std::is_member_pointer_v<T> || !HasOneFunctionCallOperator<Mixin<T>>::value;
+    concept HasFunctionCallOperator =
+        std::is_pointer_v<T> || std::is_member_pointer_v<T> || !HasOneFunctionCallOperator<Mixin<T>>::value;
 
     RETROLIB_EXPORT template <typename F>
-    consteval bool is_valid_functor_object(const F& functor) {
+    consteval bool is_valid_functor_object(const F &functor) {
         if constexpr (!HasFunctionCallOperator<F>) {
             return false;
         } else if constexpr (std::is_pointer_v<F> || std::is_member_pointer_v<F>) {
@@ -106,4 +107,4 @@ namespace retro {
             return true;
         }
     }
-}
+} // namespace retro

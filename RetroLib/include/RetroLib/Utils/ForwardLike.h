@@ -32,14 +32,14 @@ namespace Retro {
      * @note The behavior of the function mimics the effects of std::forward but extends
      *       it by adding the ability to replicate cv-qualifiers from a template type `T`.
      */
-    RETROLIB_EXPORT template<class T, class U>
-    constexpr auto&& forwardLike(U&& x) noexcept {
+    RETROLIB_EXPORT template <class T, class U>
+    constexpr auto &&forwardLike(U &&x) noexcept {
         constexpr bool isAddingConst = std::is_const_v<std::remove_reference_t<T>>;
-        if constexpr (std::is_lvalue_reference_v<T&&>) {
+        if constexpr (std::is_lvalue_reference_v<T &&>) {
             if constexpr (isAddingConst) {
                 return std::as_const(x);
             } else {
-                return static_cast<U&>(x);
+                return static_cast<U &>(x);
             }
         } else {
             if constexpr (isAddingConst) {
@@ -49,4 +49,4 @@ namespace Retro {
             }
         }
     }
-}
+} // namespace Retro

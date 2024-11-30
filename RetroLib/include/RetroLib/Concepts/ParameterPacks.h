@@ -8,8 +8,8 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include <type_traits>
 #include <tuple>
+#include <type_traits>
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -24,7 +24,7 @@ namespace retro {
      * @tparam T The types of the parameter pack
      */
     template <size_t N, typename... T>
-        requires (N < sizeof...(T))
+        requires(N < sizeof...(T))
     using PackType = std::tuple_element_t<N, std::tuple<std::decay_t<T>...>>;
 
     /**
@@ -39,4 +39,4 @@ namespace retro {
      */
     template <typename T, typename... A>
     concept PackSameAs = (sizeof...(A) == 1) && std::same_as<PackType<0, A...>, T>;
-}
+} // namespace retro
