@@ -20,7 +20,7 @@
 #define RETROLIB_EXPORT
 #endif
 
-namespace Retro::Views {
+namespace retro::views {
 
     /**
      * @brief A concept to check if a range is compatible with a given type.
@@ -758,4 +758,4 @@ namespace Retro::Views {
       private:
         Polymorphic<AnyViewInterface<T>> data = AnyViewImpl<std::ranges::empty_view<T>>(std::views::empty<T>);
     };
-} // namespace Retro::Views
+} // namespace retro::views

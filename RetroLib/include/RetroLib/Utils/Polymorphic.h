@@ -20,7 +20,7 @@
 #define RETROLIB_EXPORT
 #endif
 
-namespace Retro {
+namespace retro {
     /**
      * @brief A class template that provides polymorphic storage and access capabilities for types derived from a base
      * class.
@@ -468,4 +468,4 @@ namespace Retro {
         const VTable *vtable = get_vtable<T>();
     };
 
-} // namespace Retro
+} // namespace retro

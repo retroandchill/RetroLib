@@ -74,11 +74,11 @@ constexpr std::array VALUE_ARRAY2 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24,
 
 TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     // We want to test that we can assign different polymorphic values into each other
-    Retro::Polymorphic<Base> polymorphic1 = Derived1(42);
+    retro::Polymorphic<Base> polymorphic1 = Derived1(42);
     CHECK(polymorphic1->get_value() == 42);
     CHECK(polymorphic1.get_size() == sizeof(Derived1));
 
-    Retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>, VALUE_ARRAY1);
+    retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>, VALUE_ARRAY1);
     CHECK(polymorphic2->get_value() == 120);
     CHECK(polymorphic2.get_size() == sizeof(Derived2));
 
@@ -89,7 +89,7 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     polymorphic1 = polymorphic2;
     CHECK(polymorphic1->get_value() == 40);
 
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY2);
+    polymorphic1 = retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY2);
     CHECK(polymorphic1->get_value() == 240);
 
     // Here we want to check that during reassignment the destructor for a different type gets invoked
@@ -98,7 +98,7 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     polymorphic1 = Derived3(std::move(value));
     CHECK(polymorphic1->get_value() == 4);
 
-    polymorphic1 = Retro::Polymorphic<Base>();
+    polymorphic1 = retro::Polymorphic<Base>();
     CHECK(polymorphic1->get_value() == 0);
     CHECK(weakValue.expired());
 
@@ -110,7 +110,7 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
 
     polymorphic1 = polymorphic2;
     CHECK(polymorphic1->get_value() == 64);
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 100);
+    polymorphic1 = retro::Polymorphic<Base>(std::in_place_type<Derived1>, 100);
     CHECK(polymorphic1->get_value() == 100);
 
     // Here we're going to do the same thing with large storage
@@ -121,19 +121,19 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
 
     polymorphic1 = polymorphic2;
     CHECK(polymorphic1->get_value() == 240);
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
+    polymorphic1 = retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
     CHECK(polymorphic1->get_value() == 120);
 
     // Check that dereferencing works correctly
     auto &dereferenced1 = *polymorphic1;
     CHECK(dereferenced1.get_value() == 120);
 
-    const Retro::Polymorphic<Base> polymorphic3 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
+    const retro::Polymorphic<Base> polymorphic3 = retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
     auto &dereferenced2 = *polymorphic3;
     CHECK(dereferenced2.get_value() == 150);
 
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
-    const Retro::Polymorphic<Base> polymorphic4 = polymorphic1;
+    polymorphic1 = retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
+    const retro::Polymorphic<Base> polymorphic4 = polymorphic1;
     auto &dereferenced3 = *polymorphic4;
     CHECK(dereferenced3.get_value() == 120);
 }
