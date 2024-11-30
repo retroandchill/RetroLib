@@ -4,7 +4,8 @@ find_package(Catch2 3 REQUIRED)
 add_executable(RetroLibTests Utils/PolymorphicTest.cpp
         Ranges/Views/AnyViewTest.cpp
         Functional/TestExtensionMethods.cpp
-        Functional/TestBindBack.cpp)
+        Functional/TestBindBack.cpp
+        Functional/TestBindMethod.cpp)
 
 target_link_libraries(RetroLibTests
     PRIVATE
