@@ -24,11 +24,15 @@ TEST_CASE("Ranges can be converted into a collection type") {
     SECTION("Convert to a like range type") {
         auto vectored = values | retro::ranges::to<std::vector>();
         CHECK(vectored == std::vector({1, 2, 3, 4, 5}));
+        CHECK(retro::ranges::container_capacity(vectored) == 5);
+        CHECK(retro::ranges::container_max_size(vectored) == vectored.max_size());
     }
 
     SECTION("Can convert between unlike, but compatible, range types") {
         auto vectored = values | retro::ranges::to<std::vector<double>>();
         CHECK(vectored == std::vector({1.0, 2.0, 3.0, 4.0, 5.0}));
+        CHECK(retro::ranges::container_capacity(vectored) == 5);
+        CHECK(retro::ranges::container_max_size(vectored) == vectored.max_size());
     }
 
     SECTION("Can convert a vector into a set") {
