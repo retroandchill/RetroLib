@@ -67,12 +67,12 @@ namespace retro::ranges {
 
     template< typename C, typename R >
     concept StlEmplace = requires (C& c, R&& ref) {
-        c.emplace(c.end(), std::forward<R>(ref));
+        c.emplace(std::forward<R>(ref));
     };
 
     template< typename C, typename R >
     concept StlInsert = requires (C& c, R&& ref) {
-        c.insert(c.end(), std::forward<R>(ref));
+        c.insert(std::forward<R>(ref));
     };
 
     template< typename Container, typename Reference >
@@ -86,9 +86,9 @@ namespace retro::ranges {
         } else if constexpr (StlPushBack<C, T>) {
             return container.push_back(std::forward<T>(value));
         } else if constexpr (StlEmplace<C, T>) {
-            return container.emplace(container.end(), std::forward<T>(value));
+            return container.emplace(std::forward<T>(value));
         } else if constexpr (StlInsert<C, T>) {
-            return container.insert(container.end(), std::forward<T>(value));
+            return container.insert(std::forward<T>(value));
         }
     }
 

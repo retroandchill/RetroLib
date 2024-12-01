@@ -19,7 +19,7 @@
 
 namespace retro::ranges {
     RETROLIB_EXPORT template <typename C, std::ranges::input_range R, typename... A>
-        requires (!std::ranges::view<C>)
+        requires (!std::ranges::view<C>) && AppendableContainer<C, std::ranges::range_common_reference_t<R>>
     constexpr C to(R&& range, A&&... args) {
         C result(std::forward<A>(args)...);
 
