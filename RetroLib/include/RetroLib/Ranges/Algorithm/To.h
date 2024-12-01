@@ -28,7 +28,7 @@ namespace retro::ranges {
     template <typename C, typename R, typename... A>
     concept CompatibleContainerTypeForArgs =
         std::ranges::input_range<R> && AppendableContainer<C, std::ranges::range_value_t<R>> &&
-        ContainerCompatibleRange<R, std::ranges::range_value_t<R>> && std::constructible_from<C, A...>;
+        ContainerCompatibleRange<R, RangeCommonReference<R>> && std::constructible_from<C, A...>;
 
     /**
      * Transforms the given range into a container of type C using provided arguments for construction.
@@ -57,7 +57,7 @@ namespace retro::ranges {
             container_reserve(result, std::ranges::size(range));
         }
 
-        using RangeType = std::ranges::range_common_reference_t<R>;
+        using RangeType = RangeCommonReference<R>;
         for (RangeType x : range) {
             append_container(result, std::forward<RangeType>(x));
         }

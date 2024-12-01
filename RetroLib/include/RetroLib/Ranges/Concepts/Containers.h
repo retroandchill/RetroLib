@@ -196,5 +196,5 @@ namespace retro::ranges {
      */
     template <typename R, typename T>
     concept ContainerCompatibleRange =
-        std::ranges::input_range<R> && std::convertible_to<std::ranges::range_common_reference_t<R>, T>;
+        std::ranges::input_range<R> && std::convertible_to<RangeCommonReference<R>, T>;
 } // namespace retro::ranges

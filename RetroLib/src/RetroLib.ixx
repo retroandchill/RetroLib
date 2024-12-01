@@ -36,6 +36,7 @@ import std;
 #include "RetroLib/Utils/ForwardLike.h"
 #include "RetroLib/Utils/Polymorphic.h"
 
+#include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Ranges/Concepts/Containers.h"
 
 #include "RetroLib/Ranges/Algorithm/To.h"
