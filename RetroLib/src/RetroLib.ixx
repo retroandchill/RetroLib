@@ -9,7 +9,9 @@ module;
 
 #include "RetroLib/RetroLibMacros.h"
 
+#include <bit>
 #include <cassert>
+#include <ranges>
 #include <typeinfo>
 
 export module RetroLib;
@@ -19,6 +21,7 @@ import std;
 #define RETROLIB_EXPORT export
 
 // clang-format off
+#include "RetroLib/TypeTraits.h"
 #include "RetroLib/FunctionTraits.h"
 
 #include "RetroLib/TypeTraits.h"
@@ -28,6 +31,8 @@ import std;
 #include "RetroLib/Concepts/ParameterPacks.h"
 
 #include "RetroLib/Functional/BindBack.h"
+#include "RetroLib/Functional/BindFront.h"
+#include "RetroLib/Functional/BindMethod.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 
 #include "RetroLib/Utils/ForwardLike.h"
@@ -35,6 +40,10 @@ import std;
 
 #include "RetroLib/Optionals/OptionalOperations.h"
 
+#include "RetroLib/Ranges/FeatureBridge.h"
+#include "RetroLib/Ranges/Concepts/Containers.h"
+
+#include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/AnyView.h"
 
 // clang-format on

@@ -12,14 +12,12 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Functional/ExtensionMethods.h"
-#include <vector>
+
 #include <string_view>
+#include <vector>
 #endif
 
-enum class TestEnum {
-    Ordinal1,
-    Ordinal2
-};
+enum class TestEnum { Ordinal1, Ordinal2 };
 
 std::string_view enum_to_string(TestEnum test_enum) {
     switch (test_enum) {
@@ -31,26 +29,27 @@ std::string_view enum_to_string(TestEnum test_enum) {
         return "<Invalid>";
     }
 }
-constexpr retro::ExtensionMethodBinder<&enum_to_string> to_string;
+constexpr auto to_string = retro::extension_method<&enum_to_string>;
 
 struct VectorAppender {
     template <typename T, typename... A>
         requires std::constructible_from<T, A...>
-    constexpr void operator()(std::vector<T>& vec, A&&... args) const {
+    constexpr void operator()(std::vector<T> &vec, A &&...args) const {
         vec.emplace_back(std::forward<A>(args)...);
     }
 };
 
 struct DemoStruct {
 
-    DemoStruct(int value1, float value2) : value1(value1), value2(value2) {}
+    DemoStruct(int value1, float value2) : value1(value1), value2(value2) {
+    }
 
     int value1;
     float value2;
 };
 
 constexpr VectorAppender vector_appender;
-constexpr retro::ExtensionMethodBinder<vector_appender> append;
+constexpr auto append = retro::extension_method<vector_appender>;
 
 TEST_CASE("Test that extension methods can be used") {
     SECTION("Extension method on enum with no arguments") {

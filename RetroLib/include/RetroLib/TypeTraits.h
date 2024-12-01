@@ -53,5 +53,40 @@ namespace retro {
         static constexpr bool is_valid = true;
     };
 
+    /**
+     * @brief A concept that checks if a type can be dereferenced.
+     *
+     * This concept ensures that the provided type supports the dereference
+     * operator (*). It is used to determine if a given type behaves like a
+     * pointer or an iterator by requiring the type to be dereferenceable.
+     *
+     * @tparam T The type to check for the dereference capability.
+     */
+    template <typename T>
+    concept Dereferenceable = requires(T &&ptr) { *ptr; };
 
-}
+    /**
+     * Get the underlying type that comes from the pointer dereference.
+     *
+     * @tparam T The dereferencable type
+     */
+    template <Dereferenceable T>
+    using DereferencedType = decltype(*std::declval<T>());
+
+    /**
+     * @brief Concept to determine if a type can be dereferenced to a specific type reference.
+     *
+     * This concept checks whether an instance of type T, when dereferenced,
+     * yields a result that is convertible to a reference of type C. It is used
+     * to constrain template parameters to types that support dereferencing to
+     * a specific target type.
+     *
+     * @tparam T The type to be dereferenced.
+     * @tparam C The target type to which the dereferenced value should be convertible.
+     */
+    template <typename T, typename C>
+    concept DereferenceableTo = requires(T &&ptr) {
+        { *ptr } -> std::convertible_to<C &>;
+    };
+
+} // namespace retro
