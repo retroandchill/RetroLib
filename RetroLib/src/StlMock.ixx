@@ -1095,7 +1095,6 @@ export namespace std {
         using std::ranges::range;
         using std::ranges::range_difference_t;
         using std::ranges::range_reference_t;
-        using std::ranges::range_common_reference_t;
         using std::ranges::range_rvalue_reference_t;
         using std::ranges::range_size_t;
         using std::ranges::range_value_t;
