@@ -41,8 +41,8 @@ TEST_CASE("Can perform basic operations on optional values", "[optionals]") {
         CHECK(optional2.value() == wrapped3.value());
         CHECK(&optional2.value() == &wrapped3.value().get());
 
-
-        decltype(auto) wrapped4 = retro::optionals::make_optional_reference(retro::optionals::make_optional_reference(optional2));
+        decltype(auto) wrapped4 =
+            retro::optionals::make_optional_reference(retro::optionals::make_optional_reference(optional2));
         CHECK(wrapped4.value() == wrapped3.value());
     }
 }

@@ -9,6 +9,7 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/TypeTraits.h"
+
 #include <optional>
 #endif
 
@@ -24,7 +25,7 @@ namespace retro::optionals {
      * @tparam T The type to check against
      */
     template <typename T>
-    concept StlOptional = requires (T&& optional) {
+    concept StlOptional = requires(T &&optional) {
         optional.value();
         *optional;
         { optional.has_value() } -> std::same_as<bool>;
@@ -33,7 +34,8 @@ namespace retro::optionals {
     /**
      * @brief Retrieves the value from an optional object by forwarding the input object.
      *
-     * This version uses the deference operator, which does perform any checks for the validity of the value leading to undefined behavior.
+     * This version uses the deference operator, which does perform any checks for the validity of the value leading to
+     * undefined behavior.
      *
      * @param optional An optional object from which the value is to be retrieved.
      *                 The parameter is forwarded, maintaining its value category
@@ -42,7 +44,7 @@ namespace retro::optionals {
      *         the same value category as the input parameter.
      */
     RETROLIB_EXPORT template <StlOptional O>
-    constexpr decltype(auto) get(O&& optional) {
+    constexpr decltype(auto) get(O &&optional) {
         return *std::forward<O>(optional);
     }
 
@@ -59,7 +61,7 @@ namespace retro::optionals {
      * @throws std::bad_optional_access If the optional does not contain a value
      */
     RETROLIB_EXPORT template <StlOptional O>
-    constexpr decltype(auto) get_value(O&& optional) {
+    constexpr decltype(auto) get_value(O &&optional) {
         return std::forward<O>(optional).value();
     }
 
@@ -70,7 +72,7 @@ namespace retro::optionals {
      * @return A boolean value that is true if the optional object contains a value, otherwise false.
      */
     RETROLIB_EXPORT template <StlOptional O>
-    constexpr bool has_value(const O& optional) {
+    constexpr bool has_value(const O &optional) {
         return optional.has_value();
     }
 
@@ -80,7 +82,7 @@ namespace retro::optionals {
      * @tparam T The type to check inside the optional
      */
     RETROLIB_EXPORT template <typename T>
-    concept Optional = requires(T&& value) {
+    concept Optional = requires(T &&value) {
         get<T>(std::forward<T>(value));
         get_value<T>(std::forward<T>(value));
         { has_value<T>(std::forward<T>(value)) } -> std::same_as<bool>;
@@ -112,7 +114,6 @@ namespace retro::optionals {
     template <Optional>
     struct OptionalTraits {
         static constexpr bool is_optional_reference = false;
-
     };
 
     /**
@@ -201,7 +202,7 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <template <typename> typename O, typename T>
         requires Optional<O<T>>
-    constexpr decltype(auto) make_optional_reference(O<T>& value) {
+    constexpr decltype(auto) make_optional_reference(O<T> &value) {
         if constexpr (OptionalReference<O<T>>) {
             return value;
         } else {
@@ -230,7 +231,7 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <template <typename> typename O, typename T>
         requires Optional<O<T>>
-    constexpr decltype(auto) make_optional_reference(const O<T>& value) {
+    constexpr decltype(auto) make_optional_reference(const O<T> &value) {
         if constexpr (OptionalReference<O<T>>) {
             return value;
         } else {
@@ -258,8 +259,8 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <template <typename> typename O, typename T>
         requires Optional<O<T>>
-    constexpr auto make_optional_reference(O<T>&& value) {
+    constexpr auto make_optional_reference(O<T> &&value) {
         static_assert(OptionalReference<O<T>>, "Cannot an r-value to an optional reference type.");
         return std::move(value);
     }
-};
+}; // namespace retro::optionals

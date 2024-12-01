@@ -39,7 +39,7 @@ namespace retro {
             if constexpr (is_adding_const) {
                 return std::as_const(x);
             } else {
-                return static_cast<U&>(x);
+                return static_cast<U &>(x);
             }
         } else {
             if constexpr (is_adding_const) {
