@@ -189,4 +189,26 @@ namespace retro::optionals {
     template <typename T>
     concept OptionalReference = OptionalTraits<T>::is_optional_reference;
 
+    /**
+     * @brief Creates an optional reference wrapper around a given value.
+     *
+     * This function takes an object of type `O<T>` and returns it directly if it
+     * supports being an optional reference based on the `OptionalReference` type trait.
+     * Otherwise, it returns an object of type `O<std::reference_wrapper<T>>` which
+     * wraps the given value in a `std::reference_wrapper`.
+     *
+     * @param value An object of type `O<T>` that is to be conditionally wrapped.
+     * @return An object of type `O<T>` if it is already an optional reference, or
+     *         an object of type `O<std::reference_wrapper<T>>` if not.
+     */
+    template <template <typename> typename O, typename T>
+        requires OptionalReference<O<T>>
+    constexpr decltype(auto) make_optional_reference(O<T>& value) {
+        if constexpr (OptionalReference<O<T>>) {
+            return value;
+        } else {
+            return O<std::reference_wrapper<T>>(value);
+        }
+    }
+
 };
