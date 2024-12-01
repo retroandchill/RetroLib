@@ -58,7 +58,7 @@ namespace retro::ranges {
         }
 
         using RangeType = RangeCommonReference<R>;
-        for (RangeType x : range) {
+        for (auto &&x : range) {
             append_container(result, std::forward<RangeType>(x));
         }
 
