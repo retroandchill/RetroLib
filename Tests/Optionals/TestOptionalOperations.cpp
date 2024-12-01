@@ -44,5 +44,11 @@ TEST_CASE("Can perform basic operations on optional values", "[optionals]") {
         decltype(auto) wrapped4 =
             retro::optionals::make_optional_reference(retro::optionals::make_optional_reference(optional2));
         CHECK(wrapped4.value() == wrapped3.value());
+
+        std::optional<int> optional3;
+        decltype(auto) wrapped5 = retro::optionals::make_optional_reference(optional3);
+        CHECK_FALSE(wrapped5.has_value());
+        decltype(auto) wrapped6 = retro::optionals::make_optional_reference(std::as_const(optional3));
+        CHECK_FALSE(wrapped6.has_value());
     }
 }
