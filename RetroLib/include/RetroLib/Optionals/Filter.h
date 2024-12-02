@@ -60,9 +60,9 @@ namespace retro::optionals {
     constexpr auto filter(O&& optional) {
         if constexpr (std::is_lvalue_reference_v<O>) {
             using FilteredType = decltype(make_optional_reference(std::forward<O>(optional)));
-            return has_value(std::forward<O>(optional)) && invoke<Functor>(get(std::forward<O>(optional))) ? make_optional_reference(std::forward<O>(optional)) : FilteredType();
+            return has_value(std::forward<O>(optional)) && std::invoke(Functor, get(std::forward<O>(optional))) ? make_optional_reference(std::forward<O>(optional)) : FilteredType();
         } else {
-            return has_value(std::forward<O>(optional)) && invoke<Functor>(get(std::forward<O>(optional))) ? O(std::forward<O>(optional)) : O();
+            return has_value(std::forward<O>(optional)) && std::invoke(Functor, get(std::forward<O>(optional))) ? O(std::forward<O>(optional)) : O();
         }
     }
 
