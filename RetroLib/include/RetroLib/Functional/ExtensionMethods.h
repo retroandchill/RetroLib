@@ -268,7 +268,7 @@ namespace retro {
                 return ExtensionMethodConstClosure<Functor>();
             } else {
                 using BindingType = decltype(retro::bind_back<Functor>(wrap_arg<T>(std::forward<T>(args))...));
-                return ExtensionMethodClosure<BindingType>(retro::bind_back<Functor>(std::forward<T>(args)...));
+                return ExtensionMethodClosure<BindingType>(retro::bind_back<Functor>(wrap_arg<T>(std::forward<T>(args))...));
             }
         }
     };
