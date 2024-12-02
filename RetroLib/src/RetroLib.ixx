@@ -34,6 +34,7 @@ import std;
 #include "RetroLib/Utils/WrapArg.h"
 #include "RetroLib/Utils/Polymorphic.h"
 
+#include "RetroLib/Functional/BindFunctor.h"
 #include "RetroLib/Functional/BindBack.h"
 #include "RetroLib/Functional/BindFront.h"
 #include "RetroLib/Functional/BindMethod.h"
