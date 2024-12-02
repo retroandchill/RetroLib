@@ -58,12 +58,9 @@ namespace retro::optionals {
     RETROLIB_EXPORT template <auto Functor, Optional O>
         requires std::is_invocable_r_v<bool, decltype(Functor), CommonReference<O>>
     constexpr auto filter(O&& optional) {
-        if constexpr (std::is_lvalue_reference_v<O>) {
-            using FilteredType = decltype(make_optional_reference(std::forward<O>(optional)));
-            return has_value(std::forward<O>(optional)) && std::invoke(Functor, get(std::forward<O>(optional))) ? make_optional_reference(std::forward<O>(optional)) : FilteredType();
-        } else {
-            return has_value(std::forward<O>(optional)) && std::invoke(Functor, get(std::forward<O>(optional))) ? O(std::forward<O>(optional)) : O();
-        }
+        return filter(std::forward<O>(optional), []<typename T>(T&& arg) {
+            return std::invoke(Functor, std::forward<T>(arg));
+        });
     }
 
     /**
