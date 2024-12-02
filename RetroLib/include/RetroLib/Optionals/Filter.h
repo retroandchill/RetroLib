@@ -66,4 +66,36 @@ namespace retro::optionals {
         }
     }
 
+    struct FilterInvoker {
+        template <Optional O, typename F>
+            requires std::is_invocable_r_v<bool, F, CommonReference<O>>
+        constexpr auto operator()(O&& optional, F&& functor) const {
+            return filter(std::forward<O>(optional), std::forward<F>(functor));
+        }
+    };
+
+    constexpr FilterInvoker filter_invoker;
+
+    template <auto Functor>
+    struct ConstFilterInvoker {
+        template <Optional O>
+            requires std::is_invocable_r_v<bool, decltype(Functor), CommonReference<O>>
+        constexpr auto operator()(O&& optional) const {
+            return filter<Functor>(std::forward<O>(optional));
+        }
+    };
+
+    template <auto Functor>
+    constexpr ConstFilterInvoker<Functor> const_filter_invoker;
+
+    RETROLIB_EXPORT template <typename F>
+    constexpr auto filter(F&& functor) {
+        return extension_method<filter_invoker>(std::forward<F>(functor));
+    }
+
+    RETROLIB_EXPORT template <auto Functor>
+    constexpr auto filter() {
+        return extension_method<const_filter_invoker<Functor>>();
+    }
+
 }

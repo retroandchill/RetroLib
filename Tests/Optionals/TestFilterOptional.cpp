@@ -20,15 +20,14 @@ TEST_CASE("Can filter an optional value", "[optionals]") {
         constexpr auto is_even = [](int x) { return x % 2 == 0; };
         std::optional odd = 3;
         std::optional even = 4;
-        static_assert(retro::optionals::Optional<decltype(odd)>);
-        auto filtered_odd = retro::optionals::filter<is_even>(odd);
+        auto filtered_odd = odd | retro::optionals::filter<is_even>();
         CHECK_FALSE(filtered_odd.has_value());
-        auto filtered_even = retro::optionals::filter<is_even>(even);
+        auto filtered_even = even | retro::optionals::filter<is_even>();
         CHECK(filtered_even.has_value());
 
-        auto filtered_rvalue_odd = retro::optionals::filter<is_even>(std::optional(5));
+        auto filtered_rvalue_odd = std::optional(5) | retro::optionals::filter<is_even>();
         CHECK_FALSE(filtered_rvalue_odd.has_value());
-        auto filtered_rvalue_even = retro::optionals::filter<is_even>(std::optional(6));
+        auto filtered_rvalue_even = std::optional(6) | retro::optionals::filter<is_even>();
         CHECK(filtered_rvalue_even.has_value());
     }
 
@@ -37,14 +36,14 @@ TEST_CASE("Can filter an optional value", "[optionals]") {
         std::optional odd = 3;
         std::optional even = 4;
         static_assert(retro::optionals::Optional<decltype(odd)>);
-        auto filtered_odd = retro::optionals::filter(odd, retro::bind_back<greater_than>(4));
+        auto filtered_odd = odd | retro::optionals::filter(retro::bind_back<greater_than>(4));
         CHECK_FALSE(filtered_odd.has_value());
-        auto filtered_even = retro::optionals::filter(even, retro::bind_back<greater_than>(3));
+        auto filtered_even = even | retro::optionals::filter(retro::bind_back<greater_than>(3));
         CHECK(filtered_even.has_value());
 
-        auto filtered_rvalue_odd = retro::optionals::filter(std::optional(5), retro::bind_back<greater_than>(7));
+        auto filtered_rvalue_odd = std::optional(5) | retro::optionals::filter(retro::bind_back<greater_than>(7));
         CHECK_FALSE(filtered_rvalue_odd.has_value());
-        auto filtered_rvalue_even = retro::optionals::filter(std::optional(6), retro::bind_back<greater_than>(4));
+        auto filtered_rvalue_even = std::optional(6) | retro::optionals::filter(retro::bind_back<greater_than>(4));
         CHECK(filtered_rvalue_even.has_value());
     }
 }

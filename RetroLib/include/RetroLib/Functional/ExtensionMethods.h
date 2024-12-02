@@ -10,6 +10,7 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/BindBack.h"
+#include "RetroLib/Utilities/WrapArg.h"
 #include "RetroLib/FunctionTraits.h"
 #endif
 
@@ -266,7 +267,7 @@ namespace retro {
             if constexpr (sizeof...(T) == 0) {
                 return ExtensionMethodConstClosure<Functor>();
             } else {
-                using BindingType = decltype(retro::bind_back<Functor>(std::forward<T>(args)...));
+                using BindingType = decltype(retro::bind_back<Functor>(wrap_arg<T>(std::forward<T>(args))...));
                 return ExtensionMethodClosure<BindingType>(retro::bind_back<Functor>(std::forward<T>(args)...));
             }
         }

@@ -31,6 +31,7 @@ import std;
 #include "RetroLib/Concepts/ParameterPacks.h"
 
 #include "RetroLib/Utils/ForwardLike.h"
+#include "RetroLib/Utils/WrapArg.h"
 #include "RetroLib/Utils/Polymorphic.h"
 
 #include "RetroLib/Functional/Invoke.h"
