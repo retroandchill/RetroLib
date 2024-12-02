@@ -32,11 +32,14 @@ namespace retro {
     template <typename T, typename O>
         requires std::assignable_from<T&, std::decay_t<O>>
     constexpr decltype(auto) get_type_reference(O&& object) {
-        if constexpr (std::same_as<T, std::decay_t<O>> || std::derived_from<std::decay_t<O>, T>) {
-            return std::forward<O>(object);
-        } else {
-            // TODO: This conversion from std::reference_wrapper isn't ideal
-            return object.get();
+        if constexpr (std::assignable_from<T&&, O>) {
+            return static_cast<T&&>(std::forward<O>(object));
+        } else if constexpr (std::assignable_from<const T&&, O>) {
+            return static_cast<const T&&>(std::forward<O>(object));
+        } else if constexpr (std::assignable_from<T&, O>) {
+            return static_cast<T&>(std::forward<O>(object));
+        } else if constexpr (std::assignable_from<const T&, O>) {
+            return static_cast<const T&>(std::forward<O>(object));
         }
     }
 
