@@ -26,6 +26,7 @@ import std;
 
 #include "RetroLib/TypeTraits.h"
 
+#include "RetroLib/Concepts/Comparisons.h"
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
 #include "RetroLib/Concepts/ParameterPacks.h"

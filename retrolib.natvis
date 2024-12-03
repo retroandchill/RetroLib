@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-    <Type Name="Retro::Polymorphic&lt;*&gt;">
+    <Type Name="retro::Polymorphic&lt;*&gt;">
         <Expand>
-            <Item Name="[value]" ExcludeView="simple">vtable->getSize() > sizeof(storage) ? *(($T1*)storage.largeStorage) : *(($T1*)storage.smallStorage.data())</Item>
-            <Item Name="[large]" ExcludeView="simple">vtable->getSize() > sizeof(storage)</Item>
+            <Item Name="[value]" ExcludeView="simple">vtable->get_size() > sizeof(storage) ? *(($T1*)storage.large_storage) : *(($T1*)storage.small_storage.data())</Item>
+            <Item Name="[large]" ExcludeView="simple">vtable->get_size() > sizeof(storage)</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="retro::Optional&lt;*&gt;">
+        <DisplayString Condition="!storage.has_value()">nullopt</DisplayString>
+        <DisplayString Condition="storage.has_value()">{storage.value}</DisplayString>
+        <Expand>
+            <Item Condition="storage.has_value()" Name="[value]">storage.value</Item>
         </Expand>
     </Type>
 </AutoVisualizer>
