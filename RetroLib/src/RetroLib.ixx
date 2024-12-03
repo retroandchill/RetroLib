@@ -41,6 +41,7 @@ import std;
 #include "RetroLib/Functional/ExtensionMethods.h"
 
 #include "RetroLib/Optionals/OptionalOperations.h"
+#include "RetroLib/Optionals/Optional.h"
 #include "RetroLib/Optionals/Filter.h"
 
 #include "RetroLib/Ranges/FeatureBridge.h"
