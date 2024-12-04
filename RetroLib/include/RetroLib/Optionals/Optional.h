@@ -306,9 +306,9 @@ namespace retro {
         template<typename U>
         constexpr void assign_from(U &&other) {
             if (data != nullptr && other.data != nullptr) {
-                *data = *other.data;
+                *data = *std::forward<U>(other).data;
             } else {
-                data = other.data;
+                data = std::forward<U>(other).data;
             }
         }
 
@@ -489,7 +489,7 @@ namespace retro {
         }
 
         template<ValidOptionalType U = T>
-            requires std::constructible_from<T, U>
+            requires std::constructible_from<T, U> && (!std::same_as<std::decay_t<U>, Optional>)
         constexpr explicit(!std::convertible_to<U, T>) Optional(U &&value) : Base(
             std::in_place_type<T>, std::forward<U>(value)) {
         }
