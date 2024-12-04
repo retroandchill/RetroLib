@@ -609,22 +609,26 @@ namespace retro {
         }
 
         template <typename U>
+            requires (!optionals::OptionalType<T>)
         constexpr bool operator==(const U& other) const noexcept(noexcept(**this == other)) {
             return has_value() && **this == other;
         }
 
         template <typename U>
+            requires (!optionals::OptionalType<T>)
         constexpr auto operator<=>(const U& other) const noexcept(noexcept(**this <=> other)) {
             using ResultType = std::compare_three_way_result_t<T, U>;
             return has_value() ? **this <=> other : ResultType::greater;
         }
 
         template <typename U>
+            requires (!optionals::OptionalType<T>)
         friend constexpr bool operator==(const U& other, const Optional& self) noexcept(noexcept(other == *self)) {
             return self.has_value() && other == *self;
         }
 
         template <typename U>
+            requires (!optionals::OptionalType<T>)
         friend constexpr auto operator<=>(const U& other, const Optional& self) noexcept(noexcept(other <=> *self)) {
             using ResultType = std::compare_three_way_result_t<T, U>;
             return self.has_value() ? other <=> *self : ResultType::less;
