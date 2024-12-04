@@ -13,6 +13,7 @@ module;
 #include <cassert>
 #include <ranges>
 #include <typeinfo>
+#include <initializer_list>
 
 export module RetroLib;
 

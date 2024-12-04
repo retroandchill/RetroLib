@@ -22,7 +22,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept EqualityComparable = requires(const T &lhs, const U &rhs) {
         { lhs == rhs } -> std::convertible_to<bool>;
     };
@@ -33,7 +33,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept InequalityComparable = requires(const T &lhs, const U &rhs) {
         { lhs != rhs } -> std::convertible_to<bool>;
     };
@@ -44,7 +44,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept LessThanComparable = requires(const T &lhs, const U &rhs) {
         { lhs < rhs } -> std::convertible_to<bool>;
     };
@@ -55,7 +55,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept LessThanOrEqualComparable = requires(const T &lhs, const U &rhs) {
         { lhs <= rhs } -> std::convertible_to<bool>;
     };
@@ -66,7 +66,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept GreaterThanComparable = requires(const T &lhs, const U &rhs) {
         { lhs > rhs } -> std::convertible_to<bool>;
     };
@@ -77,7 +77,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept GreaterThanOrEqualComparable = requires(const T &lhs, const U &rhs) {
         { lhs >= rhs } -> std::convertible_to<bool>;
     };
@@ -88,7 +88,7 @@ namespace retro {
      * @tparam T The type of the left-hand side
      * @tparam U The type of the right-hand side
      */
-    template <typename T, typename U = T>
+    RETROLIB_EXPORT template <typename T, typename U = T>
     concept ThreeWayComparable = requires(const T &lhs, const U &rhs) {
         { lhs <=> rhs } -> std::convertible_to<std::partial_ordering>;
     };

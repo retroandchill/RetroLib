@@ -10,7 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Functional/BindFunctor.h"
-#include "RetroLib/Functional/Invoke.h"
+#include "RetroLib/Functional/ExtensionMethods.h"
 #endif
 
 #ifndef RETROLIB_EXPORT

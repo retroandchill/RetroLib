@@ -73,6 +73,8 @@ TEST_CASE("Can use the new optional type", "[optionals]") {
     SECTION("Can compare optionals between each other") {
         retro::Optional<int> optional1;
         retro::Optional optional2 = 3;
+        static_assert(retro::EqualityComparable<int, int>);
+        static_assert(retro::EqualityComparable<decltype(optional1)::ValueType, decltype(optional2)::ValueType>);
         CHECK_FALSE(optional1 == optional2);
         CHECK(optional1 < optional2);
         CHECK(optional2 > optional1);
