@@ -459,7 +459,7 @@ namespace retro {
 
         using Base::Base;
 
-        template <OptionalShouldConvert U>
+        template <OptionalShouldConvert<T> U>
             requires std::constructible_from<T, const U&>
         constexpr explicit(!std::convertible_to<const U&, T>) Optional(const Optional<U>& other) {
             if (other.has_value()) {
@@ -468,7 +468,7 @@ namespace retro {
         }
 
 
-        template <OptionalShouldConvert U>
+        template <OptionalShouldConvert<T> U>
                     requires std::constructible_from<T, U&&>
         constexpr explicit(!std::convertible_to<const U&, T>) Optional(Optional<U>&& other) {
             if (other.has_value()) {
@@ -498,14 +498,14 @@ namespace retro {
             return *this;
         }
 
-        template <OptionalShouldConvertAssign U>
+        template <OptionalShouldConvertAssign<T> U>
             requires std::constructible_from<T, const U&> && std::assignable_from<T&, const U&>
         constexpr Optional& operator=(const Optional<U>& other) {
             Base::assign_from(other);
             return *this;
         }
 
-        template <OptionalShouldConvertAssign U>
+        template <OptionalShouldConvertAssign<T> U>
             requires std::constructible_from<T, U&&> && std::assignable_from<T&, U&&>
         constexpr Optional& operator=(Optional<U>&& other) {
             Base::assign_from(std::move(other));
