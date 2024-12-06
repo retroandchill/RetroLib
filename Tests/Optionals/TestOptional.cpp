@@ -40,6 +40,11 @@ TEST_CASE("Can use the new optional type", "[optionals]") {
         CHECK(optional2.value() == 3);
         CHECK(*optional2 == 3);
 
+        CHECK(optional1.value_or(4) == 4);
+        CHECK(std::as_const(optional1).value_or(4) == 4);
+        CHECK(optional2.value_or(4) == 3);
+        CHECK(std::as_const(optional2).value_or(4) == 3);
+
         retro::Optional<std::string> optional3 = "Hello";
         CHECK(optional3.has_value());
         CHECK(optional3 == "Hello");
@@ -128,6 +133,10 @@ TEST_CASE("Can use the new optional type", "[optionals]") {
         swap(optional3, optional4);
         CHECK_FALSE(optional3.has_value());
         CHECK_FALSE(optional4.has_value());
+
+        optional3 = "Hello world";
+        std::string value = *std::move(optional3);
+        CHECK(value == "Hello world");
     }
 
     SECTION("Can have an optional of a reference") {
