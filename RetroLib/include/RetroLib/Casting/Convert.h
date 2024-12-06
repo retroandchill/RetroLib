@@ -1,11 +1,10 @@
 /**
  * @file Convert.h
- * @brief TODO: Fill me out
+ * @brief Static conversion functor between types.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-
 #pragma once
 
 #if !RETROLIB_WITH_MODULES

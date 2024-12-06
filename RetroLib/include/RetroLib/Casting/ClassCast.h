@@ -1,6 +1,6 @@
 /**
  * @file ClassCast.h
- * @brief TODO: Fill me out
+ * @brief Functor for performing runtime conversions between types.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
