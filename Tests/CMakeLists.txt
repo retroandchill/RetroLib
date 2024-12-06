@@ -12,6 +12,8 @@ add_executable(RetroLibTests Utils/PolymorphicTest.cpp
         Optionals/TestFilterOptional.cpp
         Ranges/Views/TestConstexprAdapters.cpp
         Optionals/TestOptional.cpp
+        Utils/TestValidPtr.cpp
+        Casts/TestInstanceOf.cpp
 )
 
 target_link_libraries(RetroLibTests
