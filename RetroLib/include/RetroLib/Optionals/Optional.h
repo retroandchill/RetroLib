@@ -193,18 +193,20 @@ namespace retro {
         constexpr void swap(
             OptionalBase &other) noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T>)
             requires std::swappable<T> {
+            using std::swap;
+
             constexpr bool can_swap_trivially = std::is_trivially_move_constructible_v<T> &&
                                                 std::is_trivially_move_assignable_v<T>;
             if constexpr (can_swap_trivially) {
-                std::swap(static_cast<OptionalStorage<T> &>(*this), static_cast<OptionalStorage<T> &>(other));
+                swap(static_cast<OptionalStorage<T> &>(*this), static_cast<OptionalStorage<T> &>(other));
             } else {
                 if (is_set == other.is_set) {
                     if (is_set) {
-                        std::swap(data, other.data);
+                        swap(data, other.data);
                     }
                 } else {
-                    auto &src = is_set ? data : other.data;
-                    auto &dst = is_set ? other.data : data;
+                    auto &src = is_set ? *this : other;
+                    auto &dst = is_set ? other : *this;
                     dst.construct_from(std::move(src.data));
                     src.reset();
                 }
@@ -287,10 +289,12 @@ namespace retro {
         }
 
         constexpr void swap(OptionalBase &other) noexcept(std::is_nothrow_swappable_v<T>) requires std::swappable<T> {
+            using std::swap;
+
             if (data != nullptr && other.data != nullptr) {
-                std::swap(*data, *other.data);
+                swap(*data, *other.data);
             } else {
-                std::swap(data, other.data);
+                swap(data, other.data);
             }
         }
 
@@ -579,6 +583,11 @@ namespace retro {
         }
 
         using Base::swap;
+
+        constexpr friend void swap(Optional& lhs, Optional& rhs) noexcept(noexcept(lhs.swap(rhs))) {
+            lhs.swap(rhs);
+        }
+
         using Base::operator->;
         using Base::operator*;
 
@@ -682,4 +691,7 @@ namespace retro {
 
     template<ValidOptionalType T>
     Optional(T) -> Optional<T>;
+
+    template <>
+    struct optionals::IsRawReferenceOptionalAllowed<Optional> : std::true_type {};
 }
