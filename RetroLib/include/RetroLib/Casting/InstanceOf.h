@@ -9,6 +9,8 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
+#include "RetroLib/Utils/ValidPtr.h"
+#include "RetroLib/Utils/Polymorphic.h"
 #include <type_traits>
 #endif
 
@@ -77,11 +79,29 @@ namespace retro {
             return valid_ptr(std::forward<U>(ptr)) && (*this)(*std::forward<U>(ptr));
         }
 
+        /**
+         * Operator function for evaluating a polymorphic object.
+         *
+         * This function is a callable operator that takes a polymorphic object
+         * and applies this operator to its dereferenced value.
+         *
+         * @param polymorphic A Polymorphic object which contains a type U of
+         *        a certain size. The object will be dereferenced and the
+         *        result will be passed to the operator function.
+         * @return A boolean value indicating the result of applying the operator
+         *         to the dereferenced value of the polymorphic object.
+         */
         template <Class U, size_t Size>
         constexpr bool operator()(const Polymorphic<U, Size>& polymorphic) const {
             return (*this)(*polymorphic);
         }
 
+        /**
+         * Determines the boolean value for a nullptr.
+         *
+         * @param A parameter of type std::nullptr_t representing a null pointer.
+         * @return Always returns false as null pointers are considered false.
+         */
         constexpr bool operator()(std::nullptr_t) const {
             return false;
         }
