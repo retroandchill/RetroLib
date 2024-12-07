@@ -44,3 +44,11 @@ TEST_CASE("Can use the operators to perform comparisons", "[utils]") {
     CHECK(retro::three_way_compare(1, 1) == std::strong_ordering::equal);
     CHECK(retro::three_way_compare(1, 2) == std::strong_ordering::less);
 }
+
+TEST_CASE("Can perform basic math operations", "[utils]") {
+    CHECK(retro::add(2, 2) == 4);
+    CHECK(retro::subtract(6, 2) == 4);
+    CHECK(retro::multiply(6, 2) == 12);
+    CHECK(retro::divide(6, 2) == 3);
+    CHECK(retro::modulo(11, 3) == 2);
+}
