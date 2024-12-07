@@ -36,6 +36,7 @@ import std;
 #include "RetroLib/Concepts/Pointers.h"
 
 #include "RetroLib/Utils/ForwardLike.h"
+#include "RetroLib/Utils/Operators.h"
 #include "RetroLib/Utils/WrapArg.h"
 #include "RetroLib/Utils/Polymorphic.h"
 #include "RetroLib/Utils/ValidPtr.h"
