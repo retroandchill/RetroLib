@@ -1,6 +1,6 @@
 /**
  * @file CreateBinding.h
- * @brief TODO: Fill me out
+ * @brief Creating a binding from generic arguments.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
