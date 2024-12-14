@@ -207,7 +207,46 @@ TEST_CASE("Can bind a method with an object at compile time", "[functional]") {
     }
 }
 
-TEST_CASE("Can use the opaque binding wrapper", "[functional]") {
+
+TEST_CASE("Can use the opaque binding wrapper as runtime", "[functional]") {
+    SECTION("Can bind a regular functor") {
+        auto binding = retro::create_binding(add, 4);
+        CHECK(binding(3) == 7);
+        CHECK(std::as_const(binding)(5) == 9);
+        auto number = std::make_shared<int>(5);
+        auto weakNumber = std::weak_ptr(number);
+        retro::create_binding(add_to_shared_back, std::move(number))(4);
+        CHECK(weakNumber.expired());
+    }
+
+    SECTION("Can bind a method using the object as the owner, or bind back without it") {
+        auto object = std::make_shared<TestClass>();
+        auto binding = retro::create_binding(object, &TestClass::method, 5, 6);
+        CHECK(binding(4) == 15);
+        CHECK(std::as_const(binding)(5) == 16);
+        CHECK(retro::create_binding(&TestClass::method, 10, 12)(object, 5) == 27);
+    }
+
+    SECTION("Can bind to a member") {
+        TestClass object;
+        auto binding1 = retro::create_binding(object, &TestClass::member);
+        CHECK(binding1() == 9);
+        auto binding2 = retro::create_binding(&TestClass::member);
+        CHECK(binding2(object) == 9);
+    }
+
+    SECTION("Can bind a functor and use tuples with it") {
+        auto binding = retro::create_binding(add);
+        CHECK(binding(std::make_pair(3, 4)) == 7);
+        CHECK(std::as_const(binding)(std::make_pair(5, 4)) == 9);
+        auto number = std::make_shared<int>(5);
+        auto weakNumber = std::weak_ptr(number);
+        retro::create_binding(add_to_shared_back)(std::make_pair(4, std::move(number)));
+        CHECK(weakNumber.expired());
+    }
+}
+
+TEST_CASE("Can use the opaque binding wrapper at compile time", "[functional]") {
     SECTION("Can bind a regular functor") {
         auto binding = retro::create_binding<add>(4);
         CHECK(binding(3) == 7);

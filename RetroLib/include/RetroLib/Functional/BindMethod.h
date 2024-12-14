@@ -768,7 +768,7 @@ namespace retro {
      * @param args Optional additional arguments to pass to the callable.
      * @return A callable object that can be invoked later with the given object, functor, and arguments bound.
      */
-    RETROLIB_EXPORT template <typename C, Method F, typename... A>
+    RETROLIB_EXPORT template <typename C, Member F, typename... A>
     constexpr auto bind_method(C &&object, F&& functor, A &&...args) {
         if constexpr (sizeof...(A) == 0) {
             return std::bind_front(std::forward<F>(functor), std::forward<C>(object));
