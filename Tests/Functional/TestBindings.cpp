@@ -42,14 +42,13 @@ static int add_many(int a, int b, int c, int d) {
     return a + b + c + d;
 }
 
-
 static int add_numbers(int a, int b, int c) {
     return a + b + c;
 }
 
 class TestClass {
 
-public:
+  public:
     int method(int value1, int value2, int value3) const {
         return value1 + value2 + value3;
     }

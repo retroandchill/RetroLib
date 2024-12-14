@@ -11,9 +11,9 @@ module;
 
 #include <bit>
 #include <cassert>
+#include <initializer_list>
 #include <ranges>
 #include <typeinfo>
-#include <initializer_list>
 
 export module RetroLib;
 

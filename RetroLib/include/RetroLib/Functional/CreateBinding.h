@@ -47,7 +47,8 @@ namespace retro {
          */
         template <typename T>
             requires std::constructible_from<F, T> && (!std::same_as<std::decay_t<T>, WrappedFunctor>)
-        constexpr explicit WrappedFunctor(T&& functor) : functor(std::forward<T>(functor)) {}
+        constexpr explicit WrappedFunctor(T &&functor) : functor(std::forward<T>(functor)) {
+        }
 
         /**
          * @brief Invokes the stored functor with the provided arguments.
@@ -61,8 +62,8 @@ namespace retro {
          *         The exact return type depends on the functor and the arguments.
          */
         template <typename... A>
-            requires std::invocable<F&, A...>
-        constexpr decltype(auto) operator()(A&&... args) & noexcept(std::is_nothrow_invocable_v<F&, A...>) {
+            requires std::invocable<F &, A...>
+        constexpr decltype(auto) operator()(A &&...args) & noexcept(std::is_nothrow_invocable_v<F &, A...>) {
             return std::invoke(functor, std::forward<A>(args)...);
         }
 
@@ -78,8 +79,9 @@ namespace retro {
          *         The exact return type depends on the functor and the arguments.
          */
         template <typename... A>
-            requires std::invocable<const F&, A...>
-        constexpr decltype(auto) operator()(A&&... args) const& noexcept(std::is_nothrow_invocable_v<const F&, A...>) {
+            requires std::invocable<const F &, A...>
+        constexpr decltype(auto)
+        operator()(A &&...args) const & noexcept(std::is_nothrow_invocable_v<const F &, A...>) {
             return std::invoke(functor, std::forward<A>(args)...);
         }
 
@@ -96,7 +98,7 @@ namespace retro {
          */
         template <typename... A>
             requires std::invocable<F, A...>
-        constexpr decltype(auto) operator()(A&&... args) && noexcept(std::is_nothrow_invocable_v<F, A...>) {
+        constexpr decltype(auto) operator()(A &&...args) && noexcept(std::is_nothrow_invocable_v<F, A...>) {
             return std::invoke(std::move(functor), std::forward<A>(args)...);
         }
 
@@ -110,8 +112,8 @@ namespace retro {
          * @return The result of invoking the functor with the forwarded arguments.
          */
         template <typename U>
-            requires CanApply<F&, U>
-        constexpr decltype(auto) operator()(U&& args) & noexcept(NoThrowApplicable<F&, U>) {
+            requires CanApply<F &, U>
+        constexpr decltype(auto) operator()(U &&args) & noexcept(NoThrowApplicable<F &, U>) {
             return std::apply(functor, std::forward<U>(args));
         }
 
@@ -125,8 +127,8 @@ namespace retro {
          * @return The result of invoking the functor with the forwarded arguments.
          */
         template <typename U>
-            requires CanApply<const F&, U>
-        constexpr decltype(auto) operator()(U&& args) const & noexcept(NoThrowApplicable<const F&, U>) {
+            requires CanApply<const F &, U>
+        constexpr decltype(auto) operator()(U &&args) const & noexcept(NoThrowApplicable<const F &, U>) {
             return std::apply(functor, std::forward<U>(args));
         }
 
@@ -141,11 +143,11 @@ namespace retro {
          */
         template <typename U>
             requires CanApply<F, U>
-        constexpr decltype(auto) operator()(U&& args) && noexcept(NoThrowApplicable<F, U>) {
+        constexpr decltype(auto) operator()(U &&args) && noexcept(NoThrowApplicable<F, U>) {
             return std::apply(std::move(functor), std::forward<U>(args));
         }
 
-    private:
+      private:
         F functor;
     };
 
@@ -171,7 +173,7 @@ namespace retro {
      */
     RETROLIB_EXPORT template <auto Functor, typename... A>
         requires HasFunctionCallOperator<decltype(Functor)>
-    constexpr auto create_binding(A&&... args) {
+    constexpr auto create_binding(A &&...args) {
         if constexpr (sizeof...(A) == 0) {
             return WrappedFunctor(bind_functor<Functor>());
         } else {
@@ -191,9 +193,8 @@ namespace retro {
      */
     RETROLIB_EXPORT template <auto Functor, typename C, typename... A>
         requires Member<decltype(Functor)>
-    constexpr auto create_binding(ThisType, C&& obj, A&&... args) {
+    constexpr auto create_binding(ThisType, C &&obj, A &&...args) {
         return WrappedFunctor(bind_method<Functor>(std::forward<C>(obj), std::forward<A>(args)...));
     }
 
-
-}
+} // namespace retro
