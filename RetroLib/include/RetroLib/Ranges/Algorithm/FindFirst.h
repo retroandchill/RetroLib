@@ -12,6 +12,7 @@
 #include "Retrolib/Functional/ExtensionMethods.h"
 #include "RetroLib/Optionals/Optional.h"
 #include "Retrolib/Ranges/FeatureBridge.h"
+#include "Retrolib/Utils/ForwardLike.h"
 
 #include <ranges>
 #endif

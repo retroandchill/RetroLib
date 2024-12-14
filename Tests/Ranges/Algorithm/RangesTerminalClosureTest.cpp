@@ -119,3 +119,27 @@ TEST_CASE("Can find the first value in a range", "[ranges]") {
         CHECK_FALSE(invalid_result.has_value());
     }
 }
+
+TEST_CASE("Can check a collection for all of, any of, and none of", "[ranges]") {
+    static constexpr std::array values = {1, 2, 3, 4, 5};
+    SECTION("Check the all of condition") {
+        CHECK(values | retro::ranges::all_of(retro::greater_than, 0));
+        CHECK(values | retro::ranges::all_of<retro::greater_than>(0));
+        CHECK_FALSE(values | retro::ranges::all_of(retro::greater_than, 10));
+        CHECK_FALSE(values | retro::ranges::all_of<retro::greater_than>(20));
+    }
+
+    SECTION("Check the none of condition") {
+        CHECK_FALSE(values | retro::ranges::none_of(retro::greater_than, 0));
+        CHECK_FALSE(values | retro::ranges::none_of<retro::greater_than>(0));
+        CHECK(values | retro::ranges::none_of(retro::greater_than, 10));
+        CHECK(values | retro::ranges::none_of<retro::greater_than>(20));
+    }
+
+    SECTION("Check the any of condition") {
+        CHECK(values | retro::ranges::any_of(retro::greater_than, 2));
+        CHECK(values | retro::ranges::any_of<retro::greater_than>(2));
+        CHECK_FALSE(values | retro::ranges::any_of(retro::greater_than, 10));
+        CHECK_FALSE(values | retro::ranges::any_of<retro::greater_than>(20));
+    }
+}
