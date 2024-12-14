@@ -45,33 +45,30 @@ namespace retro {
      *
      * @note This class ensures that the object and pre-specified arguments are stored and used in the invocation
      * of the method when called, honoring value categories and noexcept specifications.
-     *
-     * @tparam T The type of the object passed for construction. Must be convertible to C.
-     * @tparam U... Types of the additional arguments passed at construction. Must be constructible into ArgsTuple.
      */
     template <typename C, auto Functor, typename... A>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodBinding {
+    struct MethodConstBinding {
         using F = decltype(Functor);
         using ArgsTuple = std::tuple<A...>;
 
         /**
-         * @brief Constructs a MethodBinding object with a specified object and arguments.
+         * @brief Constructs a MethodConstBinding object with a specified object and arguments.
          *
-         * @tparam T The type of the object being bound. Must be convertible to the type C in the MethodBinding.
+         * @tparam T The type of the object being bound. Must be convertible to the type C in the MethodConstBinding.
          * @tparam U Variadic template arguments representing types for additional arguments passed during construction.
          *
          * @param object The object to which the method is bound.
          * @param args Additional arguments to be bound, used in conjunction with the member function.
          *
-         * @requires The constructor requires that the type T is not the same as a decayed MethodBinding type,
+         * @requires The constructor requires that the type T is not the same as a decayed MethodConstBinding type,
          *           ensuring that the object type is convertible to C, and the additional arguments can be
          *           constructed into ArgsTuple.
          */
         template <typename T, typename... U>
             requires std::convertible_to<C, T> && std::constructible_from<ArgsTuple, U...> &&
-                         (!std::same_as<std::decay_t<T>, MethodBinding>)
-        constexpr explicit MethodBinding(T &&object, U &&...args)
+                         (!std::same_as<std::decay_t<T>, MethodConstBinding>)
+        constexpr explicit MethodConstBinding(T &&object, U &&...args)
             : object(std::forward<T>(object)), args(std::forward<U>(args)...) {
         }
 
@@ -79,7 +76,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -105,7 +102,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -131,7 +128,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -163,7 +160,7 @@ namespace retro {
      * @brief A utility structure to encapsulate the binding of a specific method
      *        to a class instance with predefined arguments.
      *
-     * The MethodBinding struct is designed to wrap a method (Functor) from a class (C)
+     * The MethodConstBinding struct is designed to wrap a method (Functor) from a class (C)
      * along with a pre-bound argument (A). It is templated to allow flexible usage
      * across various types and ensures that the specified method can be correctly
      * invoked with the given arguments. The struct provides operator() that allows
@@ -176,11 +173,11 @@ namespace retro {
      */
     template <typename C, auto Functor, typename A>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodBinding<C, Functor, A> {
+    struct MethodConstBinding<C, Functor, A> {
         using F = decltype(Functor);
 
         /**
-         * @brief Constructs a MethodBinding instance, initializing the object and argument
+         * @brief Constructs a MethodConstBinding instance, initializing the object and argument
          *        that will be used during method invocation.
          *
          * This constructor ensures that the provided object and argument are suitable types
@@ -197,7 +194,7 @@ namespace retro {
          */
         template <typename T, typename U>
             requires std::convertible_to<T, C> && std::convertible_to<U, A>
-        constexpr explicit MethodBinding(T &&object, U &&arg)
+        constexpr explicit MethodConstBinding(T &&object, U &&arg)
             : object(std::forward<T>(object)), arg(std::forward<U>(arg)) {
         }
 
@@ -205,7 +202,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -228,7 +225,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -251,7 +248,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -294,11 +291,11 @@ namespace retro {
      * @returns The result of invoking the Functor with the combined arguments.
      *
      * Three operator() overloads are provided for different value category contexts:
-     * - The method may be invoked on an lvalue reference to MethodBinding, forwarding the object and
+     * - The method may be invoked on an lvalue reference to MethodConstBinding, forwarding the object and
      *   bound arguments as lvalue references.
-     * - The method may be invoked on a const lvalue reference to MethodBinding, treating all
+     * - The method may be invoked on a const lvalue reference to MethodConstBinding, treating all
      *   arguments as const lvalue references.
-     * - The method may be invoked on an rvalue reference to MethodBinding, forwarding the object and
+     * - The method may be invoked on an rvalue reference to MethodConstBinding, forwarding the object and
      *   bound arguments as rvalue references.
      *
      * @remark These invocations are noexcept if the provided Functor is nothrow-invocable in the
@@ -306,13 +303,13 @@ namespace retro {
      */
     template <typename C, auto Functor, typename A, typename B>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodBinding<C, Functor, A, B> {
+    struct MethodConstBinding<C, Functor, A, B> {
         using F = decltype(Functor);
 
         /**
-         * @brief Constructs a MethodBinding instance by binding the given object and arguments.
+         * @brief Constructs a MethodConstBinding instance by binding the given object and arguments.
          *
-         * This constructor initializes a MethodBinding struct by binding an object and two arguments,
+         * This constructor initializes a MethodConstBinding struct by binding an object and two arguments,
          * allowing a method associated with the object to be called later with additional arguments.
          *
          * @tparam T The type of the object to be bound. Must be convertible to the template parameter C.
@@ -327,7 +324,7 @@ namespace retro {
          */
         template <typename T, typename U, typename W>
             requires std::convertible_to<T, C> && std::convertible_to<U, A> && std::convertible_to<W, B>
-        constexpr explicit MethodBinding(T &&object, U &&arg1, W &&arg2)
+        constexpr explicit MethodConstBinding(T &&object, U &&arg1, W &&arg2)
             : object(std::forward<T>(object)), arg1(std::forward<U>(arg1)), arg2(std::forward<W>(arg2)) {
         }
 
@@ -335,7 +332,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -358,7 +355,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -381,7 +378,7 @@ namespace retro {
          * @brief Invokes the stored functor with the specified call-time arguments
          *        followed by the pre-bound arguments.
          *
-         * This invocable operator enables the MethodBinding to be called with
+         * This invocable operator enables the MethodConstBinding to be called with
          * additional arguments that are further processed and combined with the
          * pre-bound arguments. It performs the invocation ensuring the combination
          * is safe, considering exception specifications and argument forwarding.
@@ -420,7 +417,7 @@ namespace retro {
      *    bind the method to the specified object, creating a new callable object
      *    with the bound object as its fixed first argument.
      * 2. If additional arguments are provided, it returns an instance of
-     *    MethodBinding, which combines the object, method, and additional
+     *    MethodConstBinding, which combines the object, method, and additional
      *    arguments into a new callable object optimized for the specified `C`
      *    and `A` types.
      *
@@ -444,7 +441,7 @@ namespace retro {
         if constexpr (sizeof...(A) == 0) {
             return bind_front<Functor>(std::forward<C>(object));
         } else {
-            return MethodBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(object),
+            return MethodConstBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(object),
                                                                                std::forward<A>(args)...);
         }
     }
