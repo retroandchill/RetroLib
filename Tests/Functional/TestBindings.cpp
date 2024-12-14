@@ -140,7 +140,41 @@ TEST_CASE("Can bind front to a constexpr defined functional type", "[functional]
     }
 }
 
-TEST_CASE("Can bind a method with an object", "[functional]") {
+
+TEST_CASE("Can bind a method with an object at runtime", "[functional]") {
+    SECTION("Can bind to an object of the given type") {
+        TestClass object;
+        auto binding = retro::bind_method(object, &TestClass::method);
+        CHECK(binding(1, 2, 1) == 4);
+    }
+
+    SECTION("Can bind to a raw pointer of an object") {
+        TestClass object;
+        auto ptr = &object;
+        auto binding = retro::bind_method(ptr, &TestClass::method, 5);
+        CHECK(binding(4, 1) == 10);
+        CHECK(std::as_const(binding)(5, 5) == 15);
+        CHECK(retro::bind_method(ptr, &TestClass::method, 10)(5, 5) == 20);
+    }
+
+    SECTION("Can bind to wrapped pointer object") {
+        auto object = std::make_shared<TestClass>();
+        auto binding = retro::bind_method(object, &TestClass::method, 5, 6);
+        CHECK(binding(4) == 15);
+        CHECK(std::as_const(binding)(5) == 16);
+        CHECK(retro::bind_method(object, &TestClass::method, 10, 12)(5) == 27);
+    }
+
+    SECTION("Can bind to a reference wrapper object") {
+        TestClass object;
+        auto binding = retro::bind_method(std::ref(object), &TestClass::method, 5, 6, 4);
+        CHECK(binding() == 15);
+        CHECK(std::as_const(binding)() == 15);
+        CHECK(retro::bind_method(std::cref(object), &TestClass::method, 10, 12, 7)() == 29);
+    }
+}
+
+TEST_CASE("Can bind a method with an object at compile time", "[functional]") {
     SECTION("Can bind to an object of the given type") {
         TestClass object;
         auto binding = retro::bind_method<&TestClass::method>(object);

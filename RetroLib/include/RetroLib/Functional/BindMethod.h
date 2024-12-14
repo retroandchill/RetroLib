@@ -22,10 +22,363 @@
 #endif
 
 namespace retro {
-    template <typename T, typename M>
+    /**
+     * Checks if the given method can be bound to the given object type.
+     *
+     * @tparam T The object type
+     * @tparam M The method type
+     */
+    RETROLIB_EXPORT template <typename T, typename M>
     concept CanBindMethod =
         Method<M> && (std::convertible_to<T, RefQualifiedClassType<M>> ||
                       (Dereferenceable<T> && std::convertible_to<DereferencedType<T>, RefQualifiedClassType<M>>));
+
+    /**
+     * @brief A utility structure for method binding with pre-bound arguments and invocability.
+     *
+     * The MethodBinding class allows the creation of a callable object that binds a functor (e.g., a member function pointer,
+     * callable object, or lambda) with pre-bound arguments. It enables subsequent invocation with additional arguments,
+     * combining them with the bound arguments to perform the final function call.
+     *
+     * @tparam C Type of the object to which the method belongs.
+     * @tparam F Type of the functor or callable object.
+     * @tparam A Types of the pre-bound arguments to the functor.
+     */
+    template <typename C, Method F, typename... A>
+        requires CanBindMethod<C, F>
+    struct MethodBinding {
+        using ArgsTuple = std::tuple<A...>;
+
+        /**
+         * @brief Constructs a MethodBinding object with an object instance, a functor, and optional arguments.
+         *
+         * Initializes the MethodBinding with a provided object, functor or callable, and additional arguments that can be forwarded.
+         *
+         * @param object The instance of the object associated with the binding.
+         * @param functor The callable or functor to be executed with the binding.
+         * @param args Additional arguments to be forwarded to the functor.
+         */
+        template <typename T, typename G, typename... U>
+            requires std::convertible_to<C, T> && std::constructible_from<F, G> && std::constructible_from<ArgsTuple, U...>
+        constexpr MethodBinding(T &&object, G&& functor, U &&...args)
+            : object(std::forward<T>(object)), functor(std::forward<G>(functor)), args(std::forward<U>(args)...) {
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F&, C &, T..., A &...>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C &, T..., A &...>) {
+            return std::apply(
+                [&]<typename... U>(U &&...final_args) -> decltype(auto) {
+                    return std::invoke(functor, object, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
+                },
+                args);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<const F&, const C &, T..., const A &...>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<F, const C &, T..., const A &...>) {
+            return std::apply(
+                [&]<typename... U>(U &&...final_args) -> decltype(auto) {
+                    return std::invoke(functor, object, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
+                },
+                args);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F, C , T..., A ...>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A...>) {
+            return std::apply(
+                [&]<typename... U>(U &&...final_args) -> decltype(auto) {
+                    return std::invoke(std::move(functor), std::move(object), std::forward<T>(call_args)...,
+                                       std::forward<U>(final_args)...);
+                },
+                std::move(args));
+        }
+
+      private:
+        C object;
+        F functor;
+        ArgsTuple args;
+    };
+
+    /**
+     * @struct MethodBinding
+     * @brief A utility that binds an object, a callable (functor), and an additional pre-bound argument
+     *        into a single callable entity.
+     *
+     * This struct provides a mechanism to associate a callable (functor) with a specific object and
+     * pre-bound arguments, enabling partial application and method-like invocation semantics. It supports
+     * safe forwarding and invocation according to the callable's exception specifications.
+     *
+     * @tparam C The type of the object bound to the callable.
+     * @tparam F The type of the callable to be invoked.
+     * @tparam A The type of the pre-bound argument.
+     */
+    template <typename C, Method F, typename A>
+        requires CanBindMethod<C, F>
+    struct MethodBinding<C, F, A> {
+        /**
+         * @brief Constructs a MethodBinding object with the given parameters.
+         *
+         * This constructor initializes the MethodBinding object by forwarding the provided
+         * callable object, functor, and additional argument. It ensures the proper binding
+         * of a method with its related argument for later invocation.
+         *
+         * @tparam T The type of the callable object, typically the object containing the method to be bound.
+         * @tparam G The type of the functor, representing the callable method or function.
+         * @tparam U The type of the argument to be forwarded and associated with the method.
+         * @param object The callable object or instance whose method is to be bound.
+         * @param functor The callable functor, method, or function to bind.
+         * @param arg The argument to be forwarded and used during method invocation.
+         */
+        template <typename T, typename G, typename U>
+            requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A>
+        constexpr MethodBinding(T &&object, G&& functor, U &&arg)
+            : object(std::forward<T>(object)), functor(std::forward<G>(functor)), arg(std::forward<U>(arg)) {
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F&, C &, T..., A &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, C &, T..., A &>) {
+            return std::invoke(functor, object, std::forward<T>(call_args)..., arg);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<const F&, const C &, T..., const A &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F&, const C &, T..., const A &>) {
+            return std::invoke(functor, object, std::forward<T>(call_args)..., arg);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F, C, T..., A>
+        constexpr decltype(auto) operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A>) {
+            return std::invoke(std::move(functor), std::move(object), std::forward<T>(call_args)..., std::move(arg));
+        }
+
+      private:
+        C object;
+        F functor;
+        A arg;
+    };
+
+    /**
+     * @brief A structure that encapsulates a callable object (functor) with an associated
+     *        context object and two pre-bound arguments.
+     *
+     * The `MethodBinding` class template provides functionality to bind a callable object
+     * (such as a member function or functor) with a specific object and two pre-determined
+     * arguments. It allows for later invocation with additional call-time arguments, while
+     * seamlessly integrating the pre-bound arguments during the call.
+     *
+     * @tparam C The type of the context object to which the callable object is bound.
+     * @tparam F The type of the callable object (e.g., a functor or callable function).
+     * @tparam A The type of the first pre-bound argument.
+     * @tparam B The type of the second pre-bound argument.
+     */
+    template <typename C, Method F, typename A, typename B>
+        requires CanBindMethod<C, F>
+    struct MethodBinding<C, F, A, B> {
+
+        /**
+         * @brief Constructs a MethodBinding object with specified object, functor, and arguments.
+         *
+         * Initializes the MethodBinding object using the provided callable object,
+         * the functor, and two arguments. The parameters are passed using forwarding
+         * references to allow for perfect forwarding of their values.
+         *
+         * @tparam T Type of the callable object.
+         * @tparam G Type of the functor.
+         * @tparam U Type of the first argument.
+         * @tparam W Type of the second argument.
+         *
+         * @param object The callable object that will own the operation.
+         * @param functor A callable entity (e.g., member function pointer) to be invoked.
+         * @param arg1 The first argument to be passed to the functor.
+         * @param arg2 The second argument to be passed to the functor.
+         */
+        template <typename T, typename G, typename U, typename W>
+            requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A> && std::convertible_to<W, B>
+        constexpr explicit MethodBinding(T &&object, G&& functor, U &&arg1, W &&arg2)
+            : object(std::forward<T>(object)), functor(std::forward<G>(functor)), arg1(std::forward<U>(arg1)), arg2(std::forward<W>(arg2)) {
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F&, C &, T..., A &, B &>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, C &, T..., A &, B &>) {
+            return std::invoke(functor, object, std::forward<T>(call_args)..., arg1, arg2);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<const F&, C, T..., const A &, const B &>
+        constexpr decltype(auto) operator()(T &&...call_args) const & noexcept(
+            std::is_nothrow_invocable_v<const F&, const C &, T..., const A &, const B &>) {
+            return std::invoke(functor, object, std::forward<T>(call_args)..., arg1, arg2);
+        }
+
+        /**
+         * @brief Invokes the stored functor with the specified call-time arguments
+         *        followed by the pre-bound arguments.
+         *
+         * This invocable operator enables the MethodConstBinding to be called with
+         * additional arguments that are further processed and combined with the
+         * pre-bound arguments. It performs the invocation ensuring the combination
+         * is safe, considering exception specifications and argument forwarding.
+         *
+         * @tparam T The types of the additional arguments to be passed at call-time.
+         * @param call_args The arguments provided during the invocation.
+         * @return The result of invoking the functor with both pre-bound and additional arguments.
+         *
+         * @noexcept Conditional noexcept specification based on the nothrow
+         *          invocability of the functor with the provided and bound arguments.
+         */
+        template <typename... T>
+            requires std::invocable<F, C, T..., A, B>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A, B>) {
+            return std::invoke(std::move(functor), std::move(object), std::forward<T>(call_args)..., std::move(arg1),
+                               std::move(arg2));
+        }
+
+      private:
+        C object;
+        F functor;
+        A arg1;
+        B arg2;
+    };
 
     /**
      * @brief A class template for binding a method to an object with pre-specified arguments.
@@ -403,6 +756,28 @@ namespace retro {
         A arg1;
         B arg2;
     };
+
+    /**
+     * Binds a method or functor to an object with optional arguments.
+     *
+     * If there are no additional arguments, it uses std::bind_front to bind the object and functor.
+     * Otherwise, it creates a MethodBinding with the provided object, functor, and arguments.
+     *
+     * @param object The object to which the method or functor will be bound.
+     * @param functor The method or callable to bind to the object.
+     * @param args Optional additional arguments to pass to the callable.
+     * @return A callable object that can be invoked later with the given object, functor, and arguments bound.
+     */
+    RETROLIB_EXPORT template <typename C, Method F, typename... A>
+    constexpr auto bind_method(C &&object, F&& functor, A &&...args) {
+        if constexpr (sizeof...(A) == 0) {
+            return std::bind_front(std::forward<F>(functor), std::forward<C>(object));
+        } else {
+            return MethodBinding<std::decay_t<C>, std::decay_t<F>, std::decay_t<A>...>(std::forward<C>(object),
+                                                                                       std::forward<F>(functor),
+                                                                                       std::forward<A>(args)...);
+        }
+    }
 
     /**
      * Binds a method to an object and optional arguments.
