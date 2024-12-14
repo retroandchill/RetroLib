@@ -16,9 +16,11 @@ import RetroLib;
 #include "RetroLib/Ranges/Algorithm/ForEach.h"
 #include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
+#include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Utils/Operators.h"
 
 #include <array>
+#include <optional>
 #include <vector>
 #endif
 
@@ -82,5 +84,38 @@ TEST_CASE("Can reduce a range to a single value", "[ranges]") {
     SECTION("Can reduce a range to a single value using a constexpr binding") {
         auto result = values | retro::ranges::reduce<retro::add>(0);
         CHECK(result == 15);
+    }
+}
+
+TEST_CASE("Can find the first value in a range", "[ranges]") {
+    static constexpr std::array values = {1, 2, 3, 4, 5};
+    constexpr auto is_multiple_of = [](int i, int j) { return i % j == 0; };
+    SECTION("Can reduce using an inferred optional value") {
+        auto valid_result = values | retro::ranges::views::filter<is_multiple_of>(3) | retro::ranges::find_first();
+        CHECK(valid_result == 3);
+
+        auto invalid_result = values | retro::ranges::views::filter<is_multiple_of>(10) | retro::ranges::find_first();
+        CHECK_FALSE(invalid_result.has_value());
+    }
+
+    SECTION("Can reduce using an inferred template parameter") {
+        auto valid_result =
+            values | retro::ranges::views::filter<is_multiple_of>(3) | retro::ranges::find_first<std::optional>();
+        REQUIRE(valid_result.has_value());
+        CHECK(valid_result->get() == 3);
+
+        auto invalid_result =
+            values | retro::ranges::views::filter<is_multiple_of>(10) | retro::ranges::find_first<std::optional>();
+        CHECK_FALSE(invalid_result.has_value());
+    }
+
+    SECTION("Can reduce using an explicit template parameter") {
+        auto valid_result = values | retro::ranges::views::filter<is_multiple_of>(3) |
+                            retro::ranges::find_first<retro::Optional<int>>();
+        CHECK(valid_result == 3);
+
+        auto invalid_result =
+            values | retro::ranges::views::filter<is_multiple_of>(10) | retro::ranges::find_first<std::optional<int>>();
+        CHECK_FALSE(invalid_result.has_value());
     }
 }

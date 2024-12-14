@@ -41,7 +41,7 @@ namespace retro::ranges {
                  std::convertible_to<std::invoke_result_t<F, I, RangeCommonReference<R>>, I>
     constexpr auto reduce(R &&range, I &&identity, F functor) {
         auto Result = std::forward<I>(identity);
-        for (auto &&value : range) {
+        for (auto &&value : std::forward<R>(range)) {
             Result = std::invoke(functor, std::move(Result), std::forward<decltype(value)>(value));
         }
         return Result;
