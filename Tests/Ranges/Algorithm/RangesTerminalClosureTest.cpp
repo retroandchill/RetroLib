@@ -14,7 +14,9 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Ranges/Algorithm/ForEach.h"
+#include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
+#include "RetroLib/Utils/Operators.h"
 
 #include <array>
 #include <vector>
@@ -60,5 +62,25 @@ TEST_CASE("Can iterate over a range using a functor", "[ranges]") {
         vectored.clear();
         values | retro::ranges::for_each<add_to_vector>(std::ref(vectored));
         CHECK(vectored == std::vector({1, 2, 3, 4, 5}));
+    }
+
+    SECTION("Can iterate over a range of pairs using a two arg functor") {
+        static constexpr std::array pairs = {std::make_pair(1, 2), std::make_pair(3, 4)};
+        std::map<int, int> as_map;
+        pairs | retro::ranges::for_each([&as_map](int key, int value) { as_map[key] = value; });
+        CHECK(as_map == std::map<int, int>({{1, 2}, {3, 4}}));
+    }
+}
+
+TEST_CASE("Can reduce a range to a single value", "[ranges]") {
+    static constexpr std::array values = {1, 2, 3, 4, 5};
+    SECTION("Can reduce a range to a single value using a runtime binding") {
+        auto result = values | retro::ranges::reduce(0, retro::add);
+        CHECK(result == 15);
+    }
+
+    SECTION("Can reduce a range to a single value using a constexpr binding") {
+        auto result = values | retro::ranges::reduce<retro::add>(0);
+        CHECK(result == 15);
     }
 }
