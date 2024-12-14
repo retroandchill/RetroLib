@@ -1,6 +1,6 @@
 /**
- * @file RangesToTest.cpp
- * @brief Tested for ranges to.
+ * @file RangesTerminalClosureTest.cpp
+ * @brief Tests for range terminal pipe operations
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
@@ -13,6 +13,7 @@
 import std;
 import RetroLib;
 #else
+#include "RetroLib/Ranges/Algorithm/ForEach.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 
 #include <array>
@@ -45,5 +46,19 @@ TEST_CASE("Ranges can be converted into a collection type", "[ranges]") {
         static constexpr std::array pairs = {std::make_pair(1, 2), std::make_pair(3, 4)};
         auto as_map = pairs | retro::ranges::to<std::map<int, int>>();
         CHECK(as_map == std::map<int, int>({{1, 2}, {3, 4}}));
+    }
+}
+
+TEST_CASE("Can iterate over a range using a functor", "[ranges]") {
+    static constexpr std::array values = {1, 2, 3, 4, 5};
+    SECTION("Can iterate over the values of a collection") {
+        std::vector<int> vectored;
+        values | retro::ranges::for_each([&vectored](int value) { vectored.push_back(value); });
+        CHECK(vectored == std::vector({1, 2, 3, 4, 5}));
+
+        constexpr auto add_to_vector = [](int value, std::vector<int> &vector) { vector.push_back(value); };
+        vectored.clear();
+        values | retro::ranges::for_each<add_to_vector>(std::ref(vectored));
+        CHECK(vectored == std::vector({1, 2, 3, 4, 5}));
     }
 }

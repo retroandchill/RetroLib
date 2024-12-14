@@ -62,6 +62,7 @@ import std;
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Ranges/Concepts/Containers.h"
 
+#include "RetroLib/Ranges/Algorithm/ForEach.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/AnyView.h"
 #include "RetroLib/Ranges/Views/Filter.h"
