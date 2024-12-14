@@ -56,6 +56,37 @@ class TestClass {
     int member = 9;
 };
 
+
+TEST_CASE("Can bind back to a runtime defined functional type", "[functional]") {
+    SECTION("Binding back to a single argument works") {
+        auto binding = retro::bind_back(add, 4);
+        CHECK(binding(3) == 7);
+        CHECK(std::as_const(binding)(5) == 9);
+        auto number = std::make_shared<int>(5);
+        auto weakNumber = std::weak_ptr<int>(number);
+        retro::bind_back(add_to_shared_back, std::move(number))(4);
+        CHECK(weakNumber.expired());
+    }
+
+    SECTION("Binding two arguments works") {
+        std::vector<int> elements;
+        auto binding = retro::bind_back(functor, 3, 4);
+        CHECK(std::addressof(elements) == std::addressof(binding(elements)));
+        CHECK(elements.size() == 2);
+        std::as_const(binding)(elements);
+        CHECK(elements.size() == 4);
+        retro::bind_back(functor, 5, 6)(elements);
+        CHECK(elements.size() == 6);
+    }
+
+    SECTION("Binding back to more than two arguments works") {
+        auto binding = retro::bind_back(&add_many, 4, 5, 6);
+        CHECK(binding(3) == 18);
+        CHECK(std::as_const(binding)(5) == 20);
+        CHECK(retro::bind_back(&add_many, 10, 20, 30)(5) == 65);
+    }
+}
+
 TEST_CASE("Can bind back to a constexpr defined functional type", "[functional]") {
     SECTION("Binding back to a single argument works") {
         auto binding = retro::bind_back<add>(4);
