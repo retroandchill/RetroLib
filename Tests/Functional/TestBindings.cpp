@@ -56,7 +56,6 @@ class TestClass {
     int member = 9;
 };
 
-
 TEST_CASE("Can bind back to a runtime defined functional type", "[functional]") {
     SECTION("Binding back to a single argument works") {
         auto binding = retro::bind_back(add, 4);
@@ -140,7 +139,6 @@ TEST_CASE("Can bind front to a constexpr defined functional type", "[functional]
     }
 }
 
-
 TEST_CASE("Can bind a method with an object at runtime", "[functional]") {
     SECTION("Can bind to an object of the given type") {
         TestClass object;
@@ -206,7 +204,6 @@ TEST_CASE("Can bind a method with an object at compile time", "[functional]") {
         CHECK(retro::bind_method<&TestClass::method>(std::reference_wrapper(object), 10, 12, 7)() == 29);
     }
 }
-
 
 TEST_CASE("Can use the opaque binding wrapper as runtime", "[functional]") {
     SECTION("Can bind a regular functor") {

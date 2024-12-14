@@ -36,8 +36,8 @@ namespace retro::ranges::views {
     /**
      * Filters a range based on a callable predicate or filter condition provided.
      *
-     * @param args The arguments used to create the filter binding, typically including the range and a callable predicate.
-     * These arguments will be forwarded to create the necessary filter binding.
+     * @param args The arguments used to create the filter binding, typically including the range and a callable
+     * predicate. These arguments will be forwarded to create the necessary filter binding.
      * @return A range view that only includes elements satisfying the given filter condition.
      */
     RETROLIB_EXPORT template <typename... A>

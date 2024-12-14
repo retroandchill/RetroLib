@@ -44,8 +44,10 @@ namespace retro {
          * @param args The arguments to bind to the functor, forwarded as rvalue references.
          */
         template <typename G, typename... T>
-            requires std::constructible_from<F, G> && std::constructible_from<ArgsTuple, T...> && (!std::same_as<BindBackInvoker, std::decay_t<G>>)
-        constexpr explicit BindBackInvoker(G&& functor, T &&...args) : functor(std::forward<G>(functor)), args(std::forward<T>(args)...) {
+            requires std::constructible_from<F, G> && std::constructible_from<ArgsTuple, T...> &&
+                         (!std::same_as<BindBackInvoker, std::decay_t<G>>)
+        constexpr explicit BindBackInvoker(G &&functor, T &&...args)
+            : functor(std::forward<G>(functor)), args(std::forward<T>(args)...) {
         }
 
         /**
@@ -65,8 +67,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, T..., A &...>
-        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, T..., A &...>) {
+            requires std::invocable<F &, T..., A &...>
+        constexpr decltype(auto)
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F &, T..., A &...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
                     return std::invoke(functor, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
@@ -91,9 +94,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, T..., const A &...>
+            requires std::invocable<const F &, T..., const A &...>
         constexpr decltype(auto)
-        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F&, T..., const A &...>) {
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F &, T..., const A &...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
                     return std::invoke(functor, std::forward<T>(call_args)..., std::forward<U>(final_args)...);
@@ -122,7 +125,8 @@ namespace retro {
         constexpr decltype(auto) operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, T..., A...>) {
             return std::apply(
                 [&]<typename... U>(U &&...final_args) -> decltype(auto) {
-                    return std::invoke(std::move(functor), std::forward<T>(call_args)..., std::forward<U>(final_args)...);
+                    return std::invoke(std::move(functor), std::forward<T>(call_args)...,
+                                       std::forward<U>(final_args)...);
                 },
                 std::move(args));
         }
@@ -161,7 +165,7 @@ namespace retro {
          */
         template <typename G, typename T>
             requires std::constructible_from<F, G> && std::convertible_to<T, A>
-        constexpr BindBackInvoker(G&& functor, T &&arg) : functor(std::forward<G>(functor)), arg(std::forward<T>(arg)) {
+        constexpr BindBackInvoker(G &&functor, T &&arg) : functor(std::forward<G>(functor)), arg(std::forward<T>(arg)) {
         }
 
         /**
@@ -181,8 +185,8 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, T..., A &>
-        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, T..., A &>) {
+            requires std::invocable<F &, T..., A &>
+        constexpr decltype(auto) operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F &, T..., A &>) {
             return std::invoke(functor, std::forward<T>(call_args)..., arg);
         }
 
@@ -203,9 +207,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, T..., const A &>
+            requires std::invocable<const F &, T..., const A &>
         constexpr decltype(auto)
-        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F&, T..., const A &>) {
+        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F &, T..., const A &>) {
             return std::invoke(functor, std::forward<T>(call_args)..., arg);
         }
 
@@ -253,13 +257,15 @@ namespace retro {
         /**
          * @brief Constructs a BindBackInvoker instance with the provided functor and arguments.
          *
-         * @param functor The callable object to be invoked later. It is perfect-forwarded to preserve its value category.
+         * @param functor The callable object to be invoked later. It is perfect-forwarded to preserve its value
+         * category.
          * @param arg1 The first argument to bind to the invoker. It is perfect-forwarded.
          * @param arg2 The second argument to bind to the invoker. It is perfect-forwarded.
          */
         template <typename G, typename T, typename U>
             requires std::constructible_from<F, G> && std::convertible_to<T, A> && std::convertible_to<U, B>
-        constexpr BindBackInvoker(G&& functor, T &&arg1, U &&arg2) : functor(std::forward<G>(functor)), arg1(std::forward<T>(arg1)), arg2(std::forward<U>(arg2)) {
+        constexpr BindBackInvoker(G &&functor, T &&arg1, U &&arg2)
+            : functor(std::forward<G>(functor)), arg1(std::forward<T>(arg1)), arg2(std::forward<U>(arg2)) {
         }
 
         /**
@@ -279,9 +285,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, T..., A &, B &>
+            requires std::invocable<F &, T..., A &, B &>
         constexpr decltype(auto)
-        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, T..., A &, B &>) {
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F &, T..., A &, B &>) {
             return std::invoke(functor, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -302,9 +308,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, T..., const A &, const B &>
-        constexpr decltype(auto)
-        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F&, T..., const A &, const B &>) {
+            requires std::invocable<const F &, T..., const A &, const B &>
+        constexpr decltype(auto) operator()(T &&...call_args) const & noexcept(
+            std::is_nothrow_invocable_v<const F &, T..., const A &, const B &>) {
             return std::invoke(functor, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -690,7 +696,8 @@ namespace retro {
     };
 
     /**
-     * Binds a set of arguments to the back of the provided callable object, creating a new callable object with the bound arguments.
+     * Binds a set of arguments to the back of the provided callable object, creating a new callable object with the
+     * bound arguments.
      *
      * @tparam F The type of the callable object.
      * @tparam A The types of the arguments to bind.
@@ -700,7 +707,7 @@ namespace retro {
      */
     RETROLIB_EXPORT template <typename F, typename... A>
         requires HasFunctionCallOperator<std::decay_t<F>>
-    constexpr auto bind_back(F&& functor, A &&...args) {
+    constexpr auto bind_back(F &&functor, A &&...args) {
         return BindBackInvoker<std::decay_t<F>, std::decay_t<A>...>(std::forward<F>(functor), std::forward<A>(args)...);
     }
 

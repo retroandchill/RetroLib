@@ -174,7 +174,7 @@ namespace retro {
      */
     RETROLIB_EXPORT template <typename F, typename... A>
         requires HasFunctionCallOperator<std::decay_t<F>>
-    constexpr auto create_binding(F&& functor, A &&...args) {
+    constexpr auto create_binding(F &&functor, A &&...args) {
         if constexpr (sizeof...(A) == 0) {
             return WrappedFunctor(std::forward<F>(functor));
         } else {
@@ -195,7 +195,7 @@ namespace retro {
      */
     RETROLIB_EXPORT template <typename C, typename F, typename... A>
         requires Member<F>
-    constexpr auto create_binding(C &&obj, F&& functor, A &&...args) {
+    constexpr auto create_binding(C &&obj, F &&functor, A &&...args) {
         return WrappedFunctor(bind_method(std::forward<C>(obj), std::forward<F>(functor), std::forward<A>(args)...));
     }
 
@@ -235,5 +235,8 @@ namespace retro {
     constexpr auto create_binding(ThisType, C &&obj, A &&...args) {
         return WrappedFunctor(bind_method<Functor>(std::forward<C>(obj), std::forward<A>(args)...));
     }
+
+    RETROLIB_EXPORT template <typename... A>
+    using BindingType = decltype(create_binding(std::declval<A>()...));
 
 } // namespace retro

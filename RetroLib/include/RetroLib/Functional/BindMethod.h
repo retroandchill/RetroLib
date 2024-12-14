@@ -36,9 +36,9 @@ namespace retro {
     /**
      * @brief A utility structure for method binding with pre-bound arguments and invocability.
      *
-     * The MethodBinding class allows the creation of a callable object that binds a functor (e.g., a member function pointer,
-     * callable object, or lambda) with pre-bound arguments. It enables subsequent invocation with additional arguments,
-     * combining them with the bound arguments to perform the final function call.
+     * The MethodBinding class allows the creation of a callable object that binds a functor (e.g., a member function
+     * pointer, callable object, or lambda) with pre-bound arguments. It enables subsequent invocation with additional
+     * arguments, combining them with the bound arguments to perform the final function call.
      *
      * @tparam C Type of the object to which the method belongs.
      * @tparam F Type of the functor or callable object.
@@ -52,15 +52,17 @@ namespace retro {
         /**
          * @brief Constructs a MethodBinding object with an object instance, a functor, and optional arguments.
          *
-         * Initializes the MethodBinding with a provided object, functor or callable, and additional arguments that can be forwarded.
+         * Initializes the MethodBinding with a provided object, functor or callable, and additional arguments that can
+         * be forwarded.
          *
          * @param object The instance of the object associated with the binding.
          * @param functor The callable or functor to be executed with the binding.
          * @param args Additional arguments to be forwarded to the functor.
          */
         template <typename T, typename G, typename... U>
-            requires std::convertible_to<C, T> && std::constructible_from<F, G> && std::constructible_from<ArgsTuple, U...>
-        constexpr MethodBinding(T &&object, G&& functor, U &&...args)
+            requires std::convertible_to<C, T> && std::constructible_from<F, G> &&
+                         std::constructible_from<ArgsTuple, U...>
+        constexpr MethodBinding(T &&object, G &&functor, U &&...args)
             : object(std::forward<T>(object)), functor(std::forward<G>(functor)), args(std::forward<U>(args)...) {
         }
 
@@ -81,7 +83,7 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, C &, T..., A &...>
+            requires std::invocable<F &, C &, T..., A &...>
         constexpr decltype(auto)
         operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F, C &, T..., A &...>) {
             return std::apply(
@@ -108,7 +110,7 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, const C &, T..., const A &...>
+            requires std::invocable<const F &, const C &, T..., const A &...>
         constexpr decltype(auto)
         operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<F, const C &, T..., const A &...>) {
             return std::apply(
@@ -135,7 +137,7 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F, C , T..., A ...>
+            requires std::invocable<F, C, T..., A...>
         constexpr decltype(auto)
         operator()(T &&...call_args) && noexcept(std::is_nothrow_invocable_v<F, C, T..., A...>) {
             return std::apply(
@@ -184,7 +186,7 @@ namespace retro {
          */
         template <typename T, typename G, typename U>
             requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A>
-        constexpr MethodBinding(T &&object, G&& functor, U &&arg)
+        constexpr MethodBinding(T &&object, G &&functor, U &&arg)
             : object(std::forward<T>(object)), functor(std::forward<G>(functor)), arg(std::forward<U>(arg)) {
         }
 
@@ -205,9 +207,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, C &, T..., A &>
+            requires std::invocable<F &, C &, T..., A &>
         constexpr decltype(auto)
-        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, C &, T..., A &>) {
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F &, C &, T..., A &>) {
             return std::invoke(functor, object, std::forward<T>(call_args)..., arg);
         }
 
@@ -228,9 +230,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, const C &, T..., const A &>
-        constexpr decltype(auto)
-        operator()(T &&...call_args) const & noexcept(std::is_nothrow_invocable_v<const F&, const C &, T..., const A &>) {
+            requires std::invocable<const F &, const C &, T..., const A &>
+        constexpr decltype(auto) operator()(T &&...call_args) const & noexcept(
+            std::is_nothrow_invocable_v<const F &, const C &, T..., const A &>) {
             return std::invoke(functor, object, std::forward<T>(call_args)..., arg);
         }
 
@@ -298,9 +300,11 @@ namespace retro {
          * @param arg2 The second argument to be passed to the functor.
          */
         template <typename T, typename G, typename U, typename W>
-            requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A> && std::convertible_to<W, B>
-        constexpr explicit MethodBinding(T &&object, G&& functor, U &&arg1, W &&arg2)
-            : object(std::forward<T>(object)), functor(std::forward<G>(functor)), arg1(std::forward<U>(arg1)), arg2(std::forward<W>(arg2)) {
+            requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A> &&
+                         std::convertible_to<W, B>
+        constexpr explicit MethodBinding(T &&object, G &&functor, U &&arg1, W &&arg2)
+            : object(std::forward<T>(object)), functor(std::forward<G>(functor)), arg1(std::forward<U>(arg1)),
+              arg2(std::forward<W>(arg2)) {
         }
 
         /**
@@ -320,9 +324,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<F&, C &, T..., A &, B &>
+            requires std::invocable<F &, C &, T..., A &, B &>
         constexpr decltype(auto)
-        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F&, C &, T..., A &, B &>) {
+        operator()(T &&...call_args) & noexcept(std::is_nothrow_invocable_v<F &, C &, T..., A &, B &>) {
             return std::invoke(functor, object, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -343,9 +347,9 @@ namespace retro {
          *          invocability of the functor with the provided and bound arguments.
          */
         template <typename... T>
-            requires std::invocable<const F&, C, T..., const A &, const B &>
+            requires std::invocable<const F &, C, T..., const A &, const B &>
         constexpr decltype(auto) operator()(T &&...call_args) const & noexcept(
-            std::is_nothrow_invocable_v<const F&, const C &, T..., const A &, const B &>) {
+            std::is_nothrow_invocable_v<const F &, const C &, T..., const A &, const B &>) {
             return std::invoke(functor, object, std::forward<T>(call_args)..., arg1, arg2);
         }
 
@@ -769,13 +773,12 @@ namespace retro {
      * @return A callable object that can be invoked later with the given object, functor, and arguments bound.
      */
     RETROLIB_EXPORT template <typename C, Member F, typename... A>
-    constexpr auto bind_method(C &&object, F&& functor, A &&...args) {
+    constexpr auto bind_method(C &&object, F &&functor, A &&...args) {
         if constexpr (sizeof...(A) == 0) {
             return std::bind_front(std::forward<F>(functor), std::forward<C>(object));
         } else {
-            return MethodBinding<std::decay_t<C>, std::decay_t<F>, std::decay_t<A>...>(std::forward<C>(object),
-                                                                                       std::forward<F>(functor),
-                                                                                       std::forward<A>(args)...);
+            return MethodBinding<std::decay_t<C>, std::decay_t<F>, std::decay_t<A>...>(
+                std::forward<C>(object), std::forward<F>(functor), std::forward<A>(args)...);
         }
     }
 
@@ -817,7 +820,7 @@ namespace retro {
             return bind_front<Functor>(std::forward<C>(object));
         } else {
             return MethodConstBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(object),
-                                                                               std::forward<A>(args)...);
+                                                                                    std::forward<A>(args)...);
         }
     }
 } // namespace retro
