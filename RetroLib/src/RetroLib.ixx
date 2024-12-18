@@ -61,6 +61,9 @@ import std;
 
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Ranges/Concepts/Containers.h"
+#include "RetroLib/Ranges/Concepts/Iterable.h"
+
+#include "RetroLib/Ranges/Compatiblity/ForEachRange.h"
 
 #include "RetroLib/Ranges/Algorithm/AllOf.h"
 #include "RetroLib/Ranges/Algorithm/AnyOf.h"
