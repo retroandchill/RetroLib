@@ -47,6 +47,7 @@ namespace retro::ranges {
     };
 
     template <typename I>
+        requires std::is_trivially_destructible_v<I> && std::is_trivially_copy_constructible_v<I> && std::is_trivially_move_constructible_v<I>
     struct IteratorAssignAdapter : IteratorStorage<I> {
         constexpr IteratorAssignAdapter() = default;
 
@@ -59,18 +60,12 @@ namespace retro::ranges {
 
         using IteratorStorage<I>::adapted;
 
-        constexpr IteratorAssignAdapter &operator=(const IteratorAssignAdapter &other) noexcept(std::is_nothrow_copy_constructible_v<I>) {
-            if constexpr (!std::is_trivially_destructible_v<I>) {
-                adapted.~I();
-            }
+        constexpr IteratorAssignAdapter &operator=(const IteratorAssignAdapter &other) noexcept {
             new (&adapted) I(other.adapted);
             return *this;
         }
 
-        constexpr IteratorAssignAdapter &operator=(IteratorAssignAdapter &&other) noexcept(std::is_nothrow_move_constructible_v<I>) {
-            if constexpr (!std::is_trivially_destructible_v<I>) {
-                adapted.~I();
-            }
+        constexpr IteratorAssignAdapter &operator=(IteratorAssignAdapter &&other) noexcept {
             new (&adapted) I(std::move(other.adapted));
             return *this;
         }
@@ -132,34 +127,16 @@ namespace retro::ranges {
     private:
         using Base::adapted;
     };
-
-    template <Iterable I>
-    class AdaptedRange {
-    public:
-        constexpr explicit AdaptedRange(I& range) : range(&range) {}
-
-        constexpr auto begin() const {
-            return AdapterIterator<IteratorType<I>, SentinelType<I>>(range->begin());
-        }
-
-        constexpr auto end() const {
-            return SentinelAdapter<IteratorType<I>, SentinelType<I>>(range->end());
-        }
-
-    private:
-        I* range;
-    };
-
-    template <Iterable I>
-    constexpr decltype(auto) stream(I& range) {
-        if constexpr (std::ranges::input_range<I>) {
-            return range;
-        } else {
-            return AdaptedRange<I>(range);
-        }
-    }
 }
 
-template <typename T>
-    requires retro::Iterable<T> && (!std::ranges::input_range<T>)
-constexpr inline bool std::ranges::enable_view<retro::ranges::AdaptedRange<T>> = true;
+template <retro::Iterable I>
+    requires (!std::input_or_output_iterator<retro::IteratorType<I>>)
+constexpr auto begin(I& range) {
+    return retro::ranges::AdapterIterator<retro::IteratorType<I>, retro::SentinelType<I>>(range.begin());
+}
+
+template <retro::Iterable I>
+    requires (!std::input_or_output_iterator<retro::IteratorType<I>>)
+constexpr auto end(I& range) {
+    return retro::ranges::SentinelAdapter<retro::IteratorType<I>, retro::SentinelType<I>>(range.end());
+}

@@ -35,7 +35,7 @@ namespace retro {
     using SentinelType = std::decay_t<decltype(std::declval<T>().end())>;
 
     template <typename T>
-    concept Iterable = std::ranges::input_range<T> || requires(T &&range) {
+    concept Iterable = requires(T &&range) {
         { std::forward<T>(range).begin() } -> Iterator;
         { std::forward<T>(range).end() } -> Sentinel<IteratorType<T>>;
     };
