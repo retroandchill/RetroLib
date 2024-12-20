@@ -24,6 +24,7 @@ if (RETROLIB_WITH_MODULES)
         message("Set MSVC tools directory: ${VCTOOLS_INSTALL_DIR}")
         include(EnableStandardLibraryModule)
     else()
+        message("${CMAKE_CURRENT_SOURCE_DIR}")
         include(FetchContent)
         FetchContent_Declare(
                 std

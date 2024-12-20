@@ -143,15 +143,7 @@ namespace retro::ranges {
                 }
 
                 template <std::random_access_iterator I, size_t N>
-                constexpr void operator()(IndexedElement<I, N> it) const {
-                    auto last = std::ranges::end(std::get<N>(pos->view->ranges));
-                    auto rest = std::ranges::advance(it.get(), n, std::move(last));
-                    pos->satisfy<N>();
-
-                    if (rest != 0) {
-                        visit_index(AdvanceForward{pos, rest}, pos->it);
-                    }
-                }
+                constexpr void operator()(IndexedElement<I, N> it) const;
             };
 
             struct AdvanceReverse {
@@ -453,6 +445,21 @@ namespace retro::ranges {
             return std::apply([](auto &...r) { return (std::ranges::size(r) + ...); }, ranges);
         }
     };
+
+    template<std::ranges::input_range ... R> requires (std::ranges::view<R> && ...) && (sizeof...(R) > 0) && Concatable<
+        R...>
+
+    template<bool IsConst>
+    template<std::random_access_iterator I, size_t N>
+    constexpr void ConcatView<R...>::Iterator<IsConst>::AdvanceForward::operator()(IndexedElement<I, N> it) const  {
+        auto last = std::ranges::end(std::get<N>(pos->view->ranges));
+        auto rest = std::ranges::advance(it.get(), n, std::move(last));
+        pos->satisfy<N>();
+
+        if (rest != 0) {
+            visit_index(AdvanceForward{pos, rest}, pos->it);
+        }
+    }
 
     /**
      * Constructs a ConcatView object from one or more ranges.
