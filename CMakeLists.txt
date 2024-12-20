@@ -20,9 +20,13 @@ if (RETROLIB_WITH_MODULES)
     endif()
 
     if (MSVC)
-        set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})=
+        set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
+        include(EnableStandardLibraryModule)
+    else()
+        set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
+        set(CMAKE_CXX_MODULE_STD ON)
+        set(CMAKE_CXX_EXTENSIONS ON)
     endif()
-    include(EnableStandardLibraryModule)
 
     set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 endif()
