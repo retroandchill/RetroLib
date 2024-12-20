@@ -21,9 +21,11 @@ if (RETROLIB_WITH_MODULES)
 
     if (MSVC)
         set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
+        message("Set MSVC tools directory: ${VCTOOLS_INSTALL_DIR}")
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
         get_filename_component(CLANG_DIRECTORY ${CMAKE_CXX_COMPILER} DIRECTORY)
         set(LIBCXX_BUILD "${CLANG_DIRECTORY}/..")
+        message("Set LibCXX build dir: ${LIBCXX_BUILD}")
     endif()
 
     include(EnableStandardLibraryModule)
