@@ -73,4 +73,18 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[optionals]") {
         }
         CHECK(sum == 35);
     }
+
+    SECTION("Convert to a vector an cache") {
+        auto view = values |
+                    std::ranges::views::transform(transformer) |
+                    retro::ranges::views::cache_last |
+                    retro::ranges::views::transform([](auto &&vec) { return std::span(vec); }) |
+                    std::ranges::views::join;
+
+        int sum = 0;
+        for (auto &i : view) {
+            sum += i;
+        }
+        CHECK(sum == 35);
+    }
 }
