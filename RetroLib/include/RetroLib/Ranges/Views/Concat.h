@@ -10,6 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Ranges/RangeBasics.h"
 #include "RetroLib/Ranges/Concepts/Concatable.h"
+#include "RetroLib/Utils/Unreachable.h"
 
 #include <variant>
 #include <tuple>
@@ -18,21 +19,10 @@
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
 #endif
-#include <ostream>
 
 namespace retro::ranges {
 
-    template <typename S, typename V>
-    using ConcatCardinalityImpl = std::integral_constant<Cardinality,
-        S::value == Cardinality::Infinite || V::value == Cardinality::Infinite
-            ? Cardinality::Infinite
-            : S::value == Cardinality::Unknown || V::value == Cardinality::Unknown
-                ? Cardinality::Unknown
-                : S::value == Cardinality::Finite || V::value == Cardinality::Finite
-                    ? Cardinality::Finite
-                    : static_cast<Cardinality>(S::value + V::value)>;
-
-    template <std::ranges::input_range... R>
+    RETROLIB_EXPORT template <std::ranges::input_range... R>
         requires (std::ranges::view<R> && ...) && (sizeof...(R) > 0) && Concatable<R...>
     class ConcatView : public std::ranges::view_interface<ConcatView<R...>> {
         using DifferenceType = std::common_type_t<std::ranges::range_difference_t<R>...>;
@@ -169,6 +159,7 @@ namespace retro::ranges {
 
             [[noreturn]] static difference_type distance_to(std::integral_constant<size_t, ranges_size>) {
                 RETROLIB_ASSERT(false);
+                unreachable();
             }
 
             template <size_t N>
@@ -340,4 +331,17 @@ namespace retro::ranges {
     template<typename... Rng>
     ConcatView(Rng &&...) -> ConcatView<std::ranges::views::all_t<Rng>...>;
 
+
+    namespace views {
+        struct ConcatInvoker {
+
+            template <std::ranges::input_range... R>
+                requires std::constructible_from<ConcatView<R...>, R...> && (sizeof...(R) > 0) && Concatable<R...>
+            constexpr auto operator()(R&&... ranges) const {
+                return ConcatView(std::forward<R>(ranges)...);
+            }
+        };
+
+        RETROLIB_EXPORT constexpr ConcatInvoker concat;
+    }
 }

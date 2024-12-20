@@ -13,6 +13,7 @@ module;
 #include <cassert>
 #include <initializer_list>
 #include <ranges>
+#include <variant>
 #include <typeinfo>
 
 export module RetroLib;
@@ -41,6 +42,7 @@ import std;
 #include "RetroLib/Utils/Operators.h"
 #include "RetroLib/Utils/WrapArg.h"
 #include "RetroLib/Utils/Polymorphic.h"
+#include "RetroLib/Utils/Unreachable.h"
 #include "RetroLib/Utils/ValidPtr.h"
 #include "RetroLib/Utils/Variant.h"
 
