@@ -30,7 +30,7 @@ namespace retro::ranges {
      * iteration and other range utilities.
      */
     RETROLIB_EXPORT template <std::ranges::input_range R>
-        requires std::ranges::viewable_range<R> && std::constructible_from<std::ranges::range_value_t<R>, std::ranges::range_reference_t<R>>
+        requires std::ranges::view<R> && std::constructible_from<std::ranges::range_value_t<R>, std::ranges::range_reference_t<R>>
     class CacheLastView : std::ranges::view_interface<CacheLastView<R>> {
 
         class Iterator;
