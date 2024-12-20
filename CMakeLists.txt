@@ -21,7 +21,7 @@ if (RETROLIB_WITH_MODULES)
     if (MSVC)
         set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
     endif()
-    include(cmake/EnableStandardLibraryModule.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/EnableStandardLibraryModule.cmake)
 
     set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 endif()
