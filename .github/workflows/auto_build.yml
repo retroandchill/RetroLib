@@ -51,7 +51,7 @@ jobs:
           build-dir: ${{ runner.workspace }}/build
           cc: ${{ matrix.config.cc }}
           cxx: ${{ matrix.config.cxx }}
-          configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_CXX_FLAGS=-stdlib=libc++
+          configure-options: -G Ninja -DCMAKE_CXX_COMPILER_CLANG_SCAN_DEPS=clang-scan-deps-18 -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DLIBCXX_BUILD=/usr/lib/llvm-18
           build-type: Release
           run-test: true
 
