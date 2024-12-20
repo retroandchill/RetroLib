@@ -132,7 +132,8 @@ namespace retro {
      * @return The result of invoking the visitor with the IndexedElement.
      */
     template <size_t I, typename F, typename V>
-    constexpr decltype(auto) visit_index_helper(F &&visitor, V &&variant) {
+    constexpr auto visit_index_helper(F &&visitor, V &&variant)
+        -> std::invoke_result_t<F, IndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>> {
         return std::invoke(std::forward<F>(visitor),
                            IndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>(
                                std::get<I>(std::forward<V>(variant))));
