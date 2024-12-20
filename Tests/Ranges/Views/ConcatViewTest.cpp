@@ -38,6 +38,15 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
         CHECK(sum == 55);
     }
 
+    SECTION("Can use an iterator based view setup, using post-fix") {
+        const auto view = retro::ranges::views::concat(range1, range2);
+        int sum = 0;
+        for (auto it = view.begin(); it != view.end(); it++) {
+            sum += *it;
+        }
+        CHECK(sum == 55);
+    }
+
     SECTION("Can concatenate and use with a range adaptor chain") {
         auto view_chain = retro::ranges::views::concat(range1, range2) |
                           retro::ranges::views::filter([](int i) { return i % 2 == 0; });
@@ -64,5 +73,38 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
             sum += *it;
         }
         CHECK(sum == 25);
+    }
+
+    SECTION("Can iterate a collection in reverse") {
+        int sum = 0;
+        for (auto i : std::ranges::views::reverse(retro::ranges::views::concat(range1, range2))) {
+            sum += i;
+        }
+        CHECK(sum == 55);
+    }
+
+    SECTION("Can iterate a collection in reverse, using a post-fix") {
+        auto view = retro::ranges::views::concat(range1, range2);
+        int sum = 0;
+        for (auto it = view.end() - 1; it != view.begin(); it--) {
+            sum += *it;
+        }
+        CHECK(sum == 54);
+    }
+
+    SECTION("Can iterate a collection in reverse, skipping steps") {
+        auto reversed = std::ranges::views::reverse(retro::ranges::views::concat(range1, range2));
+        int sum = 0;
+        for (auto it = reversed.begin(); it != reversed.end(); it += 2) {
+            sum += *it;
+        }
+        CHECK(sum == 30);
+    }
+
+    SECTION("Can get distance between iterators") {
+        auto view = retro::ranges::views::concat(range1, range2);
+        auto iterator1 = view.begin();
+        auto iterator2 = view.begin() + 2;
+        CHECK(std::distance(iterator1, iterator2) == 2);
     }
 }

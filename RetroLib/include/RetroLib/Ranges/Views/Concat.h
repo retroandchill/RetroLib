@@ -122,7 +122,7 @@ namespace retro::ranges {
                 template <std::bidirectional_iterator I, size_t N>
                     requires(N != 0)
                 constexpr void operator()(IndexedElement<I, N> it) const {
-                    if (it.get() != std::ranges::begin(std::get<N>(pos->view->ranges))) {
+                    if (it.get() == std::ranges::begin(std::get<N>(pos->view->ranges))) {
                         auto &&rng = std::get<N - 1>(pos->view->ranges);
                         pos->it.template emplace<N - 1>(
                             std::ranges::next(std::ranges::begin(rng), std::ranges::end(rng)));
@@ -314,7 +314,7 @@ namespace retro::ranges {
                 if (n > 0) {
                     visit_index<void>(AdvanceForward{this, n}, it);
                 } else if (n < 0) {
-                    visit_index<void>(AdvanceReverse{this, -n}, it);
+                    visit_index<void>(AdvanceReverse{this, n}, it);
                 }
                 return *this;
             }
