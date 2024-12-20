@@ -75,6 +75,8 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[optionals]") {
     }
 
     SECTION("Convert to a vector an cache") {
+        // Here we're turning the collection into a span. This would emulate using ranges with a collection
+        // type that isn't range-compatible.
         auto view = values |
                     std::ranges::views::transform(transformer) |
                     retro::ranges::views::cache_last |
