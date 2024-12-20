@@ -37,15 +37,17 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[optionals]") {
 
         auto it = view.begin();
         CHECK((*it).size() == 1);
-        ++it;
+        it++;
         CHECK((*it).size() == 2);
-        ++it;
+        // Verify that a repeat read doesn't update the cache
+        CHECK((*it).size() == 2);
+        it++;
         CHECK((*it).size() == 3);
-        ++it;
+        it++;
         CHECK((*it).size() == 4);
-        ++it;
+        it++;
         CHECK((*it).size() == 5);
-        ++it;
+        it++;
         CHECK(it == view.end());
     }
 
