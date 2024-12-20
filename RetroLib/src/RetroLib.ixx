@@ -46,6 +46,8 @@ import std;
 #include "RetroLib/Optionals/OptionalIterator.h"
 #include "RetroLib/Optionals/Optional.h"
 
+#include "RetroLib/Utils/NonPropagatingCache.h"
+
 #include "RetroLib/Casting/Convert.h"
 #include "RetroLib/Casting/ByteCast.h"
 #include "RetroLib/Casting/ClassCast.h"
