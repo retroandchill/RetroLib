@@ -11,18 +11,18 @@
 import std;
 import RetroLib;
 #else
-#include "RetroLib/Ranges/Views/Filter.h"
-#include "RetroLib/Ranges/Views/Transform.h"
-#include "RetroLib/Ranges/Views/Concat.h"
 #include "RetroLib/Ranges/Views/CacheLastView.h"
+#include "RetroLib/Ranges/Views/Concat.h"
+#include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Views/JoinWith.h"
+#include "RetroLib/Ranges/Views/Transform.h"
 #include "RetroLib/Ranges/Algorithm/To
-.h"
+.h "
 
 #include <array>
-#include <vector>
-#include <string_view>
 #include <string>
+#include <string_view>
+#include <vector>
 #endif
 
 TEST_CASE("Can use the standard range adapters", "[ranges]") {
@@ -44,7 +44,7 @@ TEST_CASE("Can use the standard range adapters", "[ranges]") {
 
     SECTION("Can use the range pipe syntax") {
         auto transformed =
-                values | retro::ranges::views::filter(is_even) | retro::ranges::views::transform(double_value, 2);
+            values | retro::ranges::views::filter(is_even) | retro::ranges::views::transform(double_value, 2);
 
         auto it = transformed.begin();
         CHECK(*it == 4);
@@ -74,7 +74,7 @@ TEST_CASE("Can use the constexpr range adapters", "[ranges]") {
 
     SECTION("Can use the range pipe syntax") {
         auto transformed =
-                values | retro::ranges::views::filter<is_even>() | retro::ranges::views::transform<double_value>(2);
+            values | retro::ranges::views::filter<is_even>() | retro::ranges::views::transform<double_value>(2);
 
         auto it = transformed.begin();
         CHECK(*it == 4);
@@ -91,7 +91,7 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
 
     SECTION("Can concatenate and use with a ranged for loop") {
         int sum = 0;
-        for (decltype(auto) i: retro::ranges::views::concat(range1, range2)) {
+        for (decltype(auto) i : retro::ranges::views::concat(range1, range2)) {
             sum += i;
         }
         CHECK(sum == 55);
@@ -119,7 +119,7 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
         auto view_chain = retro::ranges::views::concat(range1, range2) |
                           retro::ranges::views::filter([](int i) { return i % 2 == 0; });
         int sum = 0;
-        for (int i: view_chain) {
+        for (int i : view_chain) {
             sum += i;
         }
         CHECK(sum == 30);
@@ -145,7 +145,7 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
 
     SECTION("Can iterate a collection in reverse") {
         int sum = 0;
-        for (auto i: std::ranges::views::reverse(retro::ranges::views::concat(range1, range2))) {
+        for (auto i : std::ranges::views::reverse(retro::ranges::views::concat(range1, range2))) {
             sum += i;
         }
         CHECK(sum == 55);
@@ -190,7 +190,6 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
     }
 }
 
-
 TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
     std::array values = {1, 2, 3, 4, 5};
     constexpr auto transformer = [](int value) {
@@ -201,11 +200,8 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
         return v;
     };
 
-
     SECTION("Iterating through saves the value") {
-        auto view = values |
-                    std::ranges::views::transform(transformer) |
-                    retro::ranges::views::cache_last;
+        auto view = values | std::ranges::views::transform(transformer) | retro::ranges::views::cache_last;
 
         REQUIRE(view.size() == 5);
 
@@ -226,9 +222,7 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
     }
 
     SECTION("Can get the difference between iterators") {
-        auto view = values |
-                    std::ranges::views::transform(transformer) |
-                    retro::ranges::views::cache_last;
+        auto view = values | std::ranges::views::transform(transformer) | retro::ranges::views::cache_last;
 
         REQUIRE(view.size() == 5);
 
@@ -237,13 +231,11 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
     }
 
     SECTION("The value can be accessed in a loop") {
-        auto view = values |
-                    std::ranges::views::transform(transformer) |
-                    retro::ranges::views::cache_last;
+        auto view = values | std::ranges::views::transform(transformer) | retro::ranges::views::cache_last;
 
         int sum = 0;
-        for (auto vec: view) {
-            for (int i: vec) {
+        for (auto vec : view) {
+            for (int i : vec) {
                 sum += i;
             }
         }
@@ -253,14 +245,12 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
     SECTION("Convert to a vector an cache") {
         // Here we're turning the collection into a span. This would emulate using ranges with a collection
         // type that isn't range-compatible.
-        auto view = values |
-                    std::ranges::views::transform(transformer) |
-                    retro::ranges::views::cache_last |
+        auto view = values | std::ranges::views::transform(transformer) | retro::ranges::views::cache_last |
                     retro::ranges::views::transform([](auto &&vec) { return std::span(vec); }) |
                     std::ranges::views::join;
 
         int sum = 0;
-        for (auto &i: view) {
+        for (auto &i : view) {
             sum += i;
         }
         CHECK(sum == 35);
@@ -272,9 +262,7 @@ TEST_CASE("Can join a string together using a view", "[ranges]") {
         using namespace std::literals;
 
         std::array strings = {"This"sv, "is"sv, "a"sv, "test."sv};
-        auto joined = strings |
-                      retro::ranges::views::join_with(' ') |
-                      retro::ranges::to<std::string>();
+        auto joined = strings | retro::ranges::views::join_with(' ') | retro::ranges::to<std::string>();
         CHECK(joined == "This is a test.");
     }
 
@@ -283,9 +271,7 @@ TEST_CASE("Can join a string together using a view", "[ranges]") {
 
         std::array strings = {"1"sv, "2"sv, "3"sv, "4"sv};
         auto constraction = ", "sv;
-        auto joined = strings |
-                      retro::ranges::views::join_with(constraction) |
-                      retro::ranges::to<std::string>();
+        auto joined = strings | retro::ranges::views::join_with(constraction) | retro::ranges::to<std::string>();
         CHECK(joined == "1, 2, 3, 4");
     }
 }

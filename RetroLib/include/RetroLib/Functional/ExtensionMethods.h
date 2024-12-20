@@ -146,9 +146,8 @@ namespace retro {
         explicit constexpr ExtensionMethodClosure(T &&functor) : functor(std::forward<T>(functor)) {
         }
 
-
         template <typename T>
-            requires std::invocable<F&, T>
+            requires std::invocable<F &, T>
         friend constexpr decltype(auto) operator|(T &&operand, ExtensionMethodClosure &closure) {
             return std::invoke(closure.functor, std::forward<T>(operand));
         }
@@ -172,7 +171,7 @@ namespace retro {
          * with the return type determined by the result of the functor call.
          */
         template <typename T>
-            requires std::invocable<const F&, T>
+            requires std::invocable<const F &, T>
         friend constexpr decltype(auto) operator|(T &&operand, const ExtensionMethodClosure &closure) {
             return std::invoke(closure.functor, std::forward<T>(operand));
         }
@@ -280,8 +279,7 @@ namespace retro {
                 return ExtensionMethodConstClosure<Functor>();
             } else {
                 using BindingType = decltype(retro::bind_back<Functor>(std::forward<T>(args)...));
-                return ExtensionMethodClosure<BindingType>(
-                    retro::bind_back<Functor>(std::forward<T>(args)...));
+                return ExtensionMethodClosure<BindingType>(retro::bind_back<Functor>(std::forward<T>(args)...));
             }
         }
     };
