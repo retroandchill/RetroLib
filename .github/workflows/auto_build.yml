@@ -37,6 +37,14 @@ jobs:
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Build libcxx
+        run: |
+          git clone https://github.com/llvm/llvm-project.git
+          cd llvm-project
+          mkdir build
+          cmake -G Ninja -S runtimes -B build -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind"
+          ninja -C build
+
       - name: Restore cached conan dependencies
         id: cache-conan-restore
         uses: actions/cache/restore@v4

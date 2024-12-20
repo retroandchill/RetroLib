@@ -20,7 +20,7 @@ if (RETROLIB_WITH_MODULES)
     endif()
 
     if (MSVC)
-        set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
+        set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})=
     endif()
     include(EnableStandardLibraryModule)
 
