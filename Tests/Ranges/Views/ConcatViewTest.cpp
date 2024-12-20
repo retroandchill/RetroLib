@@ -106,5 +106,18 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
         auto iterator1 = view.begin();
         auto iterator2 = view.begin() + 2;
         CHECK(std::distance(iterator1, iterator2) == 2);
+        CHECK(std::distance(iterator2, iterator1) == -2);
+
+        iterator2 += 5;
+        CHECK(std::distance(iterator1, iterator2) == 7);
+        CHECK(std::distance(iterator2, iterator1) == -7);
+
+        iterator1 += 6;
+        CHECK(std::distance(iterator1, iterator2) == 1);
+        CHECK(std::distance(iterator2, iterator1) == -1);
+
+        iterator2 -= 5;
+        CHECK(std::distance(iterator1, iterator2) == -4);
+        CHECK(std::distance(iterator2, iterator1) == 4);
     }
 }
