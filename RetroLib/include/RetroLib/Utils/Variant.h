@@ -1,6 +1,6 @@
 /**
  * @file Variant.h
- * @brief TODO: Fill me out
+ * @brief Helper methods and concepts for std::variant.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill

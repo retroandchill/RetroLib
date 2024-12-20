@@ -1,6 +1,6 @@
 /**
  * @file Iterators.h
- * @brief TODO: Fill me out
+ * @brief Concepts for handling iterators.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill

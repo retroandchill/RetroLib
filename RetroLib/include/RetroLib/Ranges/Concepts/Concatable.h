@@ -1,6 +1,6 @@
 /**
  * @file Concatable.h
- * @brief TODO: Fill me out
+ * @brief Concepts for judging the concatability to multiple ranges
  *
  * @author Retro & Chill
  * https://github.com/retroandchill

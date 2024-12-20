@@ -1,6 +1,6 @@
 /**
  * @file Concat.h
- * @brief TODO: Fill me out
+ * @brief View for concatenating two or more dissimilar ranges.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill

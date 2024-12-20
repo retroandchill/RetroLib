@@ -1,6 +1,6 @@
 /**
  * @file RangeBasics.h
- * @brief TODO: Fill me out
+ * @brief Basic concepts used by all ranges.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
