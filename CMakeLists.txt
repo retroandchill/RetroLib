@@ -21,7 +21,7 @@ if (RETROLIB_WITH_MODULES)
 
     if (MSVC)
         set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
-    elseif(Clang)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT CMAKE_SYSTEM_NAME MATCHES "Windows")
         get_filename_component(CLANG_DIRECTORY ${CMAKE_CXX_COMPILER} DIRECTORY)
         set(LIBCXX_BUILD "${CLANG_DIRECTORY}/..")
     endif()
