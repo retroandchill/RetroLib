@@ -18,8 +18,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSIO
     )
     FetchContent_MakeAvailable(std)
 
-    link_libraries(std c++)
-    link_libraries(std.compat c++)
+    add_library(std)
+    target_sources(std PUBLIC
+            FILE_SET CXX_MODULES
+            BASE_DIRS ${std_SOURCE_DIR}
+            FILES
+            ${std_SOURCE_DIR}/std.cppm
+            ${std_SOURCE_DIR}/std.compat.cppm
+    )
+
+    link_libraries(std)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.36")
     if (CMAKE_CXX_STANDARD VERSION_LESS 20)
         message(FATAL_ERROR "C++20 or newer is required.")
