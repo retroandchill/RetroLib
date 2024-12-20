@@ -15,6 +15,7 @@ module;
 #include <ranges>
 #include <typeinfo>
 #include <variant>
+#include <memory>
 
 export module RetroLib;
 
