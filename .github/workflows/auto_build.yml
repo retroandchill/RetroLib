@@ -32,7 +32,7 @@ jobs:
       - name: Set up Clang
         run: |
           wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 18
-          sudo apt-get install -y clang-tools-18 libc++-dev libc++abi-dev
+          sudo apt-get install -y clang-tools-18 libc++-dev-19 libc++abi-dev-18
 
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
