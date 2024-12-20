@@ -331,10 +331,10 @@ namespace retro::ranges {
                 requires(std::sized_sentinel_for<std::ranges::iterator_t<R>, std::ranges::iterator_t<R>> && ...)
             {
                 if (it.index() <= other.it.index()) {
-                    return Iterator::distance_to(std::integral_constant<size_t, 0>{}, *this, other);
+                    return -Iterator::distance_to(std::integral_constant<size_t, 0>{}, *this, other);
                 }
 
-                return -Iterator::distance_to(std::integral_constant<size_t, 0>{}, other, *this);
+                return Iterator::distance_to(std::integral_constant<size_t, 0>{}, other, *this);
             }
 
             constexpr Iterator &operator-=(difference_type n)

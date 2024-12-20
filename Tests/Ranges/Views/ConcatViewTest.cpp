@@ -56,4 +56,13 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
         }
         CHECK(sum == 55);
     }
+
+    SECTION("Can use an iterator based view setup, skipping numbers") {
+        auto view = retro::ranges::views::concat(range1, range2);
+        int sum = 0;
+        for (auto it = view.begin(); it != view.end(); it += 2) {
+            sum += *it;
+        }
+        CHECK(sum == 25);
+    }
 }
