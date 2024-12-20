@@ -76,6 +76,7 @@ import std;
 #include "RetroLib/Ranges/Algorithm/To.h"
 
 #include "RetroLib/Ranges/Views/AnyView.h"
+#include "RetroLib/Ranges/Views/CacheLast.h"
 #include "RetroLib/Ranges/Views/Concat.h"
 #include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Views/Transform.h"

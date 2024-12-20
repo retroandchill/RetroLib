@@ -59,7 +59,8 @@ namespace retro {
          * @param other The NonPropagatingCache instance to copy from.
          * @return A copy of the provided NonPropagatingCache instance.
          */
-        constexpr NonPropagatingCache(const NonPropagatingCache&) noexcept {}
+        constexpr NonPropagatingCache(const NonPropagatingCache&) noexcept : Optional<T>() {
+        }
 
         /**
          * @brief Moves an existing NonPropagatingCache object into a new instance.
@@ -70,7 +71,8 @@ namespace retro {
          * @param other The rvalue NonPropagatingCache instance to be moved.
          * @return A new NonPropagatingCache instance initialized from the given rvalue.
          */
-        constexpr NonPropagatingCache(NonPropagatingCache&&) noexcept {}
+        constexpr NonPropagatingCache(NonPropagatingCache&&) noexcept : Optional<T>() {
+        }
 
         /**
          * @brief Default destructor for the NonPropagatingCache class.
