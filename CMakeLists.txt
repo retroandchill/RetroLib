@@ -22,9 +22,28 @@ if (RETROLIB_WITH_MODULES)
     if (MSVC)
         set(VCTOOLS_INSTALL_DIR $ENV{VCToolsInstallDir})
         message("Set MSVC tools directory: ${VCTOOLS_INSTALL_DIR}")
-    endif()
+        include(EnableStandardLibraryModule)
+    else()
+        include(FetchContent)
+        FetchContent_Declare(
+                std
+                URL "file://${LIBCXX_BUILD}/share/libc++/v1/"
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+                SYSTEM
+        )
+        FetchContent_MakeAvailable(std)
 
-    include(EnableStandardLibraryModule)
+        add_library(std)
+        target_sources(std PUBLIC
+                FILE_SET CXX_MODULES
+                BASE_DIRS ${std_SOURCE_DIR}
+                FILES
+                ${std_SOURCE_DIR}/std.cppm
+                ${std_SOURCE_DIR}/std.compat.cppm
+        )
+
+        link_libraries(std)
+    endif()
 
     set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 endif()
