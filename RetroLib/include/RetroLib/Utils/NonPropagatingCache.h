@@ -1,6 +1,6 @@
 /**
  * @file NonPropagatingCache.h
- * @brief TODO: Fill me out
+ * @brief Basic non-propagating cache type
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
