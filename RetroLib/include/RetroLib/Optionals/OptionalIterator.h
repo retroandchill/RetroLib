@@ -99,10 +99,9 @@ namespace retro::optionals {
          * if they are considered equal. Equality is determined based on the value
          * state or if the value does not satisfy the expected condition.
          *
-         * @param other The `OptionalSentinel` instance to compare against.
          * @return `true` if the instances are considered equal, `false` otherwise.
          */
-        constexpr bool operator==(const OptionalSentinel& other) const {
+        constexpr bool operator==(const OptionalSentinel&) const {
             return value == nullptr || !has_value(*value);
         }
 
