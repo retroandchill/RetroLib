@@ -132,8 +132,7 @@ namespace retro {
      * @return The result of invoking the visitor with the IndexedElement.
      */
     template <size_t I, typename F, typename V>
-    constexpr auto visit_index_helper(F &&visitor, V &&variant)
-        -> std::invoke_result_t<F, IndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>> {
+    constexpr decltype(auto) visit_index_helper(F &&visitor, V &&variant) {
         return std::invoke(std::forward<F>(visitor),
                            IndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>(
                                std::get<I>(std::forward<V>(variant))));
@@ -154,6 +153,28 @@ namespace retro {
      */
     RETROLIB_EXPORT template <typename F, typename V>
     constexpr decltype(auto) visit_index(F &&visitor, V &&variant) {
+        constexpr auto N = std::variant_size_v<std::remove_cvref_t<V>>;
+        constexpr auto func_ptrs = []<size_t... I>(std::index_sequence<I...>) {
+            return std::array{&visit_index_helper<I, F, V>...};
+        }(std::make_index_sequence<N>{});
+        return func_ptrs[variant.index()](std::forward<F>(visitor), std::forward<V>(variant));
+    }
+
+    /**
+     * @brief Visits the active alternative of a variant by index.
+     *
+     * This function dispatches a visitor to the active alternative of the given variant.
+     * It determines the index of the active alternative at compile time and calls
+     * the corresponding helper function using a function pointer array.
+     *
+     * @tparam F The type of the visitor function or callable object.
+     * @tparam V The type of the variant object to be visited.
+     * @param visitor The visitor object or function to apply to the active alternative of the variant.
+     * @param variant The variant object whose active alternative is being visited.
+     * @return The result of invoking the visitor on the active alternative of the variant.
+     */
+    RETROLIB_EXPORT template <typename R, typename F, typename V>
+    constexpr R visit_index(F &&visitor, V &&variant) {
         constexpr auto N = std::variant_size_v<std::remove_cvref_t<V>>;
         constexpr auto func_ptrs = []<size_t... I>(std::index_sequence<I...>) {
             return std::array{&visit_index_helper<I, F, V>...};

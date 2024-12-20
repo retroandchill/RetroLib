@@ -149,7 +149,7 @@ namespace retro::ranges {
                     pos->satisfy<N>();
 
                     if (rest != 0) {
-                        visit_index(AdvanceForward{pos, rest}, pos->it);
+                        visit_index<void>(AdvanceForward{pos, rest}, pos->it);
                     }
                 }
             };
@@ -174,7 +174,7 @@ namespace retro::ranges {
                     } else {
                         auto rest = std::ranges::advance(it.get(), n, std::move(first));
                         if (rest != 0) {
-                            visit_index(AdvanceReverse{pos, rest}, pos->it);
+                            visit_index<void>(AdvanceReverse{pos, rest}, pos->it);
                         }
                     }
                 }
@@ -312,9 +312,9 @@ namespace retro::ranges {
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 if (n > 0) {
-                    visit_index(AdvanceForward{this, n}, it);
+                    visit_index<void>(AdvanceForward{this, n}, it);
                 } else if (n < 0) {
-                    visit_index(AdvanceReverse{this, -n}, it);
+                    visit_index<void>(AdvanceReverse{this, -n}, it);
                 }
                 return *this;
             }
