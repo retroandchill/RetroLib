@@ -12,7 +12,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSIO
     include(FetchContent)
     FetchContent_Declare(
         std
-        URL "file://${LIBCXX_BUILD}/modules/c++/v1/"
+        URL "file://${LIBCXX_BUILD}/share/libc++/v1/"
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         SYSTEM
     )
