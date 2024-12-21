@@ -188,3 +188,11 @@ TEST_CASE("Test getting a value or a null pointer", "[optionals]") {
     auto result4 = retro::optionals::of_nullable(result1) | retro::optionals::ptr_or_null;
     CHECK(result4 == result1);
 }
+
+TEST_CASE("Can check if an optional value is set", "[optionals]") {
+    std::optional value1 = 4;
+    CHECK(value1 | retro::optionals::is_set);
+
+    std::optional<int> value2 = std::nullopt;
+    CHECK_FALSE(value2 | retro::optionals::is_set);
+}
