@@ -89,4 +89,5 @@ namespace retro {
         { *ptr } -> std::convertible_to<C &>;
     };
 
+
 } // namespace retro
