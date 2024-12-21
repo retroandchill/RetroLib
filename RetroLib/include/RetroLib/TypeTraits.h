@@ -112,5 +112,4 @@ namespace retro {
     RETROLIB_EXPORT template <typename T, template <typename...> typename C>
     concept SpecializationOf = IsSpecializationOf<T, C>::value;
 
-
 } // namespace retro

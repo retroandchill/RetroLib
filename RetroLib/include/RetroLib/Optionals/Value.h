@@ -21,13 +21,12 @@ namespace retro::optionals {
     struct ValueInvoker {
 
         template <OptionalType O>
-        constexpr decltype(auto) operator()(O&& optional) const {
+        constexpr decltype(auto) operator()(O &&optional) const {
             RETROLIB_ASSERT(has_value(std::forward<O>(optional)), "Cannot get value from an empty optional");
             return get(std::forward<O>(optional));
         }
-
     };
 
     RETROLIB_EXPORT constexpr auto value = extension_method<ValueInvoker{}>();
 
-}
+} // namespace retro::optionals

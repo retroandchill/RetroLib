@@ -20,7 +20,7 @@ namespace retro::optionals {
 
     struct IsSetInvoker {
         template <OptionalType O>
-        constexpr bool operator()(O&& optional) const {
+        constexpr bool operator()(O &&optional) const {
             return has_value(std::forward<O>(optional));
         }
     };
@@ -40,4 +40,4 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT constexpr auto is_set = extension_method<IsSetInvoker{}>();
 
-}
+} // namespace retro::optionals

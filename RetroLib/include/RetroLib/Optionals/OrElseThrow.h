@@ -10,8 +10,8 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
-#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -24,7 +24,8 @@ namespace retro::optionals {
      * Evaluates the given optional value and, in case the value does not exist,
      * invokes a functor with the provided arguments to throw an exception.
      *
-     * @param optional The optional value to be checked. Must be an object that supports `has_value` and `get` functions.
+     * @param optional The optional value to be checked. Must be an object that supports `has_value` and `get`
+     * functions.
      * @param functor The callable object that, when invoked, produces or throws an exception.
      * @param args The arguments to be forwarded to the functor when it is invoked.
      * @return The contained value of the optional object if a value is present.
@@ -34,9 +35,9 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <OptionalType O, typename F, typename... A>
         requires std::invocable<F, A...> && std::derived_from<std::invoke_result_t<F, A...>, std::exception>
-    constexpr decltype(auto) or_else_throw(O&& optional, F&& functor, A&&... args) {
+    constexpr decltype(auto) or_else_throw(O &&optional, F &&functor, A &&...args) {
         if (has_value(std::forward<O>(optional))) {
-            return get<O>( std::forward<O>(optional));
+            return get<O>(std::forward<O>(optional));
         }
 
         throw std::invoke(std::forward<F>(functor), std::forward<A>(args)...);
@@ -55,8 +56,9 @@ namespace retro::optionals {
      *         if the optional is empty.
      */
     RETROLIB_EXPORT template <auto Functor, OptionalType O, typename... A>
-        requires std::invocable<decltype(Functor), A...> && std::derived_from<std::invoke_result_t<decltype(Functor), A...>, std::exception>
-    constexpr decltype(auto) or_else_throw(O&& optional, A&&... args) {
+        requires std::invocable<decltype(Functor), A...> &&
+                 std::derived_from<std::invoke_result_t<decltype(Functor), A...>, std::exception>
+    constexpr decltype(auto) or_else_throw(O &&optional, A &&...args) {
         return or_else_throw(std::forward<O>(optional), bind_back<Functor>(std::forward<A>(args)...));
     }
 
@@ -69,23 +71,22 @@ namespace retro::optionals {
      * @throws std::bad_optional_access if the optional is not engaged.
      */
     RETROLIB_EXPORT template <OptionalType O>
-    constexpr decltype(auto) or_else_throw(O&& optional) {
+    constexpr decltype(auto) or_else_throw(O &&optional) {
         return or_else_throw(std::forward<O>(optional), [] { return std::bad_optional_access{}; });
     }
 
     struct OrElseThrowInvoker {
 
         template <OptionalType O>
-        constexpr decltype(auto) operator()(O&& optional) const {
+        constexpr decltype(auto) operator()(O &&optional) const {
             return or_else_throw(std::forward<O>(optional));
         }
 
         template <OptionalType O, typename F, typename... A>
             requires std::invocable<F, A...> && std::derived_from<std::invoke_result_t<F, A...>, std::exception>
-        constexpr decltype(auto) operator()(O&& optional, F&& functor, A&&... args) const {
+        constexpr decltype(auto) operator()(O &&optional, F &&functor, A &&...args) const {
             return or_else_throw(std::forward<O>(optional), std::forward<F>(functor), std::forward<A>(args)...);
         }
-
     };
 
     constexpr OrElseThrowInvoker or_else_throw_invoker;
@@ -93,8 +94,9 @@ namespace retro::optionals {
     template <auto Functor>
     struct ConstOrElseThrowInvoker {
         template <OptionalType O, typename... A>
-            requires std::invocable<decltype(Functor), A...> && std::derived_from<std::invoke_result_t<decltype(Functor), A...>, std::exception>
-        constexpr decltype(auto) operator()(O&& optional, A&&... args) const {
+            requires std::invocable<decltype(Functor), A...> &&
+                     std::derived_from<std::invoke_result_t<decltype(Functor), A...>, std::exception>
+        constexpr decltype(auto) operator()(O &&optional, A &&...args) const {
             return or_else_throw<Functor>(std::forward<O>(optional), std::forward<A>(args)...);
         }
     };
@@ -113,7 +115,7 @@ namespace retro::optionals {
      *         `extension_method` for the provided arguments.
      */
     RETROLIB_EXPORT template <typename... A>
-    constexpr auto or_else_throw(A&&... args) {
+    constexpr auto or_else_throw(A &&...args) {
         return extension_method<or_else_throw_invoker>(std::forward<A>(args)...);
     }
 
@@ -128,8 +130,8 @@ namespace retro::optionals {
      *         on the invoker or lambda used.
      */
     RETROLIB_EXPORT template <auto Functor, typename... A>
-    constexpr auto or_else_throw(A&&... args) {
+    constexpr auto or_else_throw(A &&...args) {
         return extension_method<const_or_else_throw_invoker<Functor>>(std::forward<A>(args)...);
     }
 
-}
+} // namespace retro::optionals
