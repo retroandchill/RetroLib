@@ -28,6 +28,7 @@ import std;
 #include "RetroLib/Concepts/Operators.h"
 #include "RetroLib/Concepts/Iterators.h"
 #include "RetroLib/Concepts/Inheritance.h"
+#include "RetroLib/Concepts/Nullability.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
 #include "RetroLib/Concepts/ParameterPacks.h"
 
@@ -60,6 +61,7 @@ import std;
 #include "RetroLib/Functional/ExtensionMethods.h"
 
 #include "RetroLib/Optionals/Filter.h"
+#include "RetroLib/Optionals/Transform.h"
 
 #include "RetroLib/Ranges/RangeBasics.h"
 #include "RetroLib/Ranges/FeatureBridge.h"

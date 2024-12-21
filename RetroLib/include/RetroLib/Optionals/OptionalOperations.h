@@ -269,4 +269,4 @@ namespace retro::optionals {
         static_assert(OptionalReference<O<T>>, "Cannot an r-value to an optional reference type.");
         return std::move(value);
     }
-}; // namespace retro::optionals
+} // namespace retro::optionals
