@@ -110,7 +110,7 @@ TEST_CASE("Can transform an optional between various types", "[optionals]") {
     }
 }
 
-TEST_CASE("Can flat map down an optional result") {
+TEST_CASE("Can flat map down an optional result", "[optionals]") {
     SECTION("Can return an optional of the same type") {
         constexpr auto mapper = [](int x) {
             if (x > 0) {
@@ -131,7 +131,7 @@ TEST_CASE("Can flat map down an optional result") {
         CHECK_FALSE(mapped3.has_value());
     }
 
-    SECTION("Can return an optional of a diffent type") {
+    SECTION("Can return an optional of a different type") {
         constexpr auto mapper = [](int x) {
             if (x > 0) {
                 return retro::Optional(x * 2);
@@ -152,7 +152,7 @@ TEST_CASE("Can flat map down an optional result") {
     }
 }
 
-TEST_CASE("Test getting a value or throwing an exception if its empty") {
+TEST_CASE("Test getting a value or throwing an exception if its empty", "[optionals]") {
     std::optional value1 = 4;
     CHECK_NOTHROW(value1 | retro::optionals::or_else_throw());
 
@@ -164,4 +164,10 @@ TEST_CASE("Test getting a value or throwing an exception if its empty") {
     };
     CHECK_THROWS_AS(value2 | retro::optionals::or_else_throw<alt_throw>("Coult not get value!"), std::runtime_error);
 
+}
+
+TEST_CASE("Test getting a value without any runtime checks (very unsafe)", "[optionals]") {
+    std::optional value1 = 4;
+    auto result = value1 | retro::optionals::get();
+    CHECK(result == 4);
 }
