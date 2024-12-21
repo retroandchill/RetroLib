@@ -300,15 +300,14 @@ namespace retro::optionals {
         using ReferenceType = std::add_lvalue_reference_t<RawType>;
 
         template <template <typename...> typename O, typename U>
-            requires std::assignable_from<ReferenceType, std::remove_pointer_t<U>&> && OptionalType<O<U>>
-        static constexpr auto of_nullable(U* ptr) {
+            requires std::assignable_from<ReferenceType, std::remove_pointer_t<U> &> && OptionalType<O<U>>
+        static constexpr auto of_nullable(U *ptr) {
             if constexpr (RawReferenceOptionalValid<O, U>) {
                 return ptr != nullptr ? O<ReferenceType>(*ptr) : O<ReferenceType>();
             } else {
                 return ptr != nullptr ? O<std::reference_wrapper<T>>(*ptr) : O<std::reference_wrapper<T>>();
             }
         }
-
     };
 
     /**
@@ -320,6 +319,8 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <typename T, template <typename...> typename O>
     concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::is_valid && requires(T &&value) {
-        { NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(value)) } -> OptionalType;
+        {
+            NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(value))
+        } -> OptionalType;
     };
 } // namespace retro::optionals

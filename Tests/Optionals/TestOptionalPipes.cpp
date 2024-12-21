@@ -12,6 +12,7 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Functional/BindBack.h"
+#include "RetroLib/Optionals/AndThen.h"
 #include "RetroLib/Optionals/Filter.h"
 #include "RetroLib/Optionals/Transform.h"
 #include "RetroLib/TypeTraits.h"
@@ -83,7 +84,8 @@ TEST_CASE("Can transform an optional between various types", "[optionals]") {
     SECTION("Can transform a value returning a reference to hold said reference") {
         std::array values = {1, 2, 3, 4, 5};
         std::optional index = 4;
-        auto transformed = index | retro::optionals::transform([&values](int i) -> decltype(auto) { return values[i]; });
+        auto transformed =
+            index | retro::optionals::transform([&values](int i) -> decltype(auto) { return values[i]; });
         CHECK(transformed.has_value());
         CHECK(transformed.value() == 5);
     }
@@ -95,7 +97,7 @@ TEST_CASE("Can transform an optional between various types", "[optionals]") {
                 return &values[i];
             }
 
-            return nullptr;
+            return static_cast<int *>(nullptr);
         };
         retro::Optional index = 2;
         auto transformed = index | retro::optionals::transform(transformer);
@@ -105,5 +107,47 @@ TEST_CASE("Can transform an optional between various types", "[optionals]") {
         index = 6;
         auto second_pass = index | retro::optionals::transform(transformer);
         CHECK_FALSE(second_pass.has_value());
+    }
+}
+
+TEST_CASE("Can flat map down an optional result") {
+    SECTION("Can return an optional of the same type") {
+        constexpr auto mapper = [](int x) {
+            if (x > 0) {
+                return std::optional(x * 2);
+            }
+
+            return std::optional<int>();
+        };
+
+        auto mapped1 = std::optional(4) | retro::optionals::and_then(mapper);
+        CHECK(mapped1.has_value());
+        CHECK(mapped1.value() == 8);
+
+        auto mapped2 = std::optional(-3) | retro::optionals::and_then(mapper);
+        CHECK_FALSE(mapped2.has_value());
+
+        auto mapped3 = std::optional<int>() | retro::optionals::and_then(mapper);
+        CHECK_FALSE(mapped3.has_value());
+    }
+
+    SECTION("Can return an optional of a diffent type") {
+        constexpr auto mapper = [](int x) {
+            if (x > 0) {
+                return retro::Optional(x * 2);
+            }
+
+            return retro::Optional<int>();
+        };
+
+        auto mapped1 = std::optional(4) | retro::optionals::and_then<mapper>();
+        CHECK(mapped1.has_value());
+        CHECK(mapped1.value() == 8);
+
+        auto mapped2 = std::optional(-3) | retro::optionals::and_then<mapper>();
+        CHECK_FALSE(mapped2.has_value());
+
+        auto mapped3 = std::optional<int>() | retro::optionals::and_then<mapper>();
+        CHECK_FALSE(mapped3.has_value());
     }
 }

@@ -1881,7 +1881,7 @@ namespace retro {
      * @tparam T The type of the value that the Optional should store.
      */
     template <ValidOptionalType T>
-    Optional(T&&) -> Optional<std::decay_t<T>>;
+    Optional(T &&) -> Optional<std::decay_t<T>>;
 
     /**
      * @brief Trait for determining if raw reference optionals are allowed.
@@ -1907,7 +1907,7 @@ namespace retro {
          */
         RETROLIB_EXPORT template <template <typename...> typename O = Optional, typename T>
             requires OptionalType<O<std::decay_t<T>>>
-        constexpr O<std::decay_t<T>> of(T&& value) {
+        constexpr O<std::decay_t<T>> of(T &&value) {
             return O<std::decay_t<T>>(std::forward<T>(value));
         }
 
@@ -1928,9 +1928,9 @@ namespace retro {
          */
         RETROLIB_EXPORT template <template <typename...> typename O = Optional, typename T>
             requires OptionalType<O<std::decay_t<T>>>
-        constexpr auto of_reference(T& value) {
+        constexpr auto of_reference(T &value) {
             if constexpr (RawReferenceOptionalValid<O, T>) {
-                return O<T&>(value);
+                return O<T &>(value);
             } else {
                 return O<std::reference_wrapper<T>>(value);
             }
@@ -1954,5 +1954,5 @@ namespace retro {
             return NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(value));
         }
 
-    }
+    } // namespace optionals
 } // namespace retro

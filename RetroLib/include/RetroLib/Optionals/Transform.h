@@ -11,6 +11,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/FunctionTraits.h"
+#include "RetroLib/Optionals/Optional.h"
 
 #include <ranges>
 #endif
@@ -23,7 +24,7 @@ namespace retro::optionals {
 
     template <template <typename...> typename O, typename T, typename U>
         requires OptionalType<O<std::decay_t<T>>>
-    constexpr auto from_result(const O<U>&, T &&value) {
+    constexpr auto from_result(const O<U> &, T &&value) {
         if constexpr (Nullable<T, O>) {
             return of_nullable<O>(std::forward<T>(value));
         } else if constexpr (std::is_lvalue_reference_v<T>) {
@@ -56,12 +57,13 @@ namespace retro::optionals {
     RETROLIB_EXPORT template <OptionalType O, typename... A>
         requires std::is_invocable_v<BindingType<A...>, CommonReference<O>>
     constexpr auto transform(O &&optional, A &&...args) {
-        using ResultType = decltype(from_result(std::forward<O>(optional),
-                std::invoke(create_binding(std::forward<A>(args)...), get<O>(std::forward<O>(optional)))));
-        return has_value(std::forward<O>(optional)) ?
-            from_result(std::forward<O>(optional),
-                std::invoke(create_binding(std::forward<A>(args)...), get<O>(std::forward<O>(optional)))) :
-            ResultType();
+        using ResultType =
+            decltype(from_result(std::forward<O>(optional), std::invoke(create_binding(std::forward<A>(args)...),
+                                                                        get<O>(std::forward<O>(optional)))));
+        return has_value(std::forward<O>(optional))
+                   ? from_result(std::forward<O>(optional), std::invoke(create_binding(std::forward<A>(args)...),
+                                                                        get<O>(std::forward<O>(optional))))
+                   : ResultType();
     }
 
     /**
@@ -74,7 +76,7 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <auto Functor, OptionalType O, typename... A>
         requires std::is_invocable_v<BindingType<decltype(Functor), A...>, CommonReference<O>>
-    constexpr auto transform(O&& optional, A&&... args) {
+    constexpr auto transform(O &&optional, A &&...args) {
         return transform(std::forward<O>(optional), create_binding<Functor>(std::forward<A>(args)...));
     }
 
@@ -92,7 +94,7 @@ namespace retro::optionals {
     struct ConstTransformInvoker {
         template <OptionalType O, typename... A>
             requires std::is_invocable_v<BindingType<decltype(Functor), A...>, CommonReference<O>>
-        constexpr auto operator()(O &&optional, A&&... args) const {
+        constexpr auto operator()(O &&optional, A &&...args) const {
             return transform<Functor>(std::forward<O>(optional), std::forward<A>(args)...);
         }
     };
@@ -115,7 +117,7 @@ namespace retro::optionals {
      * to different data types.
      */
     RETROLIB_EXPORT template <typename... A>
-    constexpr auto transform(A&&... args) {
+    constexpr auto transform(A &&...args) {
         return extension_method<transform_invoker>(std::forward<A>(args)...);
     }
 
@@ -131,8 +133,8 @@ namespace retro::optionals {
      * @return Returns the result of the transformation wrapped in the invoker for further processing.
      */
     RETROLIB_EXPORT template <auto Functor, typename... A>
-    constexpr auto transform(A&&... args) {
+    constexpr auto transform(A &&...args) {
         return extension_method<const_transform_invoker<Functor>>(std::forward<A>(args)...);
     }
 
-}
+} // namespace retro::optionals
