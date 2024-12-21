@@ -151,3 +151,17 @@ TEST_CASE("Can flat map down an optional result") {
         CHECK_FALSE(mapped3.has_value());
     }
 }
+
+TEST_CASE("Test getting a value or throwing an exception if its empty") {
+    std::optional value1 = 4;
+    CHECK_NOTHROW(value1 | retro::optionals::or_else_throw());
+
+    std::optional<int> value2 = std::nullopt;
+    CHECK_THROWS_AS(value2 | retro::optionals::or_else_throw(), std::bad_optional_access);
+
+    constexpr auto alt_throw = [](std::string_view message) {
+        return std::runtime_error(message.data());
+    };
+    CHECK_THROWS_AS(value2 | retro::optionals::or_else_throw<alt_throw>("Coult not get value!"), std::runtime_error);
+
+}

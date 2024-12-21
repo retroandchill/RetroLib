@@ -32,7 +32,7 @@ namespace retro::optionals {
                      OptionalType<std::invoke_result_t<BindingType<A...>, CommonReference<O>>>
     constexpr auto and_then(O &&optional, A &&...args) -> std::invoke_result_t<BindingType<A...>, CommonReference<O>> {
         return has_value(std::forward<O>(optional))
-                   ? std::invoke(create_binding(std::forward<A>(args)...), *std::forward<O>(optional))
+                   ? std::invoke(create_binding(std::forward<A>(args)...), get<O>(std::forward<O>(optional)))
                    : std::invoke_result_t<BindingType<A...>, CommonReference<O>>();
     }
 
