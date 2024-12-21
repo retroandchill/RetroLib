@@ -22,7 +22,7 @@ namespace retro::optionals {
 
         template <OptionalType O>
         constexpr decltype(auto) operator()(O &&optional) const {
-            RETROLIB_ASSERT(has_value(std::forward<O>(optional)), "Cannot get value from an empty optional");
+            RETROLIB_ASSERT(has_value(std::forward<O>(optional)));
             return get(std::forward<O>(optional));
         }
     };
