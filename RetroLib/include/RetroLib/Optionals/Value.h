@@ -18,7 +18,7 @@
 
 namespace retro::optionals {
 
-    struct GetInvoker {
+    struct ValueInvoker {
 
         template <OptionalType O>
         constexpr decltype(auto) operator()(O&& optional) const {
@@ -28,13 +28,6 @@ namespace retro::optionals {
 
     };
 
-    /**
-     * Retrieves a value by invoking the extension method specified by GetInvoker.
-     *
-     * @return The result of the extension_method invocation for GetInvoker.
-     */
-    RETROLIB_EXPORT constexpr auto get() {
-        return extension_method<GetInvoker{}>();
-    }
+    RETROLIB_EXPORT constexpr auto value = extension_method<ValueInvoker{}>();
 
 }

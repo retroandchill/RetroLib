@@ -168,6 +168,23 @@ TEST_CASE("Test getting a value or throwing an exception if its empty", "[option
 
 TEST_CASE("Test getting a value without any runtime checks (very unsafe)", "[optionals]") {
     std::optional value1 = 4;
-    auto result = value1 | retro::optionals::get();
+    auto result = value1 | retro::optionals::value;
     CHECK(result == 4);
+}
+
+TEST_CASE("Test getting a value or a null pointer", "[optionals]") {
+    std::optional value1 = 4;
+    auto result1 = value1 | retro::optionals::ptr_or_null;
+    REQUIRE(result1 != nullptr);
+    CHECK(*result1 == 4);
+
+    std::optional<int> value2 = std::nullopt;
+    auto result2 = value2 | retro::optionals::ptr_or_null;
+    CHECK(result2 == nullptr);
+
+    auto result3 = retro::optionals::make_optional_reference(value2) | retro::optionals::ptr_or_null;
+    CHECK(result3 == nullptr);
+
+    auto result4 = retro::optionals::of_nullable(result1) | retro::optionals::ptr_or_null;
+    CHECK(result4 == result1);
 }
