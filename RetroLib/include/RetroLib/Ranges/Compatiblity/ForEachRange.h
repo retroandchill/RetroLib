@@ -1,6 +1,7 @@
 /**
  * @file ForEachRange.h
- * @brief Basic iterator definitions to allow a container that can be used for a range-based for-loop to work with C++20 ranges.
+ * @brief Basic iterator definitions to allow a container that can be used for a range-based for-loop to work with C++20
+ * ranges.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
@@ -8,8 +9,8 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "RetroLib/TypeTraits.h"
 #include "RetroLib/Ranges/Concepts/Iterable.h"
+#include "RetroLib/TypeTraits.h"
 
 #include <ranges>
 #endif
@@ -28,31 +29,37 @@ namespace retro::ranges {
 
         template <typename T>
             requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, IteratorStorage>)
-        constexpr explicit IteratorStorage(T &&adapted) : adapted(std::forward<T>(adapted)) {}
+        constexpr explicit IteratorStorage(T &&adapted) : adapted(std::forward<T>(adapted)) {
+        }
     };
 
     template <typename I>
-        requires (!std::is_default_constructible_v<I>)
+        requires(!std::is_default_constructible_v<I>)
     struct IteratorStorage<I> {
         union {
             std::monostate empty;
             I adapted;
         };
 
-        constexpr IteratorStorage() : empty() {}
+        constexpr IteratorStorage() : empty() {
+        }
 
         template <typename T>
             requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, IteratorStorage>)
-        constexpr explicit IteratorStorage(T &&adapted) : adapted(std::forward<T>(adapted)) {}
+        constexpr explicit IteratorStorage(T &&adapted) : adapted(std::forward<T>(adapted)) {
+        }
     };
 
     template <typename I>
-        requires std::is_trivially_destructible_v<I> && std::is_trivially_copy_constructible_v<I> && std::is_trivially_move_constructible_v<I>
+        requires std::is_trivially_destructible_v<I> && std::is_trivially_copy_constructible_v<I> &&
+                 std::is_trivially_move_constructible_v<I>
     struct IteratorAssignAdapter : IteratorStorage<I> {
         constexpr IteratorAssignAdapter() = default;
 
-        constexpr IteratorAssignAdapter(const IteratorAssignAdapter &) noexcept(std::is_nothrow_copy_constructible_v<I>) = default;
-        constexpr IteratorAssignAdapter(IteratorAssignAdapter &&) noexcept(std::is_nothrow_move_constructible_v<I>) = default;
+        constexpr IteratorAssignAdapter(const IteratorAssignAdapter &) noexcept(
+            std::is_nothrow_copy_constructible_v<I>) = default;
+        constexpr IteratorAssignAdapter(IteratorAssignAdapter &&) noexcept(std::is_nothrow_move_constructible_v<I>) =
+            default;
 
         ~IteratorAssignAdapter() = default;
 
@@ -77,17 +84,16 @@ namespace retro::ranges {
     template <Iterator I, Sentinel<I> S>
     class AdapterIterator;
 
-
     template <Iterator I, Sentinel<I> S>
     class SentinelAdapter : private IteratorAssignLayer<S> {
         using Base = IteratorAssignLayer<S>;
 
-    public:
+      public:
         constexpr SentinelAdapter() = default;
 
         using Base::Base;
 
-    private:
+      private:
         using Base::adapted;
 
         friend class AdapterIterator<I, S>;
@@ -96,18 +102,19 @@ namespace retro::ranges {
     template <Iterator I, Sentinel<I> S>
     class AdapterIterator : private IteratorAssignLayer<I> {
         using Base = IteratorAssignLayer<I>;
-    public:
+
+      public:
         using iterator_category = std::input_iterator_tag;
         using value_type = std::remove_reference_t<DereferencedType<I>>;
         using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
-        using reference = value_type&;
+        using pointer = value_type *;
+        using reference = value_type &;
 
         constexpr AdapterIterator() = default;
 
         using Base::Base;
 
-        constexpr bool operator==(const SentinelAdapter<I, S>& sentinel) const {
+        constexpr bool operator==(const SentinelAdapter<I, S> &sentinel) const {
             return !(adapted != sentinel.adapted);
         }
 
@@ -115,7 +122,7 @@ namespace retro::ranges {
             return *adapted;
         }
 
-        constexpr AdapterIterator& operator++() {
+        constexpr AdapterIterator &operator++() {
             ++adapted;
             return *this;
         }
@@ -124,19 +131,19 @@ namespace retro::ranges {
             ++adapted;
         }
 
-    private:
+      private:
         using Base::adapted;
     };
-}
+} // namespace retro::ranges
 
 template <retro::Iterable I>
-    requires (!std::input_or_output_iterator<retro::IteratorType<I>>)
-constexpr auto begin(I& range) {
+    requires(!std::input_or_output_iterator<retro::IteratorType<I>>)
+constexpr auto begin(I &range) {
     return retro::ranges::AdapterIterator<retro::IteratorType<I>, retro::SentinelType<I>>(range.begin());
 }
 
 template <retro::Iterable I>
-    requires (!std::input_or_output_iterator<retro::IteratorType<I>>)
-constexpr auto end(I& range) {
+    requires(!std::input_or_output_iterator<retro::IteratorType<I>>)
+constexpr auto end(I &range) {
     return retro::ranges::SentinelAdapter<retro::IteratorType<I>, retro::SentinelType<I>>(range.end());
 }

@@ -9,6 +9,7 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Ranges/FeatureBridge.h"
+#include "RetroLib/TypeTraits.h"
 
 #include <ranges>
 #endif
@@ -203,6 +204,76 @@ namespace retro::ranges {
     concept StlAppendable = StlEmplaceBack<C, R> || StlPushBack<C, R> || StlEmplace<C, R> || StlInsert<C, R>;
 
     /**
+     * Represents a container type that supports appending operations.
+     * This structure is intended to be derived from InvalidType and demonstrates
+     * a type that can facilitate appending functionality.
+     */
+    RETROLIB_EXPORT template <typename>
+    struct AppendableContainerType : InvalidType {};
+
+    /**
+     * Provides a type trait capable of adding elements to a container by leveraging
+     * various appending mechanisms available in the standard library or container API.
+     *
+     * The `AppendableContainerType` struct is designed to determine and utilize the
+     * most efficient and compatible method for appending elements to a container,
+     * such as `emplace_back`, `push_back`, `emplace`, or `insert`, based on the
+     * properties of the container and the operations it supports.
+     *
+     * @tparam C The container type to which the append functionality is being applied.
+     * This container must satisfy the requirements enforced by the `ValidType` base
+     * and must support one or more appending methods (e.g., `emplace_back`, `push_back`,
+     * `emplace`, or `insert`).
+     */
+    RETROLIB_EXPORT template <typename C>
+        requires std::ranges::range<C> && StlAppendable<C, std::ranges::range_value_t<C>>
+    struct AppendableContainerType<C> : ValidType {
+        /**
+         * Appends a value to the given container using the most appropriate method
+         * available, such as emplace_back, push_back, emplace, or insert.
+         *
+         * This function utilizes compile-time checks to determine the most suitable
+         * method to add an element to the container, thus ensuring both efficiency
+         * and compatibility with the container's capabilities.
+         *
+         * @param container The container to which the value is to be appended. It
+         * should support one of the following operations: emplace_back, push_back,
+         * emplace, or insert.
+         * @param value The value to be appended to the container. The type of this
+         * value must be compatible with the container's value type and the supported
+         * insertion methods.
+         * @return This function returns the result of the container's append operation.
+         * The exact return type depends on the append method used (e.g., emplace_back,
+         * push_back, emplace, or insert). Note that the return type could vary, such
+         * as void or an iterator, depending on the method invoked.
+         */
+        template <typename T>
+            requires StlAppendable<C, T>
+        static constexpr decltype(auto) append(C &container, T &&value) {
+            if constexpr (StlEmplaceBack<C, T>) {
+                return container.emplace_back(std::forward<T>(value));
+            } else if constexpr (StlPushBack<C, T>) {
+                return container.push_back(std::forward<T>(value));
+            } else if constexpr (StlEmplace<C, T>) {
+                return container.emplace(std::forward<T>(value));
+            } else if constexpr (StlInsert<C, T>) {
+                return container.insert(std::forward<T>(value));
+            }
+        }
+    };
+
+    /**
+     * Concept that defines if a container is appendable.
+     *
+     * @tparam C The type to check
+     * @tparam T the type of element to add
+     */
+    template <typename C, typename T>
+    concept AppendableContainer = AppendableContainerType<C>::is_valid && requires(C &container, T &&value) {
+        AppendableContainerType<C>::append_container(container, std::forward<T>(value));
+    };
+
+    /**
      * Appends a value to the given container using the most appropriate method
      * available, such as emplace_back, push_back, emplace, or insert.
      *
@@ -224,26 +295,8 @@ namespace retro::ranges {
     template <typename C, typename T>
         requires StlAppendable<C, T>
     constexpr decltype(auto) append_container(C &container, T &&value) {
-        if constexpr (StlEmplaceBack<C, T>) {
-            return container.emplace_back(std::forward<T>(value));
-        } else if constexpr (StlPushBack<C, T>) {
-            return container.push_back(std::forward<T>(value));
-        } else if constexpr (StlEmplace<C, T>) {
-            return container.emplace(std::forward<T>(value));
-        } else if constexpr (StlInsert<C, T>) {
-            return container.insert(std::forward<T>(value));
-        }
+        return AppendableContainerType<C>::append_container(container, std::forward<T>(value));
     }
-
-    /**
-     * Concept that defines if a container is appendable.
-     *
-     * @tparam C The type to check
-     * @tparam T the type of element to add
-     */
-    template <typename C, typename T>
-    concept AppendableContainer =
-        requires(C &container, T &&value) { append_container(container, std::forward<T>(value)); };
 
     /**
      * Concept that defines if a range has a compatible element type.

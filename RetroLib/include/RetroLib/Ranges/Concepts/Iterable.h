@@ -19,7 +19,7 @@
 namespace retro {
     template <typename T>
     concept Iterator = requires(T iter) {
-        { ++iter } -> std::same_as<T&>;
+        { ++iter } -> std::same_as<T &>;
         *iter;
     };
 
@@ -39,4 +39,4 @@ namespace retro {
         { std::forward<T>(range).begin() } -> Iterator;
         { std::forward<T>(range).end() } -> Sentinel<IteratorType<T>>;
     };
-}
+} // namespace retro
