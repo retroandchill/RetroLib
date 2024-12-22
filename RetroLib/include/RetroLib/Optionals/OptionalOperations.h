@@ -131,9 +131,9 @@ namespace retro::optionals {
      * @return The value contained in the optional object. The return type maintains
      *         the same value category as the input parameter.
      */
-    RETROLIB_EXPORT template <StlOptional O>
+    RETROLIB_EXPORT template <OptionalType O>
     constexpr decltype(auto) get(O &&optional) {
-        return *std::forward<O>(optional);
+        return OptionalOperations<std::decay_t<O>>::get(std::forward<O>(optional));
     }
 
     /**
@@ -148,9 +148,9 @@ namespace retro::optionals {
      *         the same value category as the input parameter.
      * @throws std::bad_optional_access If the optional does not contain a value
      */
-    RETROLIB_EXPORT template <StlOptional O>
+    RETROLIB_EXPORT template <OptionalType O>
     constexpr decltype(auto) get_value(O &&optional) {
-        return std::forward<O>(optional).value();
+        return OptionalOperations<std::decay_t<O>>::get_value(std::forward<O>(optional));
     }
 
     /**
@@ -159,9 +159,9 @@ namespace retro::optionals {
      * @param optional An object of type O which must have a has_value() member function.
      * @return A boolean value that is true if the optional object contains a value, otherwise false.
      */
-    RETROLIB_EXPORT template <StlOptional O>
+    RETROLIB_EXPORT template <OptionalType O>
     constexpr bool has_value(const O &optional) {
-        return optional.has_value();
+        return OptionalOperations<std::decay_t<O>>::has_value(optional);
     }
 
     /**
@@ -170,7 +170,7 @@ namespace retro::optionals {
      * @tparam T The optional to dereference
      */
     RETROLIB_EXPORT template <OptionalType T>
-    using CommonReference = decltype(get(std::declval<T>()));
+    using CommonReference = decltype(OptionalOperations<std::decay_t<T>>::get(std::declval<T>()));
 
     /**
      * Obtain the raw value type from the optional in question.

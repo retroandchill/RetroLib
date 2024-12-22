@@ -74,6 +74,8 @@ import std;
 #include "RetroLib/Ranges/Concepts/Concatable.h"
 #include "RetroLib/Ranges/Concepts/Iterable.h"
 
+#include "RetroLib/Ranges/Compatiblity/ForEachRange.h"
+
 #include "RetroLib/Ranges/Algorithm/AllOf.h"
 #include "RetroLib/Ranges/Algorithm/AnyOf.h"
 #include "RetroLib/Ranges/Algorithm/FindFirst.h"

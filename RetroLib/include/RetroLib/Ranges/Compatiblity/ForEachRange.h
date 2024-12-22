@@ -135,15 +135,3 @@ namespace retro::ranges {
         using Base::adapted;
     };
 } // namespace retro::ranges
-
-template <retro::Iterable I>
-    requires(!std::input_or_output_iterator<retro::IteratorType<I>>)
-constexpr auto begin(I &range) {
-    return retro::ranges::AdapterIterator<retro::IteratorType<I>, retro::SentinelType<I>>(range.begin());
-}
-
-template <retro::Iterable I>
-    requires(!std::input_or_output_iterator<retro::IteratorType<I>>)
-constexpr auto end(I &range) {
-    return retro::ranges::SentinelAdapter<retro::IteratorType<I>, retro::SentinelType<I>>(range.end());
-}

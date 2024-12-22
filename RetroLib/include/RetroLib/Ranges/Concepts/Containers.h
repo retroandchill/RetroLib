@@ -270,7 +270,7 @@ namespace retro::ranges {
      */
     template <typename C, typename T>
     concept AppendableContainer = AppendableContainerType<C>::is_valid && requires(C &container, T &&value) {
-        AppendableContainerType<C>::append_container(container, std::forward<T>(value));
+        AppendableContainerType<C>::append(container, std::forward<T>(value));
     };
 
     /**
@@ -293,9 +293,9 @@ namespace retro::ranges {
      * as void or an iterator, depending on the method invoked.
      */
     template <typename C, typename T>
-        requires StlAppendable<C, T>
+        requires AppendableContainer<C, T>
     constexpr decltype(auto) append_container(C &container, T &&value) {
-        return AppendableContainerType<C>::append_container(container, std::forward<T>(value));
+        return AppendableContainerType<C>::append(container, std::forward<T>(value));
     }
 
     /**
