@@ -251,6 +251,9 @@ namespace retro {
     RETROLIB_EXPORT constexpr DynamicFunctorTag dynamic_functor;
 
     template <auto Functor>
-    concept ValidFunctorParameter = std::same_as<std::decay_t<decltype(Functor)>, DynamicFunctorTag> || is_valid_functor_object(Functor);
+    concept DynamicFunctorBinding = std::same_as<std::decay_t<decltype(Functor)>, DynamicFunctorTag>;
+
+    template <auto Functor>
+    concept ValidFunctorParameter = DynamicFunctorBinding<Functor> || is_valid_functor_object(Functor);
 
 } // namespace retro

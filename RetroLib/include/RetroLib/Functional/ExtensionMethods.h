@@ -240,6 +240,13 @@ namespace retro {
     template <auto Functor>
         requires(is_valid_functor_object(Functor))
     struct ExtensionMethodBinder {
+
+        template <typename... T>
+            requires std::invocable<decltype(Functor), T...>
+        constexpr auto operator()(T &&...args) const {
+            return std::invoke(Functor, std::forward<T>(args)...);
+        }
+
         /**
          *
          * @brief This method enables the binding process with the specified functor.
@@ -263,6 +270,7 @@ namespace retro {
          *         This closure can be utilized to execute the functor at a later point.
          */
         template <typename... T>
+            requires (!std::invocable<decltype(Functor), T...>)
         constexpr auto operator()(T &&...args) const {
             if constexpr (sizeof...(T) == 0) {
                 return ExtensionMethodConstClosure<Functor>();
