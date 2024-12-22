@@ -146,36 +146,108 @@ namespace retro {
         explicit constexpr ExtensionMethodClosure(T &&functor) : functor(std::forward<T>(functor)) {
         }
 
+        /**
+         * Applies the stored functor to the given operand parameter.
+         *
+         * This operator() overload is a constexpr function that forwards the operand
+         * to the stored functor and invokes it. The invocation is performed by
+         * using std::invoke to ensure compatibility with callable objects and member functions.
+         *
+         * @tparam T The type of the operand being passed to the functor.
+         * @param operand The argument to pass to the functor. It is perfectly
+         *                forwarded to ensure the correct value category is preserved.
+         * @return The result of invoking the functor with the provided operand.
+         *         The deduced return type is determined by the functor's invocation result.
+         *
+         * @note This overload is restricted to be called on an lvalue.
+         */
         template <typename T>
             requires std::invocable<F &, T>
         constexpr decltype(auto) operator()(T &&operand) & {
             return std::invoke(functor, std::forward<T>(operand));
         }
 
+        /**
+         * Applies the stored functor to the given operand parameter.
+         *
+         * This operator() overload is a constexpr function that forwards the operand
+         * to the stored functor and invokes it. The invocation is performed by
+         * using std::invoke to ensure compatibility with callable objects and member functions.
+         *
+         * @tparam T The type of the operand being passed to the functor.
+         * @param operand The argument to pass to the functor. It is perfectly
+         *                forwarded to ensure the correct value category is preserved.
+         * @return The result of invoking the functor with the provided operand.
+         *         The deduced return type is determined by the functor's invocation result.
+         *
+         * @note This overload is restricted to be called on an lvalue.
+         */
         template <typename T>
             requires std::invocable<const F &, T>
         constexpr decltype(auto) operator()(T &&operand) const & {
             return std::invoke(functor, std::forward<T>(operand));
         }
 
+        /**
+         * Applies the stored functor to the given operand parameter.
+         *
+         * This operator() overload is a constexpr function that forwards the operand
+         * to the stored functor and invokes it. The invocation is performed by
+         * using std::invoke to ensure compatibility with callable objects and member functions.
+         *
+         * @tparam T The type of the operand being passed to the functor.
+         * @param operand The argument to pass to the functor. It is perfectly
+         *                forwarded to ensure the correct value category is preserved.
+         * @return The result of invoking the functor with the provided operand.
+         *         The deduced return type is determined by the functor's invocation result.
+         *
+         * @note This overload is restricted to be called on an lvalue.
+         */
         template <typename T>
             requires std::invocable<F, T>
         constexpr decltype(auto) operator()(T &&operand) && {
             return std::invoke(std::move(functor), std::forward<T>(operand));
         }
 
+        /**
+         * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
+         *
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         *
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param closure The extension method closure to be applied to the operand.
+         * @return The result of applying the extension method closure to the given operand.
+         */
         template <typename T>
             requires std::invocable<F &, T>
         friend constexpr decltype(auto) operator|(T &&operand, ExtensionMethodClosure &closure) {
             return closure(std::forward<T>(operand));
         }
 
+        /**
+         * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
+         *
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         *
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param closure The extension method closure to be applied to the operand.
+         * @return The result of applying the extension method closure to the given operand.
+         */
         template <typename T>
             requires std::invocable<const F &, T>
         friend constexpr decltype(auto) operator|(T &&operand, const ExtensionMethodClosure &closure) {
             return closure(std::forward<T>(operand));
         }
 
+        /**
+         * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
+         *
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         *
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param closure The extension method closure to be applied to the operand.
+         * @return The result of applying the extension method closure to the given operand.
+         */
         template <typename T>
             requires std::invocable<F, T>
         friend constexpr decltype(auto) operator|(T &&operand, ExtensionMethodClosure &&closure) {
@@ -207,12 +279,41 @@ namespace retro {
         requires(is_valid_functor_object(Functor))
     struct ExtensionMethodConstClosure {
 
+        /**
+         * @brief Invokes the stored functor with the given operand.
+         *
+         * This operator utilizes std::invoke to call the stored Functor object
+         * with the provided operand. It ensures that the operand is perfectly
+         * forwarded to the invoked functor.
+         *
+         * @param operand The argument to be forwarded to the Functor. It can be
+         *        an lvalue or rvalue of any type that is compatible with Functor.
+         * @return The result of invoking the Functor with the forwarded operand.
+         *         The return type depends on the Functor and the operand type.
+         */
         template <typename T>
             requires std::invocable<decltype(Functor), T>
         constexpr decltype(auto) operator()(T&& operand) const {
             return std::invoke(Functor, std::forward<T>(operand));
         }
 
+        /**
+         * @brief Overloads the pipe operator (|) to apply an extension method closure
+         *        to a given operand.
+         *
+         * @tparam T The type of the operand being passed.
+         * @param operand An argument of type T, forwarded to the closure.
+         * @param closure A constant reference to an ExtensionMethodConstClosure that
+         *        represents the extension method to be applied to the operand.
+         * @return The result of invoking the closure with the provided operand, returned
+         *         as an automatically deduced type.
+         *
+         * @note This operator is designed to enable a cleaner, functional-style syntax
+         *       when applying extension methods to objects or values.
+         *
+         * @remark The constexpr specifier ensures this operator can be used in
+         *         compile-time expressions if all involved components support it.
+         */
         template <typename T>
             requires std::invocable<decltype(Functor), T>
         friend constexpr decltype(auto) operator|(T &&operand, const ExtensionMethodConstClosure &closure) {
@@ -241,12 +342,6 @@ namespace retro {
         requires(is_valid_functor_object(Functor))
     struct ExtensionMethodBinder {
 
-        template <typename... T>
-            requires std::invocable<decltype(Functor), T...>
-        constexpr auto operator()(T &&...args) const {
-            return std::invoke(Functor, std::forward<T>(args)...);
-        }
-
         /**
          *
          * @brief This method enables the binding process with the specified functor.
@@ -270,7 +365,6 @@ namespace retro {
          *         This closure can be utilized to execute the functor at a later point.
          */
         template <typename... T>
-            requires (!std::invocable<decltype(Functor), T...>)
         constexpr auto operator()(T &&...args) const {
             if constexpr (sizeof...(T) == 0) {
                 return ExtensionMethodConstClosure<Functor>();
