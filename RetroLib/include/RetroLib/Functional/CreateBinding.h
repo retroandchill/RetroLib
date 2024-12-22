@@ -243,4 +243,14 @@ namespace retro {
         requires HasFunctionCallOperator<decltype(Functor)>
     using ConstBindingType = decltype(create_binding<Functor>(std::declval<A>()...));
 
+    struct DynamicFunctorTag {};
+
+    /**
+     * Constant tag used to signify that functional object is bounding by taking in a functor as its argument.
+     */
+    RETROLIB_EXPORT constexpr DynamicFunctorTag dynamic_functor;
+
+    template <auto Functor>
+    concept ValidFunctorParameter = std::same_as<std::decay_t<decltype(Functor)>, DynamicFunctorTag> || is_valid_functor_object(Functor);
+
 } // namespace retro
