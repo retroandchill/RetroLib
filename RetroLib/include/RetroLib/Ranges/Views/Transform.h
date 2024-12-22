@@ -23,7 +23,6 @@ namespace retro::ranges::views {
         requires ValidFunctorParameter<Functor>
     constexpr FunctorBindingInvoker<Functor, std::ranges::views::transform> transform_invoker;
 
-
     /**
      * Applies a transformation operation on the given arguments, using the specified Functor.
      * This method wraps the transformation logic within an extension method.
@@ -39,7 +38,7 @@ namespace retro::ranges::views {
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto transform(A&&... args) {
+    constexpr auto transform(A &&...args) {
         return extension_method<transform_invoker<Functor>>(std::forward<A>(args)...);
     }
 } // namespace retro::ranges::views

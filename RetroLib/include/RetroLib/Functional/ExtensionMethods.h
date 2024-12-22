@@ -212,9 +212,11 @@ namespace retro {
         /**
          * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
          *
-         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to
+         * generate a result.
          *
-         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding
+         * reference.
          * @param closure The extension method closure to be applied to the operand.
          * @return The result of applying the extension method closure to the given operand.
          */
@@ -227,9 +229,11 @@ namespace retro {
         /**
          * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
          *
-         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to
+         * generate a result.
          *
-         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding
+         * reference.
          * @param closure The extension method closure to be applied to the operand.
          * @return The result of applying the extension method closure to the given operand.
          */
@@ -242,9 +246,11 @@ namespace retro {
         /**
          * An overloaded pipe operator that allows applying an ExtensionMethodClosure to a given operand.
          *
-         * This operator enables a syntax where an operand can be "piped" through an extension method closure to generate a result.
+         * This operator enables a syntax where an operand can be "piped" through an extension method closure to
+         * generate a result.
          *
-         * @param operand The input operand to which the extension method closure is applied. It is a forwarding reference.
+         * @param operand The input operand to which the extension method closure is applied. It is a forwarding
+         * reference.
          * @param closure The extension method closure to be applied to the operand.
          * @return The result of applying the extension method closure to the given operand.
          */
@@ -293,7 +299,7 @@ namespace retro {
          */
         template <typename T>
             requires std::invocable<decltype(Functor), T>
-        constexpr decltype(auto) operator()(T&& operand) const {
+        constexpr decltype(auto) operator()(T &&operand) const {
             return std::invoke(Functor, std::forward<T>(operand));
         }
 
@@ -343,6 +349,18 @@ namespace retro {
     struct ExtensionMethodBinder {
 
         /**
+         * Overloaded call operator that invokes the Functor with the provided arguments.
+         *
+         * @param args The arguments to be forwarded to the Functor for invocation.
+         * @return The result of invoking the Functor with the forwarded arguments.
+         */
+        template <typename... T>
+            requires std::invocable<decltype(Functor), T...>
+        constexpr auto operator()(T &&...args) const {
+            return std::invoke(Functor, std::forward<T>(args)...);
+        }
+
+        /**
          *
          * @brief This method enables the binding process with the specified functor.
          *
@@ -365,6 +383,7 @@ namespace retro {
          *         This closure can be utilized to execute the functor at a later point.
          */
         template <typename... T>
+            requires(!std::invocable<decltype(Functor), T...>)
         constexpr auto operator()(T &&...args) const {
             if constexpr (sizeof...(T) == 0) {
                 return ExtensionMethodConstClosure<Functor>();

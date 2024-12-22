@@ -22,8 +22,8 @@ namespace retro::optionals {
 
     struct OrElseThrowInvoker {
         /**
-         * Invokes the functor with the provided arguments and throws the result if the optional parameter does not have a value.
-         * If the optional parameter does have a value, retrieves and returns it.
+         * Invokes the functor with the provided arguments and throws the result if the optional parameter does not have
+         * a value. If the optional parameter does have a value, retrieves and returns it.
          *
          * @param optional The optional object to check for a value.
          * @param functor The functor to invoke in case the optional does not contain a value.
@@ -39,7 +39,6 @@ namespace retro::optionals {
 
             throw std::invoke(std::forward<F>(functor));
         }
-
     };
 
     constexpr OrElseThrowInvoker or_else_throw_function;
@@ -67,11 +66,12 @@ namespace retro::optionals {
      * Invokes a provided functor or throws an exception when the operation on a pipeable object fails.
      *
      * @tparam A The variadic template arguments to be forwarded to the functor.
-     * @return A processed result of the input or an exception if the operation fails, leveraging the `extension_method`.
+     * @return A processed result of the input or an exception if the operation fails, leveraging the
+     * `extension_method`.
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto or_else_throw(A&&... args) {
+    constexpr auto or_else_throw(A &&...args) {
         return extension_method<or_else_throw_invoker<Functor>>(std::forward<A>(args)...);
     }
 

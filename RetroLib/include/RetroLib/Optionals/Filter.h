@@ -21,11 +21,12 @@ namespace retro::optionals {
 
     struct FilterInvoker {
         /**
-         * @brief Applies the given functor to the value within an optional-like object and returns the optional based on the functor's result.
+         * @brief Applies the given functor to the value within an optional-like object and returns the optional based
+         * on the functor's result.
          *
-         * This function checks if the optional-like object contains a value and applies a functor to the value to decide
-         * whether to return the same optional-like object or an empty one. If the functor returns true, the optional-like
-         * object is returned as is, otherwise an empty one is returned.
+         * This function checks if the optional-like object contains a value and applies a functor to the value to
+         * decide whether to return the same optional-like object or an empty one. If the functor returns true, the
+         * optional-like object is returned as is, otherwise an empty one is returned.
          *
          * @tparam O The type of the optional-like object, can be an lvalue or rvalue reference.
          * @tparam F The type of the functor to be applied on the contained value.
@@ -33,8 +34,8 @@ namespace retro::optionals {
          * @param optional An optional-like object whose value is evaluated and possibly passed to the functor.
          * @param functor A callable object which takes the value from the optional and returns a boolean.
          *
-         * @return If the optional contains a value and the functor returns true, the optional-like object is returned with
-         *         its value preserved. Otherwise, an empty optional-like object of the same type is returned.
+         * @return If the optional contains a value and the functor returns true, the optional-like object is returned
+         * with its value preserved. Otherwise, an empty optional-like object of the same type is returned.
          */
         template <OptionalType O, typename F>
             requires std::is_invocable_r_v<bool, F, CommonReference<O>>
@@ -71,12 +72,12 @@ namespace retro::optionals {
      *
      * @param args Arguments to be forwarded to the `filter_invoker` along with the functor.
      *
-     * @return An object resulting from the invocation of the specified filter logic, where the value is conditionally preserved
-     *         based on the evaluation of the provided functor.
+     * @return An object resulting from the invocation of the specified filter logic, where the value is conditionally
+     * preserved based on the evaluation of the provided functor.
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto filter(A&&... args) {
+    constexpr auto filter(A &&...args) {
         return extension_method<filter_invoker<Functor>>(std::forward<A>(args)...);
     }
 

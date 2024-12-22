@@ -35,8 +35,8 @@ namespace retro::optionals {
             requires std::invocable<F, CommonReference<O>> && OptionalType<std::invoke_result_t<F, CommonReference<O>>>
         constexpr auto operator()(O &&optional, F &&functor) const {
             return has_value(std::forward<O>(optional))
-                   ? std::invoke(std::forward<F>(functor), get<O>(std::forward<O>(optional)))
-                   : std::invoke_result_t<F, CommonReference<O>>();
+                       ? std::invoke(std::forward<F>(functor), get<O>(std::forward<O>(optional)))
+                       : std::invoke_result_t<F, CommonReference<O>>();
         }
     };
 
@@ -52,11 +52,12 @@ namespace retro::optionals {
      * @tparam A The types of the arguments to be forwarded to the functor.
      * @tparam Functor The type of the functor to be invoked.
      * @param args The arguments to be forwarded to the functor.
-     * @return An instance of the specified extension method, created using the provided functor and forwarded arguments.
+     * @return An instance of the specified extension method, created using the provided functor and forwarded
+     * arguments.
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto and_then(A&&... args) {
+    constexpr auto and_then(A &&...args) {
         return extension_method<and_then_invoker<Functor>>(std::forward<A>(args)...);
     }
 } // namespace retro::optionals

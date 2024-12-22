@@ -53,7 +53,7 @@ namespace retro {
      *   of the callable should be managed by the user as necessary.
      */
     RETROLIB_EXPORT template <auto BoundFunctor, auto BaseFunctor>
-        requires (ValidFunctorParameter<BoundFunctor> && is_valid_functor_object(BaseFunctor))
+        requires(ValidFunctorParameter<BoundFunctor> && is_valid_functor_object(BaseFunctor))
     struct FunctorBindingInvoker {
         using BoundFunctorType = decltype(BoundFunctor);
         using BaseFunctorType = decltype(BaseFunctor);
@@ -72,7 +72,7 @@ namespace retro {
          */
         template <typename T, typename F>
             requires std::invocable<BaseFunctorType, T, F> && DynamicFunctorBinding<BoundFunctor>
-        constexpr auto operator()(T&& operand, F&& functor) const {
+        constexpr auto operator()(T &&operand, F &&functor) const {
             return std::invoke(BaseFunctor, std::forward<T>(operand), std::forward<F>(functor));
         }
 
@@ -87,8 +87,9 @@ namespace retro {
          * @return The result of invoking BaseFunctor with the operand and the created binding.
          */
         template <typename T, typename... A>
-            requires (sizeof...(A) > 1) && std::invocable<BaseFunctorType, T, BindingType<A...>> && DynamicFunctorBinding<BoundFunctor>
-        constexpr auto operator()(T&& operand, A&&... args) const {
+            requires(sizeof...(A) > 1) && std::invocable<BaseFunctorType, T, BindingType<A...>> &&
+                    DynamicFunctorBinding<BoundFunctor>
+        constexpr auto operator()(T &&operand, A &&...args) const {
             return std::invoke(BaseFunctor, std::forward<T>(operand), create_binding(std::forward<A>(args)...));
         }
 
@@ -101,7 +102,7 @@ namespace retro {
          */
         template <typename T>
             requires std::invocable<BaseFunctorType, T, BoundFunctorType> && (!DynamicFunctorBinding<BoundFunctor>)
-        constexpr auto operator()(T&& operand) const {
+        constexpr auto operator()(T &&operand) const {
             return std::invoke(BaseFunctor, std::forward<T>(operand), create_binding<BoundFunctor>());
         }
 
@@ -117,10 +118,12 @@ namespace retro {
          * @return The result of invoking the BaseFunctor with the given operand and bound arguments.
          */
         template <typename T, typename... A>
-            requires (sizeof...(A) >= 1) && std::invocable<BaseFunctorType, T, BindingType<BoundFunctorType, A...>> && (!DynamicFunctorBinding<BoundFunctor>)
-        constexpr auto operator()(T&& operand, A&&... args) const {
-            return std::invoke(BaseFunctor, std::forward<T>(operand), create_binding<BoundFunctor>(std::forward<A>(args)...));
+            requires(sizeof...(A) >= 1) && std::invocable<BaseFunctorType, T, BindingType<BoundFunctorType, A...>> &&
+                    (!DynamicFunctorBinding<BoundFunctor>)
+        constexpr auto operator()(T &&operand, A &&...args) const {
+            return std::invoke(BaseFunctor, std::forward<T>(operand),
+                               create_binding<BoundFunctor>(std::forward<A>(args)...));
         }
     };
 
-}
+} // namespace retro

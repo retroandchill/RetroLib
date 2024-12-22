@@ -35,7 +35,7 @@ namespace retro::ranges::views {
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto filter(A&&... args) {
+    constexpr auto filter(A &&...args) {
         return extension_method<filter_invoker<Functor>>(std::forward<A>(args)...);
     }
 

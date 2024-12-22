@@ -34,7 +34,6 @@ namespace retro::optionals {
         }
     }
 
-
     struct TransformInvoker {
         /**
          * Invokes the given functor on the value held by the optional-like object, if it has a value.
@@ -48,12 +47,11 @@ namespace retro::optionals {
         template <OptionalType O, typename F>
             requires std::invocable<F, CommonReference<O>>
         constexpr auto operator()(O &&optional, F &&functor) const {
-            using ResultType =
-                decltype(from_result(std::forward<O>(optional), std::invoke(std::forward<F>(functor),
-                                                                            get<O>(std::forward<O>(optional)))));
+            using ResultType = decltype(from_result(
+                std::forward<O>(optional), std::invoke(std::forward<F>(functor), get<O>(std::forward<O>(optional)))));
             return has_value(std::forward<O>(optional))
-                       ? from_result(std::forward<O>(optional), std::invoke(std::forward<F>(functor),
-                                                                            get<O>(std::forward<O>(optional))))
+                       ? from_result(std::forward<O>(optional),
+                                     std::invoke(std::forward<F>(functor), get<O>(std::forward<O>(optional))))
                        : ResultType();
         }
     };
@@ -75,7 +73,7 @@ namespace retro::optionals {
      */
     RETROLIB_EXPORT template <auto Functor = dynamic_functor, typename... A>
         requires ValidFunctorParameter<Functor>
-    constexpr auto transform(A&&... args) {
+    constexpr auto transform(A &&...args) {
         return extension_method<transform_invoker<Functor>>(std::forward<A>(args)...);
     }
 
