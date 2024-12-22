@@ -21,6 +21,10 @@
 
 namespace retro::ranges {
 
+    RETROLIB_EXPORT template <typename I>
+    concept BridgableIterator = !std::input_or_output_iterator<I> && std::is_trivially_destructible_v<I> &&
+                                std::is_trivially_copy_constructible_v<I> && std::is_trivially_move_constructible_v<I>;
+
     template <typename I>
     struct IteratorStorage {
         I adapted;
@@ -50,9 +54,7 @@ namespace retro::ranges {
         }
     };
 
-    template <typename I>
-        requires std::is_trivially_destructible_v<I> && std::is_trivially_copy_constructible_v<I> &&
-                 std::is_trivially_move_constructible_v<I>
+    template <BridgableIterator I>
     struct IteratorAssignAdapter : IteratorStorage<I> {
         constexpr IteratorAssignAdapter() = default;
 
@@ -134,4 +136,7 @@ namespace retro::ranges {
       private:
         using Base::adapted;
     };
+
+    template <typename I>
+    concept CanBridgeToRange = Iterable<I> && BridgableIterator<IteratorType<I>>;
 } // namespace retro::ranges

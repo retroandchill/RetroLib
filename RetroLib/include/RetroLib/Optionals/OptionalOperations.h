@@ -91,7 +91,7 @@ namespace retro::optionals {
         template <StlOptional O>
             requires std::same_as<T, std::decay_t<O>>
         static constexpr decltype(auto) get_value(O &&optional) {
-            return *std::forward<O>(optional);
+            return std::forward<O>(optional).value();
         }
 
         /**

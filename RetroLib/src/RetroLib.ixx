@@ -74,7 +74,7 @@ import std;
 #include "RetroLib/Ranges/Concepts/Concatable.h"
 #include "RetroLib/Ranges/Concepts/Iterable.h"
 
-#include "RetroLib/Ranges/Compatiblity/ForEachRange.h"
+#include "RetroLib/Ranges/Compatibility/ForEachRange.h"
 
 #include "RetroLib/Ranges/Algorithm/AllOf.h"
 #include "RetroLib/Ranges/Algorithm/AnyOf.h"
@@ -87,6 +87,7 @@ import std;
 #include "RetroLib/Ranges/Views/AnyView.h"
 #include "RetroLib/Ranges/Views/CacheLast.h"
 #include "RetroLib/Ranges/Views/Concat.h"
+#include "RetroLib/Ranges/Views/Elements.h"
 #include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
