@@ -279,12 +279,6 @@ namespace retro {
                 return ExtensionMethodClosure<BindingType>(retro::bind_back<Functor>(std::forward<T>(args)...));
             }
         }
-
-        template <typename T>
-            requires std::invocable<decltype(Functor), T>
-        friend constexpr decltype(auto) operator|(T&& operand, const ExtensionMethodBinder &binder) {
-            return binder(std::forward<T>(operand));
-        }
     };
 
     RETROLIB_EXPORT template <auto Functor>

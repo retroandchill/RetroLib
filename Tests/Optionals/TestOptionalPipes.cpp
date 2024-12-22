@@ -161,6 +161,7 @@ TEST_CASE("Test getting a value or throwing an exception if its empty", "[option
 
     constexpr auto alt_throw = [](std::string_view message) { return std::runtime_error(message.data()); };
     CHECK_THROWS_AS(value2 | retro::optionals::or_else_throw<alt_throw>("Coult not get value!"), std::runtime_error);
+    CHECK_THROWS_AS(value2 | retro::optionals::or_else_throw(alt_throw, "Coult not get value!"), std::bad_optional_access);
 }
 
 TEST_CASE("Test getting a value without any runtime checks (very unsafe)", "[optionals]") {

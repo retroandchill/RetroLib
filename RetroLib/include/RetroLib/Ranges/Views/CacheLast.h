@@ -261,6 +261,6 @@ namespace retro::ranges {
          * views, providing efficient access to the last element without
          * recalculating it at every access, even for non-bidirectional ranges.
          */
-        RETROLIB_EXPORT constexpr auto cache_last = extension_method<CacheLastInvoker{}>;
+        RETROLIB_EXPORT constexpr auto cache_last = extension_method<CacheLastInvoker{}>();
     } // namespace views
 } // namespace retro::ranges
