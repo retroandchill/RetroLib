@@ -8,7 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "Retro/Utils/ForwardLike.h"
+#include "RetroLib/Utils/ForwardLike.h"
 
 #include <tuple>
 #include <type_traits>

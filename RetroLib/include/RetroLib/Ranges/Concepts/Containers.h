@@ -8,6 +8,8 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/Ranges/FeatureBridge.h"
+
 #include <ranges>
 #endif
 
@@ -221,7 +223,7 @@ namespace retro::ranges {
      */
     template <typename C, typename T>
         requires StlAppendable<C, T>
-    constexpr auto append_container(C &container, T &&value) {
+    constexpr decltype(auto) append_container(C &container, T &&value) {
         if constexpr (StlEmplaceBack<C, T>) {
             return container.emplace_back(std::forward<T>(value));
         } else if constexpr (StlPushBack<C, T>) {

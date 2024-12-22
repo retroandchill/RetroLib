@@ -29,6 +29,7 @@ TEST_CASE("Can use the standard range adapters", "[ranges]") {
     constexpr std::array values = {1, 2, 3, 4, 5};
     constexpr auto is_even = [](int i) { return i % 2 == 0; };
     constexpr auto double_value = [](int i, int j) { return i * j; };
+    auto filterer = retro::ranges::views::filter(is_even);
 
     SECTION("Can use the regular functional operators") {
         auto filtered = retro::ranges::views::filter(values, is_even);

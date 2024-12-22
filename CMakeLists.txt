@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
 list(APPEND CMAKE_PROJECT_TOP_LEVEL_INCLUDES ${CMAKE_SOURCE_DIR}/CMake/conan_provider.cmake)
+set(CONAN_INSTALL_ARGS "${CONAN_INSTALL_ARGS} -o with_tests=True")
 project(RetroLib)
 
 option(RETROLIB_WITH_TESTS "Should this project be compiled with the tests?" ON)
