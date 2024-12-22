@@ -23,24 +23,92 @@ namespace retro::ranges {
      * @tparam T The type to check
      */
     template <typename T>
-    concept StlReservable = std::ranges::sized_range<T> &&
-                            requires(T &container, std::ranges::range_size_t<T> size) { container.reserve(size); };
+    concept StlReservable = std::ranges::sized_range<T> && requires(T &container, std::ranges::range_size_t<T> size) {
+        container.reserve(size);
+        { container.capacity() } -> std::convertible_to<std::ranges::range_size_t<T>>;
+        { container.max_size() } -> std::convertible_to<std::ranges::range_size_t<T>>;
+    };
 
     /**
-     * Concept that defines if a container has an STL style capacity method.
+     * @class ReservableContainerType
+     * @brief Represents a type of container that can be reserved for particular usage.
+     *
+     * Inherits from InvalidType to provide specialized behavior for reservable
+     * containers. This struct is used to define and categorize containers that
+     * support reservation functionality, distinguishing them from invalid or
+     * non-reservable types.
+     */
+    RETROLIB_EXPORT template <typename>
+    struct ReservableContainerType : InvalidType {};
+
+    /**
+     * @brief A utility struct that operates on types with reservable storage.
+     *
+     * ReservableContainerType provides static methods tailored for managing containers
+     * that support reservable storage. These containers must conform to the
+     * `StlReservable` concept and include methods such as `reserve()` and `capacity()` for
+     * manipulating and inspecting their internal memory allocations.
+     *
+     * @tparam T The type of the container or range this utility operates on.
+     */
+    RETROLIB_EXPORT template <StlReservable T>
+    struct ReservableContainerType<T> : ValidType {
+        /**
+         * Reserves storage in the given range to accommodate at least the specified number of elements.
+         *
+         * @param range The container or range object that needs its storage reserved.
+         * @param size The minimum number of elements for which storage should be reserved.
+         */
+        static constexpr void reserve(T &range, std::ranges::range_size_t<T> size) {
+            range.reserve(size);
+        }
+
+        /**
+         * @brief Retrieves the capacity of a given container.
+         *
+         * This function returns the capacity of the provided container-like object
+         * by calling its `capacity` method. It is applicable to any type that
+         * defines a `capacity` method.
+         *
+         * @param range A container-like object that supports the `capacity` method.
+         * @return The capacity of the given container.
+         */
+        static constexpr std::ranges::range_size_t<T> capacity(const T &range) {
+            return range.capacity();
+        }
+
+        /**
+         * @brief Retrieves the maximum size of a given container.
+         *
+         * This function template returns the maximum number of elements
+         * that the specified container type `T` can theoretically contain.
+         * It calls the `max_size` member function of the container.
+         *
+         * @param range The container object for which the maximum size is to be determined.
+         *
+         * @return The maximum size of the container as returned by its `max_size` method.
+         */
+        static constexpr std::ranges::range_size_t<T> max_size(const T &range) {
+            return range.max_size();
+        }
+    };
+
+    /**
+     * Concept that checks if a container has the ability to perform a reserve operation on it.
      *
      * @tparam T The type to check
      */
-    template <typename T>
-    concept StlCapacity = requires(T &container) { container.capacity(); };
-
-    /**
-     * Concept that defines if a container has an STL style max_size method.
-     *
-     * @tparam T The type to check
-     */
-    template <typename T>
-    concept StlMaxSize = requires(T &container) { container.max_size(); };
+    RETROLIB_EXPORT template <typename T>
+    concept ReservableContainer = std::ranges::sized_range<T> && ReservableContainerType<std::decay_t<T>>::is_valid &&
+                                  requires(T &container, std::ranges::range_size_t<T> size) {
+                                      ReservableContainerType<std::decay_t<T>>::reserve(container, size);
+                                      {
+                                          ReservableContainerType<std::decay_t<T>>::capacity(container)
+                                      } -> std::convertible_to<std::ranges::range_size_t<T>>;
+                                      {
+                                          ReservableContainerType<std::decay_t<T>>::max_size(container)
+                                      } -> std::convertible_to<std::ranges::range_size_t<T>>;
+                                  };
 
     /**
      * Reserves storage in the given range to accommodate at least the specified number of elements.
@@ -49,9 +117,9 @@ namespace retro::ranges {
      * @param range The container or range object that needs its storage reserved.
      * @param size The minimum number of elements for which storage should be reserved.
      */
-    RETROLIB_EXPORT template <StlReservable T>
+    RETROLIB_EXPORT template <ReservableContainer T>
     constexpr void container_reserve(T &range, std::ranges::range_size_t<T> size) {
-        range.reserve(size);
+        ReservableContainerType<std::decay_t<T>>::reserve(range, size);
     }
 
     /**
@@ -65,9 +133,9 @@ namespace retro::ranges {
      * @param range A container-like object that supports the `capacity` method.
      * @return The capacity of the given container.
      */
-    RETROLIB_EXPORT template <StlCapacity T>
-    constexpr auto container_capacity(const T &range) {
-        return range.capacity();
+    RETROLIB_EXPORT template <ReservableContainer T>
+    constexpr std::ranges::range_size_t<T> container_capacity(const T &range) {
+        return ReservableContainerType<std::decay_t<T>>::capacity(range);
     }
 
     /**
@@ -82,23 +150,10 @@ namespace retro::ranges {
      *
      * @return The maximum size of the container as returned by its `max_size` method.
      */
-    RETROLIB_EXPORT template <StlMaxSize T>
-    constexpr auto container_max_size(const T &range) {
-        return range.max_size();
+    RETROLIB_EXPORT template <ReservableContainer T>
+    constexpr std::ranges::range_size_t<T> container_max_size(const T &range) {
+        return ReservableContainerType<std::decay_t<T>>::max_size(range);
     }
-
-    /**
-     * Concept that checks if a container has the ability to perform a reserve operation on it.
-     *
-     * @tparam T The type to check
-     */
-    RETROLIB_EXPORT template <typename T>
-    concept ReservableContainer =
-        std::ranges::sized_range<T> && requires(T &container, std::ranges::range_size_t<T> size) {
-            container_reserve(container, size);
-            { container_capacity(container) } -> std::convertible_to<std::ranges::range_size_t<T>>;
-            { container_max_size(container) } -> std::convertible_to<std::ranges::range_size_t<T>>;
-        };
 
     /**
      * Concept that defines if a container has an STL style emplace_back method.
