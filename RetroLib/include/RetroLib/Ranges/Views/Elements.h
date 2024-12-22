@@ -8,12 +8,12 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "RetroLib/Concepts/Tuples.h"
 #include "RetroLib/Concepts/Iterators.h"
+#include "RetroLib/Concepts/Tuples.h"
+#include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Ranges/RangeBasics.h"
 #include "RetroLib/Utils/NonPropagatingCache.h"
-#include "RetroLib/Functional/ExtensionMethods.h"
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -112,7 +112,8 @@ namespace retro::ranges {
                 return *this;
             }
 
-            constexpr Iterator operator--(int) noexcept(noexcept(--it) && std::is_nothrow_copy_constructible_v<std::ranges::iterator_t<R>>)
+            constexpr Iterator
+            operator--(int) noexcept(noexcept(--it) && std::is_nothrow_copy_constructible_v<std::ranges::iterator_t<R>>)
                 requires std::ranges::bidirectional_range<R>
             {
                 auto temp = *this;
@@ -286,7 +287,7 @@ namespace retro::ranges {
             std::ranges::sentinel_t<ConstifyIf<R>> end_element;
         };
 
-    public:
+      public:
         /**
          * @brief Default constructor for the `ElementsView` class.
          *
@@ -420,9 +421,6 @@ namespace retro::ranges {
       private:
         R range;
     };
-
-    template <std::ranges::input_range R, size_t N>
-    ElementsView(R &&) -> ElementsView<std::ranges::views::all_t<R>, N>;
 
     namespace views {
         template <size_t N>

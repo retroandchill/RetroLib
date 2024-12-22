@@ -215,12 +215,15 @@ namespace retro::ranges {
         /**
          * @brief Computes the size of the range by considering the sizes of outer, contraction, and inner ranges.
          *
-         * This method calculates the total size of the composite range by iterating over the outer range, factoring in the contraction size,
-         * and summing up the sizes of each element within the outer range.
+         * This method calculates the total size of the composite range by iterating over the outer range, factoring in
+         * the contraction size, and summing up the sizes of each element within the outer range.
          *
          * @return The computed total size of the range as `SizeType`.
          */
-        constexpr SizeType size() const requires std::ranges::sized_range<Outer> && std::ranges::sized_range<Inner> && std::ranges::sized_range<P> && std::ranges::forward_range<Outer> {
+        constexpr SizeType size() const
+            requires std::ranges::sized_range<Outer> && std::ranges::sized_range<Inner> &&
+                     std::ranges::sized_range<P> && std::ranges::forward_range<Outer>
+        {
             SizeType size = (std::ranges::size(outer) - 1) * std::ranges::size(contraction);
             for (auto &&it : outer) {
                 size += std::ranges::size(std::forward<decltype(it)>(it));

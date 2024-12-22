@@ -279,8 +279,8 @@ TEST_CASE("Can join a string together using a view", "[ranges]") {
 
 TEST_CASE("Can get the elements of a tupled collection", "[ranges]") {
     SECTION("Can get the value of any tuple based collection") {
-        std::array<std::tuple<int, int, int>, 3> tuples = {{std::make_tuple(1, 2, 3), std::make_tuple(4, 5, 6),
-                                                            std::make_tuple(7, 8, 9)}};
+        std::array<std::tuple<int, int, int>, 3> tuples = {
+            {std::make_tuple(1, 2, 3), std::make_tuple(4, 5, 6), std::make_tuple(7, 8, 9)}};
 
         auto value_view = tuples | retro::ranges::views::elements<2>;
         int sum = 0;
