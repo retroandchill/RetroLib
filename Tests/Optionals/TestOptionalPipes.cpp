@@ -242,3 +242,38 @@ TEST_CASE("Can convert between various optional types", "[optionals]") {
         CHECK_FALSE(value4.has_value());
     }
 }
+
+TEST_CASE("Can get the value inside of an optional or an alternative", "[optionals]") {
+    SECTION("Can get the value of a value type out") {
+        std::optional value1 = 34;
+        auto value2 = value1 | retro::optionals::or_else_get([] { return 5; });
+        CHECK(value2 == 34);
+
+        std::optional<int> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::or_else_get([] { return 5; });
+        CHECK(value4 == 5);
+    }
+
+    SECTION("Can get the value of a referemce type out") {
+        int ref_value = 34;
+        int alt_value = 45;
+        retro::Optional<int&> value1 = ref_value;
+        decltype(auto) value2 = value1 | retro::optionals::or_else_get([&alt_value]() -> int& { return alt_value; });
+        CHECK(value2 == 34);
+
+        retro::Optional<int&> value3 = std::nullopt;
+        decltype(auto) value4 = value3 | retro::optionals::or_else_get([&alt_value]() -> int& { return alt_value; });
+        CHECK(value4 == 45);
+    }
+
+    SECTION("Can collapse two different types") {
+        int ref_value = 34;
+        retro::Optional<int&> value1 = ref_value;
+        decltype(auto) value2 = value1 | retro::optionals::or_else_get([] { return 50.0; });
+        CHECK(value2 == 34);
+
+        retro::Optional<int&> value3 = std::nullopt;
+        decltype(auto) value4 = value3 | retro::optionals::or_else_get([] { return 50.0; });
+        CHECK(value4 == 50.0);
+    }
+}
