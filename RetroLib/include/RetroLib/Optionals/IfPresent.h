@@ -27,7 +27,7 @@ namespace retro::optionals {
          */
         template <OptionalType O, typename F>
             requires std::invocable<F, CommonReference<O>>
-        constexpr void operator()(O&& optional, F&& functor) const {
+        constexpr void operator()(O &&optional, F &&functor) const {
             if (has_value(optional)) {
                 std::invoke(std::forward<F>(functor), get(std::forward<O>(optional)));
             }
@@ -56,4 +56,4 @@ namespace retro::optionals {
     constexpr auto if_present(A &&...args) {
         return extension_method<if_present_invoker<Functor>>(std::forward<A>(args)...);
     }
-}
+} // namespace retro::optionals

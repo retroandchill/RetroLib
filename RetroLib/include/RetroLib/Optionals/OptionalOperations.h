@@ -227,11 +227,12 @@ namespace retro::optionals {
     template <template <typename...> typename O, typename T>
         requires OptionalType<O<std::reference_wrapper<T>>>
     struct OptionalParameters<O<std::reference_wrapper<T>>> : ValidType {
-        using ContainedType = T&;
+        using ContainedType = T &;
     };
 
     /**
-     * Type parameter definition for the effective type parameter of an optional type. Decaying std::reference_wrapper to a raw reference.
+     * Type parameter definition for the effective type parameter of an optional type. Decaying std::reference_wrapper
+     * to a raw reference.
      *
      * @tparam T The optional type in question
      */

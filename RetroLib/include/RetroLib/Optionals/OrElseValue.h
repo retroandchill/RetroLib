@@ -30,10 +30,12 @@ namespace retro::optionals {
          * @return The value contained in the optional object if it has one; otherwise, the provided fallback value.
          */
         template <OptionalType O, typename T>
-            requires std::convertible_to<CommonReference<O>, T> && (!std::is_lvalue_reference_v<CommonReference<O>> || !SpecializationOf<std::decay_t<T>, std::reference_wrapper>)
-        constexpr decltype(auto) operator()(O&& optional, T&& value) const {
+            requires std::convertible_to<CommonReference<O>, T> &&
+                     (!std::is_lvalue_reference_v<CommonReference<O>> ||
+                      !SpecializationOf<std::decay_t<T>, std::reference_wrapper>)
+        constexpr decltype(auto) operator()(O &&optional, T &&value) const {
             if (has_value(optional)) {
-                return static_cast<T&&>(get(std::forward<O>(optional)));
+                return static_cast<T &&>(get(std::forward<O>(optional)));
             }
 
             return std::forward<T>(value);
@@ -52,7 +54,7 @@ namespace retro::optionals {
          */
         template <OptionalType O, typename T>
             requires std::convertible_to<CommonReference<O>, T> && std::is_lvalue_reference_v<CommonReference<O>>
-        constexpr T& operator()(O&& optional, const std::reference_wrapper<T>& value) const {
+        constexpr T &operator()(O &&optional, const std::reference_wrapper<T> &value) const {
             if (has_value(optional)) {
                 return get(std::forward<O>(optional));
             }
@@ -68,4 +70,4 @@ namespace retro::optionals {
      * Intended for use where inline handling of optional values with a default fallback is required.
      */
     RETROLIB_EXPORT constexpr auto or_else_value = extension_method<OrElseValueInvoker{}>;
-}
+} // namespace retro::optionals

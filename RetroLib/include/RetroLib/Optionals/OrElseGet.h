@@ -32,7 +32,7 @@ namespace retro::optionals {
          */
         template <OptionalType O, typename F>
             requires std::invocable<F> && std::convertible_to<CommonReference<O>, std::invoke_result_t<F>>
-        constexpr decltype(auto) operator()(O&& optional, F&& functor) const  {
+        constexpr decltype(auto) operator()(O &&optional, F &&functor) const {
             if (has_value(std::forward<O>(optional))) {
                 return static_cast<std::invoke_result_t<F>>(get(std::forward<O>(optional)));
             }
@@ -63,5 +63,4 @@ namespace retro::optionals {
         return extension_method<or_else_get_invoker<Functor>>(std::forward<A>(args)...);
     }
 
-
-}
+} // namespace retro::optionals

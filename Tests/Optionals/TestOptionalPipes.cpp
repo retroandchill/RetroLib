@@ -232,7 +232,7 @@ TEST_CASE("Can convert between various optional types", "[optionals]") {
 
     SECTION("Can convert from a raw reference optional to a reference-wrapped optional") {
         int ref_value = 34;
-        retro::Optional<int&> value1 = ref_value;
+        retro::Optional<int &> value1 = ref_value;
         auto value2 = value1 | retro::optionals::to<std::optional>();
         CHECK(value2.has_value());
         CHECK(value2.value() == 34);
@@ -257,22 +257,22 @@ TEST_CASE("Can get the value inside of an optional or an alternative", "[optiona
     SECTION("Can get the value of a reference type out") {
         int ref_value = 34;
         int alt_value = 45;
-        retro::Optional<int&> value1 = ref_value;
-        decltype(auto) value2 = value1 | retro::optionals::or_else_get([&alt_value]() -> int& { return alt_value; });
+        retro::Optional<int &> value1 = ref_value;
+        decltype(auto) value2 = value1 | retro::optionals::or_else_get([&alt_value]() -> int & { return alt_value; });
         CHECK(value2 == 34);
 
-        retro::Optional<int&> value3 = std::nullopt;
-        decltype(auto) value4 = value3 | retro::optionals::or_else_get([&alt_value]() -> int& { return alt_value; });
+        retro::Optional<int &> value3 = std::nullopt;
+        decltype(auto) value4 = value3 | retro::optionals::or_else_get([&alt_value]() -> int & { return alt_value; });
         CHECK(value4 == 45);
     }
 
     SECTION("Can collapse two different types") {
         int ref_value = 34;
-        retro::Optional<int&> value1 = ref_value;
+        retro::Optional<int &> value1 = ref_value;
         decltype(auto) value2 = value1 | retro::optionals::or_else_get([] { return 50.0; });
         CHECK(value2 == 34);
 
-        retro::Optional<int&> value3 = std::nullopt;
+        retro::Optional<int &> value3 = std::nullopt;
         decltype(auto) value4 = value3 | retro::optionals::or_else_get([] { return 50.0; });
         CHECK(value4 == 50.0);
     }
@@ -304,11 +304,11 @@ TEST_CASE("Can get the value or an alternative", "[optionals]") {
     SECTION("Can get references out") {
         int ref_value = 34;
         int alt_value = 45;
-        retro::Optional<int&> value1 = ref_value;
+        retro::Optional<int &> value1 = ref_value;
         decltype(auto) value2 = value1 | retro::optionals::or_else_value(std::ref(alt_value));
         CHECK(value2 == 34);
 
-        retro::Optional<int&> value3 = std::nullopt;
+        retro::Optional<int &> value3 = std::nullopt;
         decltype(auto) value4 = value3 | retro::optionals::or_else_value(std::ref(alt_value));
         CHECK(value4 == alt_value);
     }

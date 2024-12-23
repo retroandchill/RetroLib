@@ -32,7 +32,7 @@ namespace retro::optionals {
          */
         template <OptionalType O, typename F>
             requires std::invocable<F> && std::same_as<std::invoke_result_t<F>, std::decay_t<O>>
-        constexpr std::decay_t<O> operator()(O&& optional, F&& functor) const  {
+        constexpr std::decay_t<O> operator()(O &&optional, F &&functor) const {
             if (has_value(std::forward<O>(optional))) {
                 return std::forward<O>(optional);
             }
@@ -61,5 +61,4 @@ namespace retro::optionals {
         return extension_method<or_else_invoker<Functor>>(std::forward<A>(args)...);
     }
 
-
-}
+} // namespace retro::optionals
