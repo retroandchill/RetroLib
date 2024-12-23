@@ -194,3 +194,51 @@ TEST_CASE("Can check if an optional value is set", "[optionals]") {
     std::optional<int> value2 = std::nullopt;
     CHECK_FALSE(value2 | retro::optionals::is_set);
 }
+
+TEST_CASE("Can convert between various optional types", "[optionals]") {
+    SECTION("Can convert between two optionals holding the same parameter") {
+        std::optional value1 = 34;
+        auto value2 = value1 | retro::optionals::to<retro::Optional>();
+        CHECK(value2.has_value());
+        CHECK(value2.value() == 34);
+
+        std::optional<int> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::to<retro::Optional>();
+        CHECK_FALSE(value4.has_value());
+    }
+
+    SECTION("Can convert between two unlike optional types") {
+        std::optional value1 = 34;
+        auto value2 = value1 | retro::optionals::to<retro::Optional<double>>();
+        CHECK(value2.has_value());
+        CHECK(value2.value() == 34.0);
+
+        std::optional<int> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::to<retro::Optional<double>>();
+        CHECK_FALSE(value4.has_value());
+    }
+
+    SECTION("Can convert from a reference-wrapped optional to a raw reference optional") {
+        int ref_value = 34;
+        std::optional value1 = std::ref(ref_value);
+        auto value2 = value1 | retro::optionals::to<retro::Optional>();
+        CHECK(value2.has_value());
+        CHECK(value2.value() == 34);
+
+        std::optional<std::reference_wrapper<int>> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::to<retro::Optional>();
+        CHECK_FALSE(value4.has_value());
+    }
+
+    SECTION("Can convert from a raw reference optional to a reference-wrapped optional") {
+        int ref_value = 34;
+        retro::Optional<int&> value1 = ref_value;
+        auto value2 = value1 | retro::optionals::to<std::optional>();
+        CHECK(value2.has_value());
+        CHECK(value2.value() == 34);
+
+        std::optional<std::reference_wrapper<int>> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::to<std::optional>();
+        CHECK_FALSE(value4.has_value());
+    }
+}

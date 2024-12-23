@@ -65,6 +65,7 @@ import std;
 #include "RetroLib/Optionals/IsSet.h"
 #include "RetroLib/Optionals/OrElseThrow.h"
 #include "RetroLib/Optionals/PtrOrNull.h"
+#include "RetroLib/Optionals/To.h"
 #include "RetroLib/Optionals/Transform.h"
 #include "RetroLib/Optionals/Value.h"
 
