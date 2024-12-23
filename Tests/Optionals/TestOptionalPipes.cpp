@@ -313,3 +313,14 @@ TEST_CASE("Can get the value or an alternative", "[optionals]") {
         CHECK(value4 == alt_value);
     }
 }
+
+TEST_CASE("Can execute on a value if said value is present", "[optionals]") {
+    SECTION("Can execute if a value is present of do nothing") {
+        int sum = 0;
+        std::optional value1 = 34;
+        value1 | retro::optionals::if_present([&sum](int value) { sum += value; });
+        std::optional<int> value2 = std::nullopt;
+        value2 | retro::optionals::if_present([&sum](int value) { sum += value; });
+        CHECK(sum == 34);
+    }
+}
