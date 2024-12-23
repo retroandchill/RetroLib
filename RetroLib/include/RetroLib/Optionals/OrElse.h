@@ -1,6 +1,6 @@
 /**
- * @file Or.h
- * @brief TODO: Fill me out
+ * @file OrElse.h
+ * @brief Get an optional or another one if this one is empty.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill

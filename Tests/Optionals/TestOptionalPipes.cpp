@@ -289,3 +289,27 @@ TEST_CASE("Can get the value inside of an optional or an alternative", "[optiona
         CHECK(*value4 == 5);
     }
 }
+
+TEST_CASE("Can get the value or an alternative", "[optionals]") {
+    SECTION("Can get basic values out") {
+        std::optional value1 = 34;
+        auto value2 = value1 | retro::optionals::or_else_value(5);
+        CHECK(value2 == 34);
+
+        std::optional<int> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::or_else_value(5);
+        CHECK(value4 == 5);
+    }
+
+    SECTION("Can get references out") {
+        int ref_value = 34;
+        int alt_value = 45;
+        retro::Optional<int&> value1 = ref_value;
+        decltype(auto) value2 = value1 | retro::optionals::or_else_value(std::ref(alt_value));
+        CHECK(value2 == 34);
+
+        retro::Optional<int&> value3 = std::nullopt;
+        decltype(auto) value4 = value3 | retro::optionals::or_else_value(std::ref(alt_value));
+        CHECK(value4 == alt_value);
+    }
+}

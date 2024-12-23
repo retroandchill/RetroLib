@@ -66,6 +66,7 @@ import std;
 #include "RetroLib/Optionals/OrElse.h"
 #include "RetroLib/Optionals/OrElseGet.h"
 #include "RetroLib/Optionals/OrElseThrow.h"
+#include "RetroLib/Optionals/OrElseValue.h"
 #include "RetroLib/Optionals/PtrOrNull.h"
 #include "RetroLib/Optionals/To.h"
 #include "RetroLib/Optionals/Transform.h"
