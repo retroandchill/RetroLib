@@ -323,4 +323,13 @@ TEST_CASE("Can execute on a value if said value is present", "[optionals]") {
         value2 | retro::optionals::if_present([&sum](int value) { sum += value; });
         CHECK(sum == 34);
     }
+
+    SECTION("Can execute if a value is present, otherwise doing an alternate action") {
+        int sum = 0;
+        std::optional value1 = 34;
+        value1 | retro::optionals::if_present_or_else([&sum](int value) { sum += value; }, [&sum] { sum += 5; });
+        std::optional<int> value2 = std::nullopt;
+        value2 | retro::optionals::if_present_or_else([&sum](int value) { sum += value; }, [&sum] { sum += 5; });
+        CHECK(sum == 39);
+    }
 }

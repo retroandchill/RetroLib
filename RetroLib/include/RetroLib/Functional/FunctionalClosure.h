@@ -125,5 +125,4 @@ namespace retro {
                                create_binding<BoundFunctor>(std::forward<A>(args)...));
         }
     };
-
 } // namespace retro
