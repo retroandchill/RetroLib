@@ -432,4 +432,257 @@ namespace retro::ranges {
          */
         RETROLIB_EXPORT constexpr auto enumerate = extension_method<EnumerateInvoker{}>();
     } // namespace views
+
+    RETROLIB_EXPORT template <std::ranges::view V, std::ranges::random_access_range R>
+        requires RangeWithMovableReference<V> && RangeWithMovableReference<R> && std::ranges::view<R> && std::convertible_to<std::ranges::range_reference_t<V>, std::ranges::range_difference_t<R>>
+    class ReverseEnumerateView : public std::ranges::view_interface<ReverseEnumerateView<V, R>> {
+
+        template <bool Const>
+        class Iterator {
+            using Base = std::conditional_t<Const, const V, V>;
+            using Viewed = std::conditional_t<Const, const R, R>;
+
+          public:
+            using iterator_category = std::input_iterator_tag;
+            using iterator_concept = std::conditional_t<
+                std::ranges::random_access_range<Base>, std::random_access_iterator_tag,
+                std::conditional_t<std::ranges::bidirectional_range<Base>, std::bidirectional_iterator_tag,
+                                   std::conditional_t<std::ranges::forward_range<Base>, std::forward_iterator_tag,
+                                                      std::input_iterator_tag>>>;
+            using difference_type = std::ranges::range_difference_t<Base>;
+            using value_type = std::tuple<std::ranges::range_value_t<Base>, std::ranges::range_value_t<Viewed>>;
+
+          private:
+            using ReferenceType = std::tuple<std::ranges::range_value_t<Base>, std::ranges::range_reference_t<Viewed>>;
+
+          public:
+            constexpr Iterator()
+                requires std::default_initializable<std::ranges::iterator_t<Base>> && std::default_initializable<std::ranges::iterator_t<Viewed>> = default;
+
+            constexpr explicit(false) Iterator(Iterator<!Const> other)
+                requires Const && std::convertible_to<std::ranges::iterator_t<V>, std::ranges::iterator_t<Base>>
+                : current(std::move(other.current)), viewed(std::move(other.viewed)) {
+            }
+
+          private:
+            constexpr explicit Iterator(std::ranges::iterator_t<Base> current, Viewed& viewed)
+                : current(std::move(current)), viewed(std::ranges::begin(viewed)) {
+            }
+
+          public:
+            constexpr const std::ranges::iterator_t<Base> &base() const & noexcept {
+                return current;
+            }
+
+            constexpr std::ranges::iterator_t<Base> base() && {
+                return std::move(current);
+            }
+
+            constexpr auto operator*() const
+                noexcept(noexcept(*current) && noexcept(viewed[*current]) &&
+                         std::is_nothrow_copy_constructible_v<std::ranges::range_reference_t<Base>>) {
+                return ReferenceType(*current, viewed[*current]);
+            }
+
+            constexpr auto operator[](difference_type n) const
+                requires std::ranges::random_access_range<Base>
+            {
+                return ReferenceType(*current + n, viewed[*current + n]);
+            }
+
+            constexpr Iterator &operator++() {
+                ++current;
+                return *this;
+            }
+
+            constexpr void operator++(int) {
+                ++current;
+            }
+
+            constexpr Iterator operator++(int)
+                requires std::ranges::forward_range<Base>
+            {
+                Iterator tmp = *this;
+                ++*this;
+                return tmp;
+            }
+
+            constexpr Iterator &operator--()
+                requires std::ranges::bidirectional_range<Base>
+            {
+                --current;
+                return *this;
+            }
+
+            constexpr Iterator operator--(int)
+                requires std::ranges::bidirectional_range<Base>
+            {
+                Iterator tmp = *this;
+                --*this;
+                return tmp;
+            }
+
+            constexpr Iterator operator+=(difference_type n)
+                requires std::ranges::random_access_range<Base>
+            {
+                current += n;
+                return *this;
+            }
+
+            constexpr Iterator operator-=(difference_type n)
+                requires std::ranges::random_access_range<Base>
+            {
+                current -= n;
+                return *this;
+            }
+
+            friend constexpr bool operator==(const Iterator &lhs, const Iterator &rhs) noexcept {
+                return lhs.current == rhs.current;
+            }
+
+            friend constexpr std::strong_ordering operator<=>(const Iterator &lhs, const Iterator &rhs) noexcept {
+                return lhs.current <=> rhs.current;
+            }
+
+            friend constexpr Iterator operator+(const Iterator &self, difference_type n)
+                requires std::ranges::random_access_range<Base>
+            {
+                auto temp = self;
+                temp += n;
+                return temp;
+            }
+
+            friend constexpr Iterator operator+(difference_type n, const Iterator &self)
+                requires std::ranges::random_access_range<Base>
+            {
+                return self + n;
+            }
+
+            friend constexpr Iterator operator-(const Iterator &self, difference_type n)
+                requires std::ranges::random_access_range<Base>
+            {
+                auto temp = self;
+                temp -= n;
+                return temp;
+            }
+
+            friend constexpr difference_type operator-(const Iterator &lhs, const Iterator &rhs)
+                requires std::ranges::random_access_range<Base>
+            {
+                return lhs.current - rhs.current;
+            }
+
+          private:
+            friend class Iterator<!Const>;
+            friend class ReverseEnumerateView;
+
+            std::ranges::iterator_t<Base> current;
+            std::ranges::iterator_t<Viewed> viewed;
+        };
+
+        template <bool Const>
+        class Sentinel {
+            using Base = std::conditional_t<Const, const V, V>;
+
+          public:
+            constexpr Sentinel() = default;
+
+            constexpr explicit(false) Sentinel(Iterator<!Const> other)
+                requires Const && std::convertible_to<std::ranges::sentinel_t<V>, std::ranges::sentinel_t<Base>>
+                : end(std::move(other.end)) {
+            }
+
+          private:
+            constexpr explicit Sentinel(std::ranges::sentinel_t<Base> end) : end(std::move(end)) {
+            }
+
+          public:
+            constexpr std::ranges::sentinel_t<Base> base() const noexcept {
+                return end;
+            }
+
+            friend constexpr bool operator==(const Iterator<Const> &lhs, const Sentinel &rhs) noexcept {
+                return lhs.base() == rhs.end;
+            }
+
+            template <bool OtherConst>
+                requires std::sized_sentinel_for<std::ranges::sentinel_t<Base>,
+                                                 std::ranges::iterator_t<MaybeConst<OtherConst, V>>>
+            friend constexpr auto operator-(const Iterator<OtherConst> &lhs, const Sentinel &rhs) {
+                return lhs.base() - rhs.end;
+            }
+
+            template <bool OtherConst>
+                requires std::sized_sentinel_for<std::ranges::sentinel_t<Base>,
+                                                 std::ranges::iterator_t<MaybeConst<OtherConst, V>>>
+            friend constexpr auto operator-(const Sentinel &lhs, const Iterator<OtherConst> &rhs) {
+                return lhs.end - rhs.base();
+            }
+
+          private:
+            std::ranges::sentinel_t<Base> end;
+        };
+
+    public:
+        constexpr ReverseEnumerateView() requires std::default_initializable<V> = default;
+
+
+        constexpr explicit ReverseEnumerateView(V view, R range) : indices(std::move(view)), range(std::move(range)) {}
+
+        constexpr V base() const & requires std::copy_constructible<V> {
+            return indices;
+        }
+
+        constexpr V base() && {
+            return std::move(indices);
+        }
+
+        constexpr auto begin() requires (!SimpleView<V>) {
+            return Iterator<false>(std::ranges::begin(indices), range);
+        }
+
+        constexpr auto begin() const requires RangeWithMovableReference<const V> && std::ranges::random_access_range<const V> {
+            return Iterator<true>(std::ranges::begin(indices), range);
+        }
+
+        constexpr auto end() requires (!SimpleView<V>) {
+            if constexpr (std::ranges::forward_range<V>) {
+                return Iterator<false>(std::ranges::end(indices), range);
+            } else {
+                return Sentinel<false>(std::ranges::end(indices));
+            }
+        }
+
+        constexpr auto end() const requires RangeWithMovableReference<const V> && std::ranges::random_access_range<const V> {
+            if constexpr (std::ranges::forward_range<V>) {
+                return Iterator<true>(std::ranges::end(indices), range);
+            } else {
+                return Sentinel<true>(std::ranges::end(indices));
+            }
+        }
+
+        constexpr auto size() requires std::ranges::sized_range<V> {
+            return std::ranges::size(indices);
+        }
+
+        constexpr auto size() const requires std::ranges::sized_range<const V> {
+            return std::ranges::size(indices);
+        }
+
+    private:
+        V indices;
+        R range;
+    };
+
+    namespace views {
+        struct ReverseEnumerateInvoker {
+            template <std::ranges::viewable_range V, std::ranges::random_access_range R>
+                requires std::ranges::view<std::ranges::views::all_t<V>> && RangeWithMovableReference<V> && RangeWithMovableReference<R> && std::ranges::view<std::ranges::views::all_t<R>> && std::convertible_to<std::ranges::range_reference_t<V>, std::ranges::range_difference_t<R>>
+            constexpr auto operator()(V &&indices, R &&range) const {
+                return ReverseEnumerateView(std::ranges::views::all(std::forward<V>(indices)), std::ranges::views::all(std::forward<R>(range)));
+            }
+        };
+
+        RETROLIB_EXPORT constexpr auto reverse_enumerate = extension_method<ReverseEnumerateInvoker{}>;
+    }
 } // namespace retro::ranges

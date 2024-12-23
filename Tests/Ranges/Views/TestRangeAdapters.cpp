@@ -351,3 +351,28 @@ TEST_CASE("Can enumerate over a collection with its index", "[ranges]") {
         CHECK(output == std::vector<int>{2, 4, 6, 8});
     }
 }
+
+TEST_CASE("Can enumerate in reverse mapping inices to elements", "[ranges]") {
+    constexpr static std::array input = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'};
+
+    SECTION("Can reverse enumerate using some generated indices") {
+        auto pairs = std::ranges::views::iota(static_cast<size_t>(6), input.size()) |
+            retro::ranges::views::reverse_enumerate(input);
+
+        int count = 0;
+        for (auto [index, letter] : pairs) {
+            CHECK(letter == input[index]);
+            count++;
+        }
+        CHECK(count == 6);
+    }
+
+    SECTION("Can reverse enumerate into a map") {
+        auto pairs = std::ranges::views::iota(2, 5) |
+            retro::ranges::views::reverse_enumerate(input) |
+                retro::ranges::views::transform(retro::convert_tuple<std::pair>) |
+                    retro::ranges::to<std::map>();
+
+        CHECK(pairs == std::map<int, char>{{ 2, 'C' }, { 3, 'D' }, {4, 'E'}});
+    }
+}
