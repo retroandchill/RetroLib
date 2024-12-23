@@ -63,6 +63,7 @@ import std;
 #include "RetroLib/Optionals/AndThen.h"
 #include "RetroLib/Optionals/Filter.h"
 #include "RetroLib/Optionals/IsSet.h"
+#include "RetroLib/Optionals/OrElse.h"
 #include "RetroLib/Optionals/OrElseGet.h"
 #include "RetroLib/Optionals/OrElseThrow.h"
 #include "RetroLib/Optionals/PtrOrNull.h"

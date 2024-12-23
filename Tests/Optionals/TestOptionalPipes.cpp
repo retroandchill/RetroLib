@@ -254,7 +254,7 @@ TEST_CASE("Can get the value inside of an optional or an alternative", "[optiona
         CHECK(value4 == 5);
     }
 
-    SECTION("Can get the value of a referemce type out") {
+    SECTION("Can get the value of a reference type out") {
         int ref_value = 34;
         int alt_value = 45;
         retro::Optional<int&> value1 = ref_value;
@@ -275,5 +275,17 @@ TEST_CASE("Can get the value inside of an optional or an alternative", "[optiona
         retro::Optional<int&> value3 = std::nullopt;
         decltype(auto) value4 = value3 | retro::optionals::or_else_get([] { return 50.0; });
         CHECK(value4 == 50.0);
+    }
+
+    SECTION("Can get an optional out of the call") {
+        std::optional value1 = 34;
+        auto value2 = value1 | retro::optionals::or_else([] { return std::optional(5); });
+        REQUIRE(value2.has_value());
+        CHECK(*value2 == 34);
+
+        std::optional<int> value3 = std::nullopt;
+        auto value4 = value3 | retro::optionals::or_else([] { return std::optional(5); });
+        REQUIRE(value4.has_value());
+        CHECK(*value4 == 5);
     }
 }
