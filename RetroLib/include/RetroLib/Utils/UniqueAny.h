@@ -77,7 +77,7 @@ namespace retro {
             requires std::constructible_from<T, A...>
         explicit UniqueAny(std::in_place_type_t<T>, A &&...Args) noexcept : vtable(&get_vtable_for_type<T>()) {
             if constexpr (FitsInUniqueAnySmallBuffer<T>) {
-                new (reinterpret_cast<T *>(&storage.small_storage)) T(std::forward<A>(Args)...);
+                new (std::bit_cast<T *>(storage.small_storage.data())) T(std::forward<A>(Args)...);
             } else {
                 storage.large_storage = new T(std::forward<A>(Args)...);
             }
@@ -238,7 +238,7 @@ namespace retro {
             }
 
             if constexpr (FitsInUniqueAnySmallBuffer<std::decay_t<T>>) {
-                new (reinterpret_cast<T *>(&storage.small_storage)) std::decay_t<T>(std::forward<A>(Args)...);
+                new (std::bit_cast<T *>(storage.small_storage.data())) std::decay_t<T>(std::forward<A>(Args)...);
             } else {
                 storage.large_storage = new std::decay_t<T>(std::forward<A>(Args)...);
             }
@@ -287,7 +287,7 @@ namespace retro {
         template <typename T>
         constexpr T &get_unchecked() {
             if constexpr (FitsInUniqueAnySmallBuffer<T>) {
-                return reinterpret_cast<T &>(storage.small_storage);
+                return *std::bit_cast<T *>(storage.small_storage.data());
             } else {
                 return *static_cast<T *>(storage.large_storage);
             }
@@ -296,7 +296,7 @@ namespace retro {
         template <typename T>
         constexpr const T &get_unchecked() const {
             if constexpr (FitsInUniqueAnySmallBuffer<T>) {
-                return reinterpret_cast<const T &>(storage.small_storage);
+                return *std::bit_cast<const T *>(storage.small_storage.data());
             } else {
                 return *static_cast<const T *>(storage.large_storage);
             }
@@ -310,13 +310,13 @@ namespace retro {
             }
 
             template <typename T>
-                requires FitsInUniqueAnySmallBuffer<std::decay_t<T>>
+                requires FitsInUniqueAnySmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, Storage>)
             explicit Storage(T &&Data) noexcept {
-                new (reinterpret_cast<std::decay_t<T> *>(&small_storage)) std::decay_t<T>(std::forward<T>(Data));
+                new (std::bit_cast<std::decay_t<T> *>(small_storage.data())) std::decay_t<T>(std::forward<T>(Data));
             }
 
             template <typename T>
-                requires(!FitsInUniqueAnySmallBuffer<std::decay_t<T>>)
+                requires(!FitsInUniqueAnySmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, Storage>)
             explicit Storage(T &&Data) noexcept : large_storage(new std::decay_t<T>(std::forward<T>(Data))) {
             }
 
@@ -337,7 +337,7 @@ namespace retro {
         struct VTableImpl {
             static void destroy(Storage &Storage) noexcept {
                 if constexpr (FitsInUniqueAnySmallBuffer<T>) {
-                    reinterpret_cast<T *>(&Storage.small_storage)->~T();
+                    std::bit_cast<T *>(Storage.small_storage.data())->~T();
                 } else {
                     delete static_cast<T *>(Storage.large_storage);
                 }
