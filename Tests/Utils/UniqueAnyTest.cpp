@@ -61,4 +61,14 @@ TEST_CASE("Can create a move-only unique any type", "[utils]") {
         any.emplace<std::array<std::string, 10>>();
         CHECK(any.has_value());
     }
+
+    SECTION("Moving by assignment invalidates as well") {
+        retro::UniqueAny any1(std::in_place_type<std::array<int, 20>>);
+
+        retro::UniqueAny any2;
+        any2 = std::move(any1);
+        CHECK(any2.has_value());
+        CHECK_FALSE(any1.has_value());
+        CHECK(any1.get_type() == typeid(void));
+    }
 }
