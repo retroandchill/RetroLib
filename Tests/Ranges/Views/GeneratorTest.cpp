@@ -11,12 +11,12 @@
 import std;
 import RetroLib;
 #else
-#include "RetroLib/Ranges/Views/Generator.h"
-#include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
+#include "RetroLib/Ranges/Views/Filter.h"
+#include "RetroLib/Ranges/Views/Generator.h"
 
-#include <vector>
 #include <array>
+#include <vector>
 #endif
 
 namespace retro::ranges::testing {
@@ -26,14 +26,12 @@ namespace retro::ranges::testing {
         }
     }
 
-    template<typename T>
-struct Tree
-    {
+    template <typename T>
+    struct Tree {
         T value;
         Tree *left{}, *right{};
 
-        Generator<const T&> traverse_inorder() const
-        {
+        Generator<const T &> traverse_inorder() const {
             if (left) {
                 co_yield ranges::ElementsOf(left->traverse_inorder());
             }
@@ -45,7 +43,7 @@ struct Tree
             }
         }
     };
-}
+} // namespace retro::ranges::testing
 
 TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
     using namespace retro::ranges::testing;
@@ -58,9 +56,8 @@ TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
     }
 
     SECTION("Can use a generator with a range pipe") {
-        auto numbers = generate_integers(10) |
-            retro::ranges::views::filter([](int value) { return value % 2 == 0; }) |
-            retro::ranges::to<std::vector>();
+        auto numbers = generate_integers(10) | retro::ranges::views::filter([](int value) { return value % 2 == 0; }) |
+                       retro::ranges::to<std::vector>();
         CHECK(numbers == std::vector({0, 2, 4, 6, 8}));
     }
 

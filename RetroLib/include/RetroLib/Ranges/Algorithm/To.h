@@ -8,10 +8,10 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Ranges/Concepts/Containers.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
+#include "RetroLib/RetroLibMacros.h"
 
 #include <map>
 #endif
@@ -38,7 +38,9 @@ namespace retro::ranges {
     struct FromRange<C> {
         template <typename R>
             requires TupleLike<std::ranges::range_value_t<R>> && (std::tuple_size_v<std::ranges::range_value_t<R>> == 2)
-        using Invoke = C<std::tuple_element_t<0, std::ranges::range_value_t<R>>, std::tuple_element_t<1, std::ranges::range_value_t<R>>>;;
+        using Invoke = C<std::tuple_element_t<0, std::ranges::range_value_t<R>>,
+                         std::tuple_element_t<1, std::ranges::range_value_t<R>>>;
+        ;
     };
 
     /**

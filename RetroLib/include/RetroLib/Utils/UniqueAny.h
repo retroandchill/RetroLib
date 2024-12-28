@@ -12,11 +12,11 @@
 #include "RetroLib/Concepts/OpaqueStorage.h"
 #include "RetroLib/Optionals/Optional.h"
 
+#include <any>
 #include <array>
 #include <bit>
 #include <typeinfo>
 #include <utility>
-#include <any>
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -58,7 +58,7 @@ namespace retro {
          * @param Value The value to be stored inside the UniqueAny instance.
          */
         template <typename T>
-            requires (!std::same_as<std::decay_t<T>, UniqueAny>)
+            requires(!std::same_as<std::decay_t<T>, UniqueAny>)
         explicit(false) UniqueAny(T &&Value) noexcept
             : storage(std::forward<T>(Value)), vtable(&get_vtable_for_type<std::decay_t<T>>()) {
         }
@@ -329,7 +329,7 @@ namespace retro {
         };
 
         struct VTable {
-            const std::type_info * type;
+            const std::type_info *type;
             bool is_large = false;
             void (*destroy)(Storage &Storage);
             void (*move)(Storage &Source, Storage &Dest) noexcept;
@@ -372,5 +372,5 @@ namespace retro {
         Storage storage;
         VTable *vtable = nullptr;
     };
-    
-}
+
+} // namespace retro

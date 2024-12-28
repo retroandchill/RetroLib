@@ -11,9 +11,9 @@
 import std;
 import RetroLib;
 #else
-#include "RetroLib/Casting/Convert.h"
 #include "RetroLib/Casting/ByteCast.h"
 #include "RetroLib/Casting/ClassCast.h"
+#include "RetroLib/Casting/Convert.h"
 #include "RetroLib/Casting/InstanceOf.h"
 
 #include <memory>

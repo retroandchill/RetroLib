@@ -22,10 +22,10 @@ import RetroLib;
 #include "RetroLib/Utils/Tuple.h"
 
 #include <array>
+#include <map>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <map>
 #endif
 
 TEST_CASE("Can use the standard range adapters", "[ranges]") {
@@ -340,9 +340,9 @@ TEST_CASE("Can enumerate over a collection with its index", "[ranges]") {
 
     SECTION("Can enumerate into a map") {
         auto as_map = input | retro::ranges::views::enumerate |
-                      retro::ranges::views::transform(retro::convert_tuple<std::pair>) |
-                      retro::ranges::to<std::map>();
-        CHECK(as_map == std::map<std::ranges::range_difference_t<decltype(input)>, char>{{0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}});
+                      retro::ranges::views::transform(retro::convert_tuple<std::pair>) | retro::ranges::to<std::map>();
+        CHECK(as_map ==
+              std::map<std::ranges::range_difference_t<decltype(input)>, char>{{0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}});
     }
 
     SECTION("Can propagate a constant reference and increment the values accordingly") {
