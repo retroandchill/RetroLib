@@ -432,8 +432,8 @@ namespace std {
 namespace retro {
     /**
      * @class Generator
-     * @brief The Generator class is a type of coroutine powered view. Allowing the user to define a method that executes
-     * until a `co_yield` statement and then stalling until the next iteration of the loop.
+     * @brief The Generator class is a type of coroutine powered view. Allowing the user to define a method that
+     * executes until a `co_yield` statement and then stalling until the next iteration of the loop.
      *
      * @tparam R The reference type of the generator
      * @tparam V The value type of the generator (defaults to the cvref unqualified version of R)
