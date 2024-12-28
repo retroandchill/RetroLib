@@ -65,9 +65,6 @@ namespace retro {
     template <typename T>
     class ManualLifetime<T &> {
       public:
-        ManualLifetime() noexcept : value(nullptr) {
-        }
-
         T &construct(T &value_in) noexcept {
             value = std::addressof(value_in);
             return value_in;
@@ -82,15 +79,12 @@ namespace retro {
         }
 
       private:
-        T *value;
+        T *value = nullptr;
     };
 
     template <typename T>
     class ManualLifetime<T &&> {
       public:
-        ManualLifetime() noexcept : value(nullptr) {
-        }
-
         T &&construct(T &&value_in) noexcept {
             value = std::addressof(value_in);
             return static_cast<T &&>(value_in);
@@ -105,7 +99,7 @@ namespace retro {
         }
 
       private:
-        T *value;
+        T *value = nullptr;
     };
 
     struct UseAllocatorArg {};
@@ -384,8 +378,8 @@ namespace retro {
             static_assert(!ExplicitAllocator, "This coroutine has an explicit allocator specified with "
                                               "std::allocator_arg so an allocator needs to be passed "
                                               "explicitly to std::elements_of");
-            return [](auto &&range) -> Generator<T, V, A> {
-                for (auto &&e : range)
+            return []<typename U> (U &&range) -> Generator<T, V, A> {
+                for (auto &&e : std::forward<U>(range))
                     co_yield std::forward<decltype(e)>(e);
             }(std::forward<R>(x.get()));
         }
