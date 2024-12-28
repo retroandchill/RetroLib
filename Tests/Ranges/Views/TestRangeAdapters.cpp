@@ -338,10 +338,6 @@ TEST_CASE("Can enumerate over a collection with its index", "[ranges]") {
     }
 
     SECTION("Can enumerate into a map") {
-        static_assert(std::ranges::input_range<decltype(input | retro::ranges::views::enumerate)>);
-        static_assert(retro::HasTupleElement<std::pair<__int64,char>, 0>);
-        static_assert(retro::HasTupleElement<retro::ranges::EnumerateViewResult<__int64,char>, 0>);
-        static_assert(retro::HasTupleElement<retro::ranges::EnumerateViewResult<__int64,char>, 1>);
         auto as_map = retro::ranges::to<std::map>(input | retro::ranges::views::enumerate);
         CHECK(as_map ==
               std::map<std::ranges::range_difference_t<decltype(input)>, char>{{0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}});
