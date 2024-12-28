@@ -22,29 +22,23 @@
 
 namespace retro::ranges {
     RETROLIB_EXPORT template <template <typename...> typename>
-    struct MapType : InvalidType {};
+    struct IsMap : std::false_type {};
 
     RETROLIB_EXPORT template <>
-    struct MapType<std::map> : ValidType {};
+    struct IsMap<std::map> : std::true_type {};
 
     RETROLIB_EXPORT template <template <typename...> typename C>
     struct FromRange {
         template <typename R>
-        static auto from_range(int) -> C<std::ranges::range_value_t<R>>;
-
-        template <typename R>
-        using Invoke = decltype(FromRange::from_range<R>(0));
+        using Invoke = C<std::ranges::range_value_t<R>>;
     };
 
     RETROLIB_EXPORT template <template <typename...> typename C>
-        requires MapType<C>::is_valid
+        requires IsMap<C>::value
     struct FromRange<C> {
         template <typename R>
             requires TupleLike<std::ranges::range_value_t<R>> && (std::tuple_size_v<std::ranges::range_value_t<R>> == 2)
-        static auto from_range(int) -> C<std::tuple_element_t<0, std::ranges::range_value_t<R>>, std::tuple_element_t<1, std::ranges::range_value_t<R>>>;
-
-        template <typename R>
-        using Invoke = decltype(FromRange::from_range<R>(0));
+        using Invoke = C<std::tuple_element_t<0, std::ranges::range_value_t<R>>, std::tuple_element_t<1, std::ranges::range_value_t<R>>>;;
     };
 
     /**
