@@ -183,7 +183,7 @@ namespace std {
 
     RETROLIB_EXPORT template <retro::TupleLike T, retro::TupleLike U, template <typename> typename A,
                               template <typename> typename B>
-        requires(retro::SpecializationOf<T, tuple> || retro::SpecializationOf<U, tuple>) && is_same_v<T, decay_t<T>> &&
+        requires is_same_v<T, decay_t<T>> &&
                 is_same_v<U, decay_t<U>> && (tuple_size_v<T> == tuple_size_v<U>) &&
                 requires { typename retro::TupleLikeCommonReference<T, U, A, B>::Type; }
     struct basic_common_reference<T, U, A, B> {
@@ -191,7 +191,7 @@ namespace std {
     };
 
     RETROLIB_EXPORT template <retro::TupleLike T, retro::TupleLike U>
-        requires(retro::SpecializationOf<T, tuple> || retro::SpecializationOf<U, tuple>) && is_same_v<T, decay_t<T>> &&
+        requires is_same_v<T, decay_t<T>> &&
                 is_same_v<U, decay_t<U>> && (tuple_size_v<T> == tuple_size_v<U>) &&
                 requires { typename retro::TupleLikeCommonType<T, U>::Type; }
     struct common_type<T, U> {
