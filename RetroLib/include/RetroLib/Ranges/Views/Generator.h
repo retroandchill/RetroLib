@@ -28,6 +28,7 @@ namespace retro {
     class ManualLifetime {
     public:
         ManualLifetime() noexcept {}
+        ~ManualLifetime() {}
 
         template <typename... A>
         T& construct(A&&... args) noexcept(std::is_nothrow_constructible_v<T, A...>) {
@@ -35,7 +36,7 @@ namespace retro {
         }
 
         void destruct() noexcept(std::is_nothrow_destructible_v<T>) {
-            value.~_T();
+            value.~T();
         }
 
         T& get() & noexcept {
@@ -148,7 +149,7 @@ namespace retro {
     }
 
 
-    template <typename R,
+    RETROLIB_EXPORT template <typename R,
               typename V = std::remove_cvref_t<R>,
               typename A = UseAllocatorArg>
     class Generator;
@@ -280,16 +281,16 @@ namespace retro {
 
         std::suspend_always yield_value(T&& x)
                 noexcept(std::is_nothrow_move_constructible_v<T>) {
-            root->value.construct(static_cast<T &&>(x));
+            root->value.construct(std::move(x));
             return {};
         }
 
         template <typename V>
         requires
-            (!std::is_reference_v<V>) &&
-            std::is_convertible_v<V, V>
+            (!std::is_reference_v<T>) &&
+            std::is_convertible_v<V, T>
         std::suspend_always yield_value(V&& x)
-                noexcept(std::is_nothrow_constructible_v<V, V>) {
+                noexcept(std::is_nothrow_constructible_v<T, V>) {
             root->value.construct(std::forward<V>(x));
             return {};
         }
@@ -399,13 +400,13 @@ namespace retro {
 
 namespace std {
     // Type-erased allocator with default allocator behaviour.
-    template<typename R, typename V, typename... A>
+    RETROLIB_EXPORT template<typename R, typename V, typename... A>
     struct coroutine_traits<retro::Generator<R, V>, A...> {
         using promise_type = retro::GeneratorPromise<retro::Generator<R, V>, std::allocator<std::byte>>;
     };
 
     // Type-erased allocator with std::allocator_arg parameter
-    template<typename R, typename V, typename A, typename... T>
+    RETROLIB_EXPORT template<typename R, typename V, typename A, typename... T>
     struct coroutine_traits<retro::Generator<R, V>, allocator_arg_t, A, T...> {
     private:
         using ByteAllocator = retro::ByteAllocatorType<A>;
@@ -414,7 +415,7 @@ namespace std {
     };
 
     // Type-erased allocator with std::allocator_arg parameter (non-static member functions)
-    template<typename R, typename V, typename S, typename A, typename... T>
+    RETROLIB_EXPORT template<typename R, typename V, typename S, typename A, typename... T>
     struct coroutine_traits<retro::Generator<R, V>, S, allocator_arg_t, A, T...> {
     private:
         using ByteAllocator = retro::ByteAllocatorType<A>;
@@ -423,7 +424,7 @@ namespace std {
     };
 
     // Generator with specified allocator type
-    template<typename R, typename V, typename A, typename... T>
+    RETROLIB_EXPORT template<typename R, typename V, typename A, typename... T>
     struct coroutine_traits<retro::Generator<R, V, A>, T...> {
         using ByteAllocator = retro::ByteAllocatorType<A>;
     public:
