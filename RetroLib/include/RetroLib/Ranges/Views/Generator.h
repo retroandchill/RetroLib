@@ -1,6 +1,6 @@
 /**
  * @file Generator.h
- * @brief TODO: Fill me out
+ * @brief Coroutine powered generator type.
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
@@ -27,8 +27,11 @@ namespace retro {
     class ManualLifetime {
       public:
         ManualLifetime() noexcept {
+            // We need to manually construct to avoid an attempted construction
         }
+
         ~ManualLifetime() {
+            // We need this to get the union to destruct manually
         }
 
         template <typename... A>
@@ -71,6 +74,7 @@ namespace retro {
         }
 
         void destruct() noexcept {
+            // No special destruction needed here
         }
 
         T &get() const noexcept {
@@ -93,6 +97,7 @@ namespace retro {
         }
 
         void destruct() noexcept {
+            // No special destruction needed here
         }
 
         T &&get() const noexcept {
@@ -168,7 +173,7 @@ namespace retro {
         }
 
         static A &get_allocator(void *frame, std::size_t frame_size) noexcept {
-            return *reinterpret_cast<A *>(static_cast<char *>(frame) + offset_of_allocator(frame_size));
+            return *std::bit_cast<A *>(static_cast<char *>(frame) + offset_of_allocator(frame_size));
         }
 
       public:
@@ -262,17 +267,18 @@ namespace retro {
 
             template <typename P>
             std::coroutine_handle<> await_suspend(std::coroutine_handle<P> handle) noexcept {
-                P &promise = handle.promise();
-                GeneratorPromiseBase &root = *promise.root;
-                if (&root != &promise) {
+                auto &promise = handle.promise();
+                auto &current_root = *promise.root;
+                if (&current_root != &promise) {
                     auto parent = promise.parent_or_leaf;
-                    root.parent_or_leaf = parent;
+                    current_root.parent_or_leaf = parent;
                     return parent;
                 }
                 return std::noop_coroutine();
             }
 
             void await_resume() noexcept {
+                // No implementation needed here
             }
         };
 
@@ -310,9 +316,9 @@ namespace retro {
             // resume the nested
             template <typename Promise>
             std::coroutine_handle<> await_suspend(std::coroutine_handle<Promise> handle) noexcept {
-                GeneratorPromiseBase &current = handle.promise();
-                GeneratorPromiseBase &nested = *gen.get_promise();
-                GeneratorPromiseBase &root = *current.root;
+                auto &current = handle.promise();
+                auto &nested = *gen.get_promise();
+                auto &current_root = *current.root;
 
                 nested.root = current.root;
                 nested.parent_or_leaf = handle;
@@ -321,15 +327,14 @@ namespace retro {
                 // know it will be used as a nested generator. This will be
                 // destroyed by the promise destructor.
                 nested.exception.construct();
-                root.parent_or_leaf = gen.get_coro();
+                current_root.parent_or_leaf = gen.get_coro();
 
                 // Immediately resume the nested coroutine (nested generator)
                 return gen.get_coro();
             }
 
             void await_resume() {
-                GeneratorPromiseBase &nested_promise = *gen.get_promise();
-                if (nested_promise.exception.get()) {
+                if (auto &nested_promise = *gen.get_promise(); nested_promise.exception.get()) {
                     std::rethrow_exception(std::move(nested_promise.exception.get()));
                 }
             }
@@ -378,10 +383,10 @@ namespace retro {
         yield_value(ranges::ElementsOf<R> &&x) {
             static_assert(!ExplicitAllocator, "This coroutine has an explicit allocator specified with "
                                               "std::allocator_arg so an allocator needs to be passed "
-                                              "explicitely to std::elements_of");
+                                              "explicitly to std::elements_of");
             return [](auto &&range) -> Generator<T, V, A> {
                 for (auto &&e : range)
-                    co_yield static_cast<decltype(e)>(e);
+                    co_yield std::forward<decltype(e)>(e);
             }(std::forward<R>(x.get()));
         }
     };
@@ -561,8 +566,7 @@ namespace retro {
         using PromiseBase = GeneratorPromiseBase<R>;
 
       public:
-        Generator() noexcept : promise(nullptr), coroutine(), started(false) {
-        }
+        Generator() noexcept = default;
 
         Generator(Generator &&other) noexcept
             : promise(std::exchange(other.promise, nullptr)), coroutine(std::exchange(other.coroutine, {})),
@@ -675,7 +679,7 @@ namespace retro {
         }
 
       private:
-        PromiseBase *promise;
+        PromiseBase *promise = nullptr;
         std::coroutine_handle<> coroutine;
         bool started = false;
     };

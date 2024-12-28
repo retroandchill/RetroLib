@@ -1,6 +1,6 @@
 /**
  * @file GeneratorTest.cpp
- * @brief TODO: Fill me out
+ * @brief Test for the coroutine generator type
  *
  * @author Retro & Chill
  * https://github.com/retroandchill
