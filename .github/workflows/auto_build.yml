@@ -13,8 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "true" }
-          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "false" }
+          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: ON }
+          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: OFF }
     env:
       LLVM_PROFILE_FILE: test-data-%p.profraw
     steps:
@@ -77,6 +77,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        if: ${{ matrix.with_modules }} == true
+        if: ${{ matrix.with_modules }} == ON
         run: |
           sonar-scanner --define sonar.cfamily.compile-commands="${{ runner.workspace }}/build/compile_commands.json" --define sonar.cfamily.llvm-cov.reportPath=coverage.txt
