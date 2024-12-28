@@ -63,9 +63,9 @@ namespace retro {
     public:
         ManualLifetime() noexcept : value(nullptr) {}
 
-        T& construct(T& value) noexcept {
-            value = std::addressof(value);
-            return value;
+        T& construct(T& value_in) noexcept {
+            value = std::addressof(value_in);
+            return value_in;
         }
 
         void destruct() noexcept {}
@@ -83,9 +83,9 @@ namespace retro {
     public:
         ManualLifetime() noexcept : value(nullptr) {}
 
-        T&& construct(T&& value) noexcept {
-            value = std::addressof(value);
-            return static_cast<T&&>(value);
+        T&& construct(T&& value_in) noexcept {
+            value = std::addressof(value_in);
+            return static_cast<T&&>(value_in);
         }
 
         void destruct() noexcept {}
@@ -102,7 +102,7 @@ namespace retro {
 
     namespace ranges {
 
-        template <typename R, typename A = UseAllocatorArg>
+        RETROLIB_EXPORT template <typename R, typename A = UseAllocatorArg>
         struct ElementsOf {
             explicit constexpr ElementsOf(R&& range) noexcept
             requires std::is_default_constructible_v<A>

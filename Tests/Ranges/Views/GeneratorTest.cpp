@@ -22,6 +22,26 @@ namespace retro::ranges::testing {
             co_yield i;
         }
     }
+
+    template<typename T>
+struct Tree
+    {
+        T value;
+        Tree *left{}, *right{};
+
+        Generator<const T&> traverse_inorder() const
+        {
+            if (left) {
+                co_yield ranges::ElementsOf(left->traverse_inorder());
+            }
+
+            co_yield value;
+
+            if (right) {
+                co_yield ranges::ElementsOf(right->traverse_inorder());
+            }
+        }
+    };
 }
 
 TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
@@ -39,5 +59,22 @@ TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
             retro::ranges::views::filter([](int value) { return value % 2 == 0; }) |
             retro::ranges::to<std::vector>();
         CHECK(numbers == std::vector({0, 2, 4, 6, 8}));
+    }
+
+    SECTION("Can traverse a nested range using ElementsOf") {
+        std::array<Tree<char>, 7> tree;
+        tree[0] = {'D', &tree[1], &tree[2]};
+        tree[1] = {'B', &tree[3], &tree[4]};
+        tree[2] = {'F', &tree[5], &tree[6]};
+        tree[3] = {'A'};
+        tree[4] = {'C'};
+        tree[5] = {'E'};
+        tree[6] = {'G'};
+
+        std::vector<char> values;
+        for (auto value : tree[0].traverse_inorder()) {
+            values.push_back(value);
+        }
+        CHECK(values == std::vector({'A', 'B', 'C', 'D', 'E', 'F', 'G'}));
     }
 }
