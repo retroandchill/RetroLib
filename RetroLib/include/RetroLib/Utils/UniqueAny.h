@@ -357,7 +357,6 @@ namespace retro {
 
         template <typename T>
         static VTable &get_vtable_for_type() {
-            std::any;
             // clang-format off
             static VTable vtable = {
                 .type = &typeid(T),
