@@ -110,7 +110,7 @@ namespace retro {
     struct IsSpecializationOf<T<A...>, T> : std::true_type {};
 
     RETROLIB_EXPORT template <typename T, template <typename...> typename C>
-    concept SpecializationOf = IsSpecializationOf<std::decay_t<T>, C>::value;
+    concept SpecializationOf = IsSpecializationOf<T, C>::value;
 
     template <bool Condition, typename T>
     using MaybeConst = std::conditional_t<Condition, const T, T>;
