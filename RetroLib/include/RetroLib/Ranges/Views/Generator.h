@@ -11,11 +11,9 @@
 #include "RetroLib/RetroLibMacros.h"
 
 #include <cassert>
-#include <concepts>
 #include <coroutine>
 #include <exception>
 #include <iterator>
-#include <ranges>
 #include <type_traits>
 #include <utility>
 #endif
@@ -432,7 +430,15 @@ namespace std {
 } // namespace std
 
 namespace retro {
-    // TODO :  make layout compatible promise casts possible
+    /**
+     * @class Generator
+     * @brief The Generator class is a type of coroutine powered view. Allowing the user to define a method that executes
+     * until a `co_yield` statement and then stalling until the next iteration of the loop.
+     *
+     * @tparam R The reference type of the generator
+     * @tparam V The value type of the generator (defaults to the cvref unqualified version of R)
+     * @tparam A The allocator used for this type
+     */
     template <typename R, typename V, typename A>
     class Generator : public std::ranges::view_interface<Generator<R, V, A>> {
         using ByteAllocator = ByteAllocatorType<A>;
@@ -550,7 +556,6 @@ namespace retro {
         bool started = false;
     };
 
-    // Specialisation for type-erased allocator implementation.
     template <typename R, typename V>
     class Generator<R, V, UseAllocatorArg> : public std::ranges::view_interface<Generator<R, V>> {
         using PromiseBase = GeneratorPromiseBase<R>;

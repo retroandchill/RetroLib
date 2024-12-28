@@ -10,6 +10,7 @@ jobs:
     name: Build Project
     runs-on: ${{ matrix.config.os }}
     strategy:
+      fail-fast: false
       matrix:
         config:
           - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "ON" }
