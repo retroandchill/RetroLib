@@ -8,12 +8,12 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Ranges/Concepts/Containers.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
-#include "RetroLib/RetroLibMacros.h"
 
-#include <ranges>
+#include <map>
 #endif
 
 #ifndef RETROLIB_EXPORT

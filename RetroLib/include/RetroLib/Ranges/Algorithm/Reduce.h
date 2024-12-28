@@ -11,8 +11,6 @@
 #include "Retrolib/Functional/CreateBinding.h"
 #include "Retrolib/Functional/ExtensionMethods.h"
 #include "Retrolib/Ranges/FeatureBridge.h"
-
-#include <ranges>
 #endif
 
 #ifndef RETROLIB_EXPORT

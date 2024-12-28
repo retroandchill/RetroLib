@@ -12,6 +12,7 @@
 #include "Retrolib/Functional/ExtensionMethods.h"
 #include "Retrolib/Ranges/FeatureBridge.h"
 
+#include <algorithm>
 #include <ranges>
 #endif
 

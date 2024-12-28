@@ -101,7 +101,4 @@ import std;
 #include "RetroLib/Ranges/Views/Generator.h"
 #include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
-
-#include "RetroLib/Compatibility.h"
-
 // clang-format on

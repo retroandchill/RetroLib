@@ -8,10 +8,11 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
+
 #include <coroutine>
 #include <exception>
 #include <iterator>
-#include <new>
 #include <type_traits>
 #include <utility>
 #include <concepts>

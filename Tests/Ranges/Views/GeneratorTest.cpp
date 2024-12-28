@@ -12,8 +12,11 @@ import std;
 import RetroLib;
 #else
 #include "RetroLib/Ranges/Views/Generator.h"
+#include "RetroLib/Ranges/Views/Filter.h"
+#include "RetroLib/Ranges/Algorithm/To.h"
 
 #include <vector>
+#include <array>
 #endif
 
 namespace retro::ranges::testing {

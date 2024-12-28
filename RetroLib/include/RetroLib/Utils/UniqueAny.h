@@ -10,11 +10,13 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
+#include "RetroLib/Optionals/Optional.h"
 
 #include <array>
 #include <bit>
 #include <typeinfo>
 #include <utility>
+#include <any>
 #endif
 
 #ifndef RETROLIB_EXPORT
