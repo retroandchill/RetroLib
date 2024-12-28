@@ -13,8 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "ON" }
-          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "OFF" }
+          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "true" }
+          - { name: "ubuntu-clang", os: ubuntu-latest, cc: "clang-18", cxx: "clang++-18", with_modules: "false" }
     env:
       LLVM_PROFILE_FILE: test-data-%p.profraw
     steps:
