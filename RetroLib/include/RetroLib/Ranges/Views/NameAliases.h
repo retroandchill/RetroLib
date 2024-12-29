@@ -22,8 +22,12 @@ namespace Retro::Ranges::Views {
 
     RETROLIB_EXPORT constexpr auto All = std::ranges::views::all;
 
+    RETROLIB_EXPORT constexpr auto Iota = std::ranges::views::iota;
+
     RETROLIB_EXPORT constexpr auto Join = std::ranges::views::join;
 
     RETROLIB_EXPORT constexpr auto Reverse = std::ranges::views::reverse;
+
+    RETROLIB_EXPORT constexpr auto Take = std::ranges::views::take;
 
 }
