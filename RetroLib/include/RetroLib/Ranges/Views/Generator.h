@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#if RETROLIB_WITH_COROUTINES
+
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
 
@@ -934,3 +936,5 @@ namespace Retro {
         bool Started = false;
     };
 } // namespace retro
+
+#endif

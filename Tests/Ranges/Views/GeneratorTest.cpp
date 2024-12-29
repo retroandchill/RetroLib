@@ -5,6 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
+#if RETROLIB_WITH_COROUTINES
 #include <catch2/catch_test_macros.hpp>
 
 #if RETROLIB_WITH_MODULES
@@ -79,3 +80,4 @@ TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
         CHECK(Values == std::vector({'A', 'B', 'C', 'D', 'E', 'F', 'G'}));
     }
 }
+#endif
