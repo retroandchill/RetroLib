@@ -18,7 +18,7 @@
 #endif
 #include <RetroLib/TypeTraits.h>
 
-namespace retro::optionals {
+namespace Retro::Optionals {
 
     struct PtrOrNullInvoker {
 
@@ -26,13 +26,13 @@ namespace retro::optionals {
             requires(std::is_lvalue_reference_v<O> || OptionalReference<O>) &&
                     (!SpecializationOf<ValueType<O>, std::reference_wrapper>)
         constexpr std::add_pointer_t<ValueType<O>> operator()(O &&optional) const {
-            return has_value(std::forward<O>(optional)) ? &get(std::forward<O>(optional)) : nullptr;
+            return HasValue(std::forward<O>(optional)) ? &get(std::forward<O>(optional)) : nullptr;
         }
 
         template <template <typename...> typename O, typename T>
             requires OptionalType<O<std::reference_wrapper<T>>>
         constexpr std::add_pointer_t<T> operator()(const O<std::reference_wrapper<T>> &optional) const {
-            return has_value(optional) ? &get(optional).get() : nullptr;
+            return HasValue(optional) ? &get(optional).get() : nullptr;
         }
     };
 
@@ -48,6 +48,6 @@ namespace retro::optionals {
      * to pointers, simplifying integration with pointer-based APIs or operations
      * that accept raw or smart pointers.
      */
-    RETROLIB_EXPORT constexpr auto ptr_or_null = extension_method<PtrOrNullInvoker{}>();
+    RETROLIB_EXPORT constexpr auto PtrOrNull = ExtensionMethod<PtrOrNullInvoker{}>();
 
 } // namespace retro::optionals

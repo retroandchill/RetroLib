@@ -19,7 +19,7 @@ import RetroLib;
 #include <vector>
 #endif
 
-namespace retro::ranges::testing {
+namespace Retro::Ranges::testing {
     static Generator<int> generate_integers(int num) {
         for (int i = 0; i < num; i++) {
             co_yield i;
@@ -33,20 +33,20 @@ namespace retro::ranges::testing {
 
         Generator<const T &> traverse_inorder() const {
             if (left) {
-                co_yield ranges::ElementsOf(left->traverse_inorder());
+                co_yield Ranges::ElementsOf(left->traverse_inorder());
             }
 
             co_yield value;
 
             if (right) {
-                co_yield ranges::ElementsOf(right->traverse_inorder());
+                co_yield Ranges::ElementsOf(right->traverse_inorder());
             }
         }
     };
 } // namespace retro::ranges::testing
 
 TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
-    using namespace retro::ranges::testing;
+    using namespace Retro::Ranges::testing;
     SECTION("Use a generator to loop through some numbers") {
         std::vector<int> numbers;
         for (int i : generate_integers(5)) {
@@ -56,8 +56,8 @@ TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
     }
 
     SECTION("Can use a generator with a range pipe") {
-        auto numbers = generate_integers(10) | retro::ranges::views::filter([](int value) { return value % 2 == 0; }) |
-                       retro::ranges::to<std::vector>();
+        auto numbers = generate_integers(10) | Retro::Ranges::Views::Filter([](int value) { return value % 2 == 0; }) |
+                       Retro::Ranges::To<std::vector>();
         CHECK(numbers == std::vector({0, 2, 4, 6, 8}));
     }
 

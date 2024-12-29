@@ -58,225 +58,225 @@ class TestClass {
 
 TEST_CASE("Can bind back to a runtime defined functional type", "[functional]") {
     SECTION("Binding back to a single argument works") {
-        auto binding = retro::bind_back(add, 4);
+        auto binding = Retro::BindBack(add, 4);
         CHECK(binding(3) == 7);
         CHECK(std::as_const(binding)(5) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr<int>(number);
-        retro::bind_back(add_to_shared_back, std::move(number))(4);
+        Retro::BindBack(add_to_shared_back, std::move(number))(4);
         CHECK(weakNumber.expired());
     }
 
     SECTION("Binding two arguments works") {
         std::vector<int> elements;
-        auto binding = retro::bind_back(functor, 3, 4);
+        auto binding = Retro::BindBack(functor, 3, 4);
         CHECK(std::addressof(elements) == std::addressof(binding(elements)));
         CHECK(elements.size() == 2);
         std::as_const(binding)(elements);
         CHECK(elements.size() == 4);
-        retro::bind_back(functor, 5, 6)(elements);
+        Retro::BindBack(functor, 5, 6)(elements);
         CHECK(elements.size() == 6);
     }
 
     SECTION("Binding back to more than two arguments works") {
-        auto binding = retro::bind_back(&add_many, 4, 5, 6);
+        auto binding = Retro::BindBack(&add_many, 4, 5, 6);
         CHECK(binding(3) == 18);
         CHECK(std::as_const(binding)(5) == 20);
-        CHECK(retro::bind_back(&add_many, 10, 20, 30)(5) == 65);
+        CHECK(Retro::BindBack(&add_many, 10, 20, 30)(5) == 65);
     }
 }
 
 TEST_CASE("Can bind back to a constexpr defined functional type", "[functional]") {
     SECTION("Binding back to a single argument works") {
-        auto binding = retro::bind_back<add>(4);
+        auto binding = Retro::bind_back<add>(4);
         CHECK(binding(3) == 7);
         CHECK(std::as_const(binding)(5) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr<int>(number);
-        retro::bind_back<add_to_shared_back>(std::move(number))(4);
+        Retro::bind_back<add_to_shared_back>(std::move(number))(4);
         CHECK(weakNumber.expired());
     }
 
     SECTION("Binding two arguments works") {
         std::vector<int> elements;
-        auto binding = retro::bind_back<functor>(3, 4);
+        auto binding = Retro::bind_back<functor>(3, 4);
         CHECK(std::addressof(elements) == std::addressof(binding(elements)));
         CHECK(elements.size() == 2);
         std::as_const(binding)(elements);
         CHECK(elements.size() == 4);
-        retro::bind_back<functor>(5, 6)(elements);
+        Retro::bind_back<functor>(5, 6)(elements);
         CHECK(elements.size() == 6);
     }
 
     SECTION("Binding back to more than two arguments works") {
-        auto binding = retro::bind_back<add_many>(4, 5, 6);
+        auto binding = Retro::bind_back<add_many>(4, 5, 6);
         CHECK(binding(3) == 18);
         CHECK(std::as_const(binding)(5) == 20);
-        CHECK(retro::bind_back<add_many>(10, 20, 30)(5) == 65);
+        CHECK(Retro::bind_back<add_many>(10, 20, 30)(5) == 65);
     }
 }
 
 TEST_CASE("Can bind front to a constexpr defined functional type", "[functional]") {
     SECTION("Can bind with one parameter") {
-        auto binding = retro::bind_front<&add_numbers>(1);
+        auto binding = Retro::bind_front<&add_numbers>(1);
         CHECK(binding(2, 3) == 6);
         CHECK(std::as_const(binding)(5, 4) == 10);
-        CHECK(retro::bind_front<&add_numbers>(3)(5, 4) == 12);
+        CHECK(Retro::bind_front<&add_numbers>(3)(5, 4) == 12);
     }
 
     SECTION("Can bind with two parameters") {
-        auto binding = retro::bind_front<&add_numbers>(1, 2);
+        auto binding = Retro::bind_front<&add_numbers>(1, 2);
         CHECK(binding(3) == 6);
         CHECK(std::as_const(binding)(4) == 7);
-        CHECK(retro::bind_front<&add_numbers>(3, 6)(5) == 14);
+        CHECK(Retro::bind_front<&add_numbers>(3, 6)(5) == 14);
     }
 
     SECTION("Can bind with three parameters") {
-        auto binding = retro::bind_front<&add_numbers>(1, 2, 3);
+        auto binding = Retro::bind_front<&add_numbers>(1, 2, 3);
         CHECK(binding() == 6);
         CHECK(std::as_const(binding)() == 6);
-        CHECK(retro::bind_front<&add_numbers>(3, 6, 9)() == 18);
+        CHECK(Retro::bind_front<&add_numbers>(3, 6, 9)() == 18);
     }
 }
 
 TEST_CASE("Can bind a method with an object at runtime", "[functional]") {
     SECTION("Can bind to an object of the given type") {
         TestClass object;
-        auto binding = retro::bind_method(object, &TestClass::method);
+        auto binding = Retro::BindMethod(object, &TestClass::method);
         CHECK(binding(1, 2, 1) == 4);
     }
 
     SECTION("Can bind to a raw pointer of an object") {
         TestClass object;
         auto ptr = &object;
-        auto binding = retro::bind_method(ptr, &TestClass::method, 5);
+        auto binding = Retro::BindMethod(ptr, &TestClass::method, 5);
         CHECK(binding(4, 1) == 10);
         CHECK(std::as_const(binding)(5, 5) == 15);
-        CHECK(retro::bind_method(ptr, &TestClass::method, 10)(5, 5) == 20);
+        CHECK(Retro::BindMethod(ptr, &TestClass::method, 10)(5, 5) == 20);
     }
 
     SECTION("Can bind to wrapped pointer object") {
         auto object = std::make_shared<TestClass>();
-        auto binding = retro::bind_method(object, &TestClass::method, 5, 6);
+        auto binding = Retro::BindMethod(object, &TestClass::method, 5, 6);
         CHECK(binding(4) == 15);
         CHECK(std::as_const(binding)(5) == 16);
-        CHECK(retro::bind_method(object, &TestClass::method, 10, 12)(5) == 27);
+        CHECK(Retro::BindMethod(object, &TestClass::method, 10, 12)(5) == 27);
     }
 
     SECTION("Can bind to a reference wrapper object") {
         TestClass object;
-        auto binding = retro::bind_method(std::ref(object), &TestClass::method, 5, 6, 4);
+        auto binding = Retro::BindMethod(std::ref(object), &TestClass::method, 5, 6, 4);
         CHECK(binding() == 15);
         CHECK(std::as_const(binding)() == 15);
-        CHECK(retro::bind_method(std::cref(object), &TestClass::method, 10, 12, 7)() == 29);
+        CHECK(Retro::BindMethod(std::cref(object), &TestClass::method, 10, 12, 7)() == 29);
     }
 }
 
 TEST_CASE("Can bind a method with an object at compile time", "[functional]") {
     SECTION("Can bind to an object of the given type") {
         TestClass object;
-        auto binding = retro::bind_method<&TestClass::method>(object);
+        auto binding = Retro::BindMethod<&TestClass::method>(object);
         CHECK(binding(1, 2, 1) == 4);
     }
 
     SECTION("Can bind to a raw pointer of an object") {
         TestClass object;
         auto ptr = &object;
-        auto binding = retro::bind_method<&TestClass::method>(ptr, 5);
+        auto binding = Retro::BindMethod<&TestClass::method>(ptr, 5);
         CHECK(binding(4, 1) == 10);
         CHECK(std::as_const(binding)(5, 5) == 15);
-        CHECK(retro::bind_method<&TestClass::method>(ptr, 10)(5, 5) == 20);
+        CHECK(Retro::BindMethod<&TestClass::method>(ptr, 10)(5, 5) == 20);
     }
 
     SECTION("Can bind to wrapped pointer object") {
         auto object = std::make_shared<TestClass>();
-        auto binding = retro::bind_method<&TestClass::method>(object, 5, 6);
+        auto binding = Retro::BindMethod<&TestClass::method>(object, 5, 6);
         CHECK(binding(4) == 15);
         CHECK(std::as_const(binding)(5) == 16);
-        CHECK(retro::bind_method<&TestClass::method>(object, 10, 12)(5) == 27);
+        CHECK(Retro::BindMethod<&TestClass::method>(object, 10, 12)(5) == 27);
     }
 
     SECTION("Can bind to a reference wrapper object") {
         TestClass object;
-        auto binding = retro::bind_method<&TestClass::method>(std::reference_wrapper(object), 5, 6, 4);
+        auto binding = Retro::BindMethod<&TestClass::method>(std::reference_wrapper(object), 5, 6, 4);
         CHECK(binding() == 15);
         CHECK(std::as_const(binding)() == 15);
-        CHECK(retro::bind_method<&TestClass::method>(std::reference_wrapper(object), 10, 12, 7)() == 29);
+        CHECK(Retro::BindMethod<&TestClass::method>(std::reference_wrapper(object), 10, 12, 7)() == 29);
     }
 }
 
 TEST_CASE("Can use the opaque binding wrapper as runtime", "[functional]") {
     SECTION("Can bind a regular functor") {
-        auto binding = retro::create_binding(add, 4);
+        auto binding = Retro::CreateBinding(add, 4);
         CHECK(binding(3) == 7);
         CHECK(std::as_const(binding)(5) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr(number);
-        retro::create_binding(add_to_shared_back, std::move(number))(4);
+        Retro::CreateBinding(add_to_shared_back, std::move(number))(4);
         CHECK(weakNumber.expired());
     }
 
     SECTION("Can bind a method using the object as the owner, or bind back without it") {
         auto object = std::make_shared<TestClass>();
-        auto binding = retro::create_binding(object, &TestClass::method, 5, 6);
+        auto binding = Retro::CreateBinding(object, &TestClass::method, 5, 6);
         CHECK(binding(4) == 15);
         CHECK(std::as_const(binding)(5) == 16);
-        CHECK(retro::create_binding(&TestClass::method, 10, 12)(object, 5) == 27);
+        CHECK(Retro::CreateBinding(&TestClass::method, 10, 12)(object, 5) == 27);
     }
 
     SECTION("Can bind to a member") {
         TestClass object;
-        auto binding1 = retro::create_binding(object, &TestClass::member);
+        auto binding1 = Retro::CreateBinding(object, &TestClass::member);
         CHECK(binding1() == 9);
-        auto binding2 = retro::create_binding(&TestClass::member);
+        auto binding2 = Retro::CreateBinding(&TestClass::member);
         CHECK(binding2(object) == 9);
     }
 
     SECTION("Can bind a functor and use tuples with it") {
-        auto binding = retro::create_binding(add);
+        auto binding = Retro::CreateBinding(add);
         CHECK(binding(std::make_pair(3, 4)) == 7);
         CHECK(std::as_const(binding)(std::make_pair(5, 4)) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr(number);
-        retro::create_binding(add_to_shared_back)(std::make_pair(4, std::move(number)));
+        Retro::CreateBinding(add_to_shared_back)(std::make_pair(4, std::move(number)));
         CHECK(weakNumber.expired());
     }
 }
 
 TEST_CASE("Can use the opaque binding wrapper at compile time", "[functional]") {
     SECTION("Can bind a regular functor") {
-        auto binding = retro::create_binding<add>(4);
+        auto binding = Retro::CreateBinding<add>(4);
         CHECK(binding(3) == 7);
         CHECK(std::as_const(binding)(5) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr(number);
-        retro::create_binding<add_to_shared_back>(std::move(number))(4);
+        Retro::CreateBinding<add_to_shared_back>(std::move(number))(4);
         CHECK(weakNumber.expired());
     }
 
     SECTION("Can bind a method using the this tag, or bind back without it") {
         auto object = std::make_shared<TestClass>();
-        auto binding = retro::create_binding<&TestClass::method>(retro::this_type, object, 5, 6);
+        auto binding = Retro::create_binding<&TestClass::method>(Retro::This, object, 5, 6);
         CHECK(binding(4) == 15);
         CHECK(std::as_const(binding)(5) == 16);
-        CHECK(retro::create_binding<&TestClass::method>(10, 12)(object, 5) == 27);
+        CHECK(Retro::CreateBinding<&TestClass::method>(10, 12)(object, 5) == 27);
     }
 
     SECTION("Can bind to a member") {
         TestClass object;
-        auto binding1 = retro::create_binding<&TestClass::member>(object);
+        auto binding1 = Retro::CreateBinding<&TestClass::member>(object);
         CHECK(binding1() == 9);
-        auto binding2 = retro::create_binding<&TestClass::member>();
+        auto binding2 = Retro::CreateBinding<&TestClass::member>();
         CHECK(binding2(object) == 9);
     }
 
     SECTION("Can bind a functor and use tuples with it") {
-        auto binding = retro::create_binding<add>();
+        auto binding = Retro::CreateBinding<add>();
         CHECK(binding(std::make_pair(3, 4)) == 7);
         CHECK(std::as_const(binding)(std::make_pair(5, 4)) == 9);
         auto number = std::make_shared<int>(5);
         auto weakNumber = std::weak_ptr(number);
-        retro::create_binding<add_to_shared_back>()(std::make_pair(4, std::move(number)));
+        Retro::CreateBinding<add_to_shared_back>()(std::make_pair(4, std::move(number)));
         CHECK(weakNumber.expired());
     }
 }

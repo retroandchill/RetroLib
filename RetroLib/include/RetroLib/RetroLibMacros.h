@@ -25,4 +25,6 @@
 #endif
 #endif
 
+#ifndef RETROLIB_ASSERT
 #define RETROLIB_ASSERT(...) assert(__VA_ARGS__)
+#endif

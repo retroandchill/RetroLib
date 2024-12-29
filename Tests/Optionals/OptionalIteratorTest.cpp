@@ -19,7 +19,7 @@ import RetroLib;
 
 TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
     SECTION("Can use a ranged for loop") {
-        retro::Optional value = 3;
+        Retro::Optional value = 3;
 
         int sum = 0;
         for (auto i : value) {
@@ -29,8 +29,8 @@ TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
     }
 
     SECTION("Can use an iterator based for loop") {
-        const retro::Optional value = 3;
-        static_assert(std::ranges::sized_range<retro::Optional<int>>);
+        const Retro::Optional value = 3;
+        static_assert(std::ranges::sized_range<Retro::Optional<int>>);
 
         int sum = 0;
         for (auto it = value.begin(); it != value.end(); it++) {
@@ -40,7 +40,7 @@ TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
     }
 
     SECTION("Can use as part of a range pipe") {
-        std::vector<retro::Optional<int>> values = {1, std::nullopt, 2, 3, std::nullopt, std::nullopt, std::nullopt};
+        std::vector<Retro::Optional<int>> values = {1, std::nullopt, 2, 3, std::nullopt, std::nullopt, std::nullopt};
         auto view = values | std::ranges::views::join;
 
         int sum = 0;
@@ -51,8 +51,8 @@ TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
     }
 
     SECTION("Can be used to determine size") {
-        auto view = retro::ranges::views::concat(retro::Optional(1), retro::Optional<int>(), retro::Optional(2),
-                                                 retro::Optional<int>(), retro::Optional<int>(), retro::Optional(3));
+        auto view = Retro::Ranges::Views::Concat(Retro::Optional(1), Retro::Optional<int>(), Retro::Optional(2),
+                                                 Retro::Optional<int>(), Retro::Optional<int>(), Retro::Optional(3));
         CHECK(view.size() == 3);
     }
 }
