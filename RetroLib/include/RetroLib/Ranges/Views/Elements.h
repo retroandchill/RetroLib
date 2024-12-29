@@ -246,12 +246,12 @@ namespace Retro::Ranges {
 
           public:
             constexpr Sentinel() = default;
-            explicit constexpr Sentinel(ElementsViewType &View) : EndElement(std::ranges::end(View.range)) {
+            explicit constexpr Sentinel(ElementsViewType &View) : EndElement(std::ranges::end(View.Range)) {
             }
 
             template <bool Other>
                 requires IsConst && (!Other)
-            explicit constexpr Sentinel(Sentinel<Other> OtherSen) : EndElement(std::move(OtherSen.end_element)) {
+            explicit constexpr Sentinel(Sentinel<Other> OtherSen) : EndElement(std::move(OtherSen.EndElement)) {
             }
 
             template <bool Other>
@@ -280,8 +280,8 @@ namespace Retro::Ranges {
 
           private:
             template <bool Other>
-            static constexpr decltype(auto) GetIteratorValue(const Iterator<Other> &it) noexcept {
-                return it.it;
+            static constexpr decltype(auto) GetIteratorValue(const Iterator<Other> &It) noexcept {
+                return It.It;
             }
 
             std::ranges::sentinel_t<ConstifyIf<R>> EndElement;

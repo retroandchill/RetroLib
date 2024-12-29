@@ -346,4 +346,4 @@ namespace Retro::Ranges {
          */
         RETROLIB_EXPORT constexpr auto JoinWith = ExtensionMethod<JoinWithFunction>;
     } // namespace views
-} // namespace retro::ranges
+} // namespace Retro::Ranges

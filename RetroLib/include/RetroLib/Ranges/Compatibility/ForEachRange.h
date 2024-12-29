@@ -285,7 +285,7 @@ namespace Retro::Ranges {
          * @return True if the adapted members are equal, otherwise false.
          */
         constexpr bool operator==(const SentinelAdapter<I, S> &Sentinel) const {
-            return !(Adapted != Sentinel.adapted);
+            return !(Adapted != Sentinel.Adapted);
         }
 
         /**

@@ -241,13 +241,13 @@ namespace Retro {
 
     RETROLIB_EXPORT template <typename F, typename... A>
     concept HasExtenededBinding = AdditionalBindingTypes<std::decay_t<F>>::IsValid && requires(F&& Functor, A&&... Args) {
-        { AdditionalBindingTypes<std::decay_t<F>>::bind(std::forward<F>(Functor), std::forward<A>(Args)...) } -> HasFunctionCallOperator;
+        { AdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...) } -> HasFunctionCallOperator;
     };
 
     RETROLIB_EXPORT template <typename F, typename... A>
         requires HasExtenededBinding<F, A...>
     constexpr auto CreateBinding(F&& Functor, A &&...Args) {
-        return AdditionalBindingTypes<std::decay_t<F>>::bind(std::forward<F>(Functor), std::forward<A>(Args)...);
+        return AdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...);
     }
 
     RETROLIB_EXPORT template <typename... A>

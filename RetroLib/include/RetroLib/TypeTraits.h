@@ -40,7 +40,7 @@ namespace Retro {
     };
 
     /**
-     * @struct ValidType
+     * @struct ValidType::
      *
      * @brief Represents a type that is confirmed to be valid.
      *
