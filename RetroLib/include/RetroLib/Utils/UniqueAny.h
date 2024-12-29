@@ -304,40 +304,40 @@ namespace Retro {
             }
         }
 
-        union FStorage {
+        union ValueStorage {
             std::array<std::byte, DEFAULT_SMALL_STORAGE_SIZE> SmallStorage;
             void *LargeStorage;
 
-            FStorage() : LargeStorage(nullptr) {
+            ValueStorage() : LargeStorage(nullptr) {
             }
 
             template <typename T>
-                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, FStorage>)
-            explicit FStorage(T &&Data) noexcept {
+                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, ValueStorage>)
+            explicit ValueStorage(T &&Data) noexcept {
                 new (std::bit_cast<std::decay_t<T> *>(SmallStorage.data())) std::decay_t<T>(std::forward<T>(Data));
             }
 
             template <typename T>
-                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, FStorage>)
-            explicit FStorage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
+                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, ValueStorage>)
+            explicit ValueStorage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
             }
 
             template <typename T>
                 requires(!FitsInSmallBuffer<std::decay_t<T>>)
-            explicit FStorage(T *Data) noexcept : LargeStorage(Data) {
+            explicit ValueStorage(T *Data) noexcept : LargeStorage(Data) {
             }
         };
 
         struct VTable {
             const std::type_info *Type;
             bool IsLarge = false;
-            void (*Destroy)(FStorage &Storage);
-            void (*Move)(FStorage &Source, FStorage &Dest) noexcept;
+            void (*Destroy)(ValueStorage &Storage);
+            void (*Move)(ValueStorage &Source, ValueStorage &Dest) noexcept;
         };
 
         template <typename T>
         struct VTableImpl {
-            static void Destroy(FStorage &Storage) noexcept {
+            static void Destroy(ValueStorage &Storage) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::bit_cast<T *>(Storage.SmallStorage.data())->~T();
                 } else {
@@ -345,7 +345,7 @@ namespace Retro {
                 }
             }
 
-            static void Move(FStorage &Source, FStorage &Dest) noexcept {
+            static void Move(ValueStorage &Source, ValueStorage &Dest) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::memcpy(&Dest.SmallStorage, &Source.SmallStorage, sizeof(T));
                 } else {
@@ -368,7 +368,7 @@ namespace Retro {
             return Vtable;
         }
 
-        FStorage Storage;
+        ValueStorage Storage;
         VTable *Vtable = nullptr;
     };
 

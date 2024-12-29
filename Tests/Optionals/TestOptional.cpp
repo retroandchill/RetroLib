@@ -18,125 +18,125 @@ import RetroLib;
 
 TEST_CASE("Can use the new optional type", "[optionals]") {
     SECTION("Can create and assign optionals") {
-        Retro::Optional<int> optional1;
-        CHECK_FALSE(optional1.HasValue());
-        CHECK(optional1 == std::nullopt);
-        CHECK(std::nullopt == optional1);
-        CHECK(optional1 <= std::nullopt);
-        CHECK(std::nullopt <= optional1);
-        CHECK(optional1 >= std::nullopt);
-        CHECK(std::nullopt >= optional1);
-        CHECK_THROWS_AS(optional1.Value(), std::bad_optional_access);
-        CHECK_THROWS_AS(std::as_const(optional1.Value()), std::bad_optional_access);
-        CHECK_THROWS_AS(std::move(optional1).Value(), std::bad_optional_access);
+        Retro::Optional<int> Optional1;
+        CHECK_FALSE(Optional1.HasValue());
+        CHECK(Optional1 == std::nullopt);
+        CHECK(std::nullopt == Optional1);
+        CHECK(Optional1 <= std::nullopt);
+        CHECK(std::nullopt <= Optional1);
+        CHECK(Optional1 >= std::nullopt);
+        CHECK(std::nullopt >= Optional1);
+        CHECK_THROWS_AS(Optional1.Value(), std::bad_optional_access);
+        CHECK_THROWS_AS(std::as_const(Optional1.Value()), std::bad_optional_access);
+        CHECK_THROWS_AS(std::move(Optional1).Value(), std::bad_optional_access);
 
-        Retro::Optional optional2 = 3;
-        CHECK(optional2.HasValue());
-        CHECK(optional2 != std::nullopt);
-        CHECK(std::nullopt != optional2);
-        CHECK(optional2 > std::nullopt);
-        CHECK(std::nullopt < optional2);
-        CHECK(optional2 == 3);
-        CHECK(optional2.Value() == 3);
-        CHECK(*optional2 == 3);
+        Retro::Optional Optional2 = 3;
+        CHECK(Optional2.HasValue());
+        CHECK(Optional2 != std::nullopt);
+        CHECK(std::nullopt != Optional2);
+        CHECK(Optional2 > std::nullopt);
+        CHECK(std::nullopt < Optional2);
+        CHECK(Optional2 == 3);
+        CHECK(Optional2.Value() == 3);
+        CHECK(*Optional2 == 3);
 
-        CHECK(optional1.ValueOr(4) == 4);
-        CHECK(std::as_const(optional1).ValueOr(4) == 4);
-        CHECK(optional2.ValueOr(4) == 3);
-        CHECK(std::as_const(optional2).ValueOr(4) == 3);
+        CHECK(Optional1.ValueOr(4) == 4);
+        CHECK(std::as_const(Optional1).ValueOr(4) == 4);
+        CHECK(Optional2.ValueOr(4) == 3);
+        CHECK(std::as_const(Optional2).ValueOr(4) == 3);
 
-        Retro::Optional<std::string> optional3 = "Hello";
-        CHECK(optional3.HasValue());
-        CHECK(optional3 == "Hello");
-        CHECK(std::as_const(optional3).Value() == "Hello");
-        CHECK(std::move(optional3).Value() == "Hello");
-        CHECK(*std::as_const(optional3) == "Hello");
-        CHECK(*std::move(optional3) == "Hello");
+        Retro::Optional<std::string> Optional3 = "Hello";
+        CHECK(Optional3.HasValue());
+        CHECK(Optional3 == "Hello");
+        CHECK(std::as_const(Optional3).Value() == "Hello");
+        CHECK(std::move(Optional3).Value() == "Hello");
+        CHECK(*std::as_const(Optional3) == "Hello");
+        CHECK(*std::move(Optional3) == "Hello");
 
-        optional3.Reset();
-        CHECK_FALSE(optional3.HasValue());
+        Optional3.Reset();
+        CHECK_FALSE(Optional3.HasValue());
 
-        optional3.Emplace("New string");
-        CHECK(optional3.HasValue());
-        CHECK(optional3 != "Hello");
-        CHECK(optional3 == "New string");
-        CHECK(optional3->length() == 10);
-        CHECK(std::as_const(optional3)->length() == 10);
+        Optional3.Emplace("New string");
+        CHECK(Optional3.HasValue());
+        CHECK(Optional3 != "Hello");
+        CHECK(Optional3 == "New string");
+        CHECK(Optional3->length() == 10);
+        CHECK(std::as_const(Optional3)->length() == 10);
 
-        auto optional4 = std::move(optional3);
-        REQUIRE(optional3.HasValue());
-        CHECK(optional3->empty());
+        auto Optional4 = std::move(Optional3);
+        REQUIRE(Optional3.HasValue());
+        CHECK(Optional3->empty());
 
-        auto optional5 = optional4;
-        REQUIRE(optional4.HasValue());
-        CHECK(optional4 == "New string");
+        auto Optional5 = Optional4;
+        REQUIRE(Optional4.HasValue());
+        CHECK(Optional4 == "New string");
 
-        optional3 = std::nullopt;
-        CHECK_FALSE(optional3.HasValue());
+        Optional3 = std::nullopt;
+        CHECK_FALSE(Optional3.HasValue());
 
-        auto optional6 = optional3;
-        CHECK_FALSE(optional6.HasValue());
-        auto optional7 = std::move(optional3);
-        CHECK_FALSE(optional3.HasValue());
+        auto Optional6 = Optional3;
+        CHECK_FALSE(Optional6.HasValue());
+        auto Optional7 = std::move(Optional3);
+        CHECK_FALSE(Optional3.HasValue());
 
-        optional4 = optional3;
-        CHECK_FALSE(optional3.HasValue());
-        optional5 = std::move(optional3);
-        CHECK_FALSE(optional3.HasValue());
+        Optional4 = Optional3;
+        CHECK_FALSE(Optional3.HasValue());
+        Optional5 = std::move(Optional3);
+        CHECK_FALSE(Optional3.HasValue());
 
-        optional3.Emplace("New value");
-        optional6 = optional3;
-        CHECK(optional6.HasValue());
-        optional5 = "Test string";
-        optional5 = std::move(optional3);
-        CHECK(optional5.HasValue());
+        Optional3.Emplace("New value");
+        Optional6 = Optional3;
+        CHECK(Optional6.HasValue());
+        Optional5 = "Test string";
+        Optional5 = std::move(Optional3);
+        CHECK(Optional5.HasValue());
     }
 
     SECTION("Can compare optionals between each other") {
-        Retro::Optional<int> optional1 = std::nullopt;
-        Retro::Optional optional2 = 3;
+        Retro::Optional<int> Optional1 = std::nullopt;
+        Retro::Optional Optional2 = 3;
         static_assert(Retro::EqualityComparable<int, int>);
-        static_assert(Retro::EqualityComparable<decltype(optional1)::ValueType, decltype(optional2)::ValueType>);
-        CHECK_FALSE(optional1 == optional2);
-        CHECK(optional1 < optional2);
-        CHECK(optional2 > optional1);
+        static_assert(Retro::EqualityComparable<decltype(Optional1)::ValueType, decltype(Optional2)::ValueType>);
+        CHECK_FALSE(Optional1 == Optional2);
+        CHECK(Optional1 < Optional2);
+        CHECK(Optional2 > Optional1);
 
-        Retro::Optional optional3 = 7.0;
-        CHECK(optional1 != optional3);
-        CHECK(optional2 != optional3);
-        CHECK(optional1 < optional3);
-        CHECK(optional3 > optional1);
-        CHECK(optional2 < optional3);
-        optional3 = 3.0;
-        CHECK(optional2 == optional3);
+        Retro::Optional Optional3 = 7.0;
+        CHECK(Optional1 != Optional3);
+        CHECK(Optional2 != Optional3);
+        CHECK(Optional1 < Optional3);
+        CHECK(Optional3 > Optional1);
+        CHECK(Optional2 < Optional3);
+        Optional3 = 3.0;
+        CHECK(Optional2 == Optional3);
     }
 
     SECTION("Swap operation works") {
-        Retro::Optional optional1 = 3;
-        Retro::Optional optional2 = 7;
-        swap(optional1, optional2);
-        CHECK(optional1 == 7);
-        CHECK(optional2 == 3);
+        Retro::Optional Optional1 = 3;
+        Retro::Optional Optional2 = 7;
+        swap(Optional1, Optional2);
+        CHECK(Optional1 == 7);
+        CHECK(Optional2 == 3);
 
-        Retro::Optional<std::string> optional3 = "Hello";
-        Retro::Optional<std::string> optional4 = "World";
-        swap(optional3, optional4);
-        CHECK(optional3 == "World");
-        CHECK(optional4 == "Hello");
+        Retro::Optional<std::string> Optional3 = "Hello";
+        Retro::Optional<std::string> Optional4 = "World";
+        swap(Optional3, Optional4);
+        CHECK(Optional3 == "World");
+        CHECK(Optional4 == "Hello");
 
-        optional3.Reset();
-        swap(optional3, optional4);
-        CHECK_FALSE(optional4.HasValue());
-        CHECK(optional3 == "Hello");
+        Optional3.Reset();
+        swap(Optional3, Optional4);
+        CHECK_FALSE(Optional4.HasValue());
+        CHECK(Optional3 == "Hello");
 
-        optional3.Reset();
-        swap(optional3, optional4);
-        CHECK_FALSE(optional3.HasValue());
-        CHECK_FALSE(optional4.HasValue());
+        Optional3.Reset();
+        swap(Optional3, Optional4);
+        CHECK_FALSE(Optional3.HasValue());
+        CHECK_FALSE(Optional4.HasValue());
 
-        optional3 = "Hello world";
-        std::string value = *std::move(optional3);
-        CHECK(value == "Hello world");
+        Optional3 = "Hello world";
+        std::string Value = *std::move(Optional3);
+        CHECK(Value == "Hello world");
     }
 
     SECTION("Can have an optional of a reference") {

@@ -19,13 +19,13 @@ import RetroLib;
 
 TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
     SECTION("Can use a ranged for loop") {
-        Retro::Optional value = 3;
+        Retro::Optional Value = 3;
 
-        int sum = 0;
-        for (auto i : value) {
-            sum += i;
+        int Sum = 0;
+        for (auto i : Value) {
+            Sum += i;
         }
-        CHECK(sum == 3);
+        CHECK(Sum == 3);
     }
 
     SECTION("Can use an iterator based for loop") {
