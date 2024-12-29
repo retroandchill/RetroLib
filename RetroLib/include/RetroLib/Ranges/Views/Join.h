@@ -84,28 +84,28 @@ namespace Retro::Ranges {
             constexpr Iterator() = default;
 
             constexpr explicit Iterator(JoinWithView &Range)
-                : Range(&Range), OuterIt(std::ranges::begin(Range.outer)) {
-                if (OuterIt != std::ranges::end(Range.outer)) {
-                    auto &&Inner = Range.update_inner(OuterIt);
+                : Range(&Range), OuterIt(std::ranges::begin(Range.Outer)) {
+                if (OuterIt != std::ranges::end(Range.Outer)) {
+                    auto &&Inner = Range.UpdateInner(OuterIt);
                     Current.template emplace<1>(std::ranges::begin(Inner));
                     Satisfy();
                 }
             }
 
             constexpr bool operator==(std::default_sentinel_t) const {
-                return OuterIt == std::ranges::end(Range->outer);
+                return OuterIt == std::ranges::end(Range->Outer);
             }
 
             constexpr Iterator &operator++() {
                 if (Current.index() == 0) {
                     auto &It = std::get<0>(Current);
-                    RETROLIB_ASSERT(It != std::ranges::end(Range->contraction));
+                    RETROLIB_ASSERT(It != std::ranges::end(Range->Contraction));
                     ++It;
                 } else {
                     auto &It = std::get<1>(Current);
 #ifndef NDEBUG
-                    auto &&inner = Range->get_inner(OuterIt);
-                    RETROLIB_ASSERT(It != std::ranges::end(inner));
+                    auto &&Inner = Range->GetInner(OuterIt);
+                    RETROLIB_ASSERT(It != std::ranges::end(Inner));
 #endif
                     ++It;
                 }
@@ -137,24 +137,23 @@ namespace Retro::Ranges {
             void Satisfy() {
                 while (true) {
                     if (Current.index() == 0) {
-                        if (std::get<0>(Current) != std::ranges::end(Range->contraction)) {
+                        if (std::get<0>(Current) != std::ranges::end(Range->Contraction)) {
                             break;
                         }
 
-                        auto &&inner = Range->update_inner(OuterIt);
-                        Current.template emplace<1>(std::ranges::begin(inner));
+                        auto &&Inner = Range->UpdateInner(OuterIt);
+                        Current.template emplace<1>(std::ranges::begin(Inner));
                     } else {
-                        auto &&inner = Range->get_inner(OuterIt);
-                        if (std::get<1>(Current) != std::ranges::end(inner)) {
+                        if (auto &&Inner = Range->GetInner(OuterIt); std::get<1>(Current) != std::ranges::end(Inner)) {
                             break;
                         }
 
                         ++OuterIt;
-                        if (OuterIt == std::ranges::end(Range->outer)) {
+                        if (OuterIt == std::ranges::end(Range->Outer)) {
                             break;
                         }
 
-                        Current.template emplace<0>(std::ranges::begin(Range->contraction));
+                        Current.template emplace<0>(std::ranges::begin(Range->Contraction));
                     }
                 }
             }

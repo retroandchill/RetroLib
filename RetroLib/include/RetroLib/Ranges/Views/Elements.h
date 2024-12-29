@@ -63,15 +63,15 @@ namespace Retro::Ranges {
           public:
             constexpr Iterator() = default;
 
-            constexpr Iterator(ElementsViewType &View, BeginTag) : View(&View), It(std::ranges::begin(View.range)) {
+            constexpr Iterator(ElementsViewType &View, BeginTag) : View(&View), It(std::ranges::begin(View.Range)) {
             }
 
-            constexpr Iterator(ElementsViewType &View, EndTag) : View(&View), It(std::ranges::end(View.range)) {
+            constexpr Iterator(ElementsViewType &View, EndTag) : View(&View), It(std::ranges::end(View.Range)) {
             }
 
             template <bool Other>
                 requires IsConst && (!Other)
-            explicit constexpr Iterator(Iterator<Other> OtherIt) : View(OtherIt.view), It(std::move(OtherIt.it)) {
+            explicit constexpr Iterator(Iterator<Other> OtherIt) : View(OtherIt.View), It(std::move(OtherIt.It)) {
             }
 
             [[nodiscard]] constexpr decltype(auto) operator*() const noexcept(noexcept(get<N>(*It)))

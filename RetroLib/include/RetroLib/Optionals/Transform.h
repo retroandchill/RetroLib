@@ -48,10 +48,10 @@ namespace Retro::Optionals {
             requires std::invocable<F, CommonReference<O>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             using ResultType = decltype(FromResult(
-                std::forward<O>(Optional), std::invoke(std::forward<F>(Functor), get<O>(std::forward<O>(Optional)))));
+                std::forward<O>(Optional), std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))));
             return HasValue(std::forward<O>(Optional))
                        ? FromResult(std::forward<O>(Optional),
-                                     std::invoke(std::forward<F>(Functor), get<O>(std::forward<O>(Optional))))
+                                     std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional))))
                        : ResultType();
         }
     };

@@ -410,15 +410,15 @@ namespace Retro {
             if constexpr (CanSwapTrivially) {
                 swap(static_cast<OptionalStorage<T> &>(*this), static_cast<OptionalStorage<T> &>(Other));
             } else {
-                if (IsSet == Other.is_set) {
+                if (IsSet == Other.IsSet) {
                     if (IsSet) {
-                        swap(Data, Other.data);
+                        swap(Data, Other.Data);
                     }
                 } else {
                     auto &Src = IsSet ? *this : Other;
                     auto &Dst = IsSet ? Other : *this;
-                    Dst.ConstructFrom(std::move(Src.data));
-                    Src.reset();
+                    Dst.ConstructFrom(std::move(Src.Data));
+                    Src.Reset();
                 }
             }
         }
@@ -449,7 +449,7 @@ namespace Retro {
             if (!Other.HasValue()) {
                 Reset();
             } else if (IsSet) {
-                Data = std::forward<U>(Other).data;
+                Data = std::forward<U>(Other).Data;
             } else {
                 new (&Data) T(*std::forward<U>(Other));
                 IsSet = true;
@@ -1916,8 +1916,8 @@ namespace Retro {
          * @return The value contained in the optional object. The return type maintains
          *         the same value category as the input parameter.
          */
-        template <StlOptional O>
-            requires std::same_as<T, std::decay_t<O>>
+        template <typename O>
+            requires std::same_as<Optional<T>, std::decay_t<O>>
         static constexpr decltype(auto) Get(O &&Optional) {
             return *std::forward<O>(Optional);
         }
@@ -1935,8 +1935,8 @@ namespace Retro {
          *         the same value category as the input parameter.
          * @throws std::bad_optional_access If the optional does not contain a value
          */
-        template <StlOptional O>
-            requires std::same_as<T, std::decay_t<O>>
+        template <typename O>
+            requires std::same_as<Optional<T>, std::decay_t<O>>
         static constexpr decltype(auto) GetValue(O &&Optional) {
             return std::forward<O>(Optional).Value();
         }
@@ -1947,8 +1947,8 @@ namespace Retro {
          * @param Optional An object of type O which must have a HasValue() member function.
          * @return A boolean value that is true if the optional object contains a value, otherwise false.
          */
-        template <StlOptional O>
-            requires std::same_as<T, std::decay_t<O>>
+        template <typename O>
+            requires std::same_as<Optional<T>, std::decay_t<O>>
         static constexpr bool HasValue(const O &Optional) {
             return Optional.HasValue();
         }

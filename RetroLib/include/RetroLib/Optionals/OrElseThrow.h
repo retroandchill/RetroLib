@@ -33,8 +33,8 @@ namespace Retro::Optionals {
         template <OptionalType O, typename F>
             requires std::invocable<F> && std::derived_from<std::invoke_result_t<F>, std::exception>
         constexpr decltype(auto) operator()(O &&optional, F &&functor) const {
-            if (has_value(std::forward<O>(optional))) {
-                return get<O>(std::forward<O>(optional));
+            if (HasValue(std::forward<O>(optional))) {
+                return Get<O>(std::forward<O>(optional));
             }
 
             throw std::invoke(std::forward<F>(functor));

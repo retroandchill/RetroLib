@@ -74,7 +74,7 @@ namespace Retro {
             requires std::invocable<BaseFunctorType, T, BindingType<F>> &&
                      DynamicFunctorBinding<BoundFunctor>
         constexpr decltype(auto) operator()(T &&Operand, F &&Functor) const {
-            return std::invoke(BaseFunctor, std::forward<T>(Operand), create_binding(std::forward<F>(Functor)));
+            return std::invoke(BaseFunctor, std::forward<T>(Operand), CreateBinding(std::forward<F>(Functor)));
         }
 
         /**
@@ -91,7 +91,7 @@ namespace Retro {
             requires(sizeof...(A) > 1) && std::invocable<BaseFunctorType, T, BindingType<A...>> &&
                     DynamicFunctorBinding<BoundFunctor>
         constexpr decltype(auto) operator()(T &&Operand, A &&...Args) const {
-            return std::invoke(BaseFunctor, std::forward<T>(Operand), create_binding(std::forward<A>(Args)...));
+            return std::invoke(BaseFunctor, std::forward<T>(Operand), CreateBinding(std::forward<A>(Args)...));
         }
 
         /**
@@ -104,7 +104,7 @@ namespace Retro {
         template <typename T>
             requires std::invocable<BaseFunctorType, T, BoundFunctorType> && (!DynamicFunctorBinding<BoundFunctor>)
         constexpr decltype(auto) operator()(T &&Operand) const {
-            return std::invoke(BaseFunctor, std::forward<T>(Operand), create_binding<BoundFunctor>());
+            return std::invoke(BaseFunctor, std::forward<T>(Operand), CreateBinding<BoundFunctor>());
         }
 
         /**
@@ -119,11 +119,10 @@ namespace Retro {
          * @return The result of invoking the BaseFunctor with the given operand and bound arguments.
          */
         template <typename T, typename... A>
-            requires(sizeof...(A) >= 1) && std::invocable<BaseFunctorType, T, BindingType<BoundFunctorType, A...>> &&
-                    (!DynamicFunctorBinding<BoundFunctor>)
+            requires(sizeof...(A) >= 1) && (!DynamicFunctorBinding<BoundFunctor>) && std::invocable<BaseFunctorType, T, BindingType<BoundFunctorType, A...>>
         constexpr decltype(auto) operator()(T &&Operand, A &&...Args) const {
             return std::invoke(BaseFunctor, std::forward<T>(Operand),
-                               create_binding<BoundFunctor>(std::forward<A>(Args)...));
+                               CreateBinding<BoundFunctor>(std::forward<A>(Args)...));
         }
     };
 } // namespace retro

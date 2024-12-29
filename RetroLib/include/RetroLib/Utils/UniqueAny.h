@@ -143,7 +143,7 @@ namespace Retro {
          */
         template <typename T>
         UniqueAny &operator=(T &&Other) noexcept {
-            emplace<std::decay_t<T>>(std::forward<T>(Other));
+            Emplace<std::decay_t<T>>(std::forward<T>(Other));
             return *this;
         }
 
@@ -304,40 +304,40 @@ namespace Retro {
             }
         }
 
-        union Storage {
+        union FStorage {
             std::array<std::byte, DEFAULT_SMALL_STORAGE_SIZE> SmallStorage;
             void *LargeStorage;
 
-            Storage() : LargeStorage(nullptr) {
+            FStorage() : LargeStorage(nullptr) {
             }
 
             template <typename T>
-                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, Storage>)
-            explicit Storage(T &&Data) noexcept {
+                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, FStorage>)
+            explicit FStorage(T &&Data) noexcept {
                 new (std::bit_cast<std::decay_t<T> *>(SmallStorage.data())) std::decay_t<T>(std::forward<T>(Data));
             }
 
             template <typename T>
-                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, Storage>)
-            explicit Storage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
+                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, FStorage>)
+            explicit FStorage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
             }
 
             template <typename T>
                 requires(!FitsInSmallBuffer<std::decay_t<T>>)
-            explicit Storage(T *Data) noexcept : LargeStorage(Data) {
+            explicit FStorage(T *Data) noexcept : LargeStorage(Data) {
             }
         };
 
         struct VTable {
             const std::type_info *Type;
             bool IsLarge = false;
-            void (*Destroy)(Storage &Storage);
-            void (*Move)(Storage &Source, Storage &Dest) noexcept;
+            void (*Destroy)(FStorage &Storage);
+            void (*Move)(FStorage &Source, FStorage &Dest) noexcept;
         };
 
         template <typename T>
         struct VTableImpl {
-            static void Destroy(Storage &Storage) noexcept {
+            static void Destroy(FStorage &Storage) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::bit_cast<T *>(Storage.SmallStorage.data())->~T();
                 } else {
@@ -345,7 +345,7 @@ namespace Retro {
                 }
             }
 
-            static void Move(Storage &Source, Storage &Dest) noexcept {
+            static void Move(FStorage &Source, FStorage &Dest) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::memcpy(&Dest.SmallStorage, &Source.SmallStorage, sizeof(T));
                 } else {
@@ -361,14 +361,14 @@ namespace Retro {
             static VTable Vtable = {
                 .Type = &typeid(T),
                 .IsLarge = !FitsInSmallBuffer<T>,
-                .Destroy = VTableImpl<T>::destroy,
-                .Move = VTableImpl<T>::move
+                .Destroy = VTableImpl<T>::Destroy,
+                .Move = VTableImpl<T>::Move
             };
             // clang-format on
             return Vtable;
         }
 
-        Storage Storage;
+        FStorage Storage;
         VTable *Vtable = nullptr;
     };
 

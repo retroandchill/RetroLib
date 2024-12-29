@@ -35,7 +35,7 @@ namespace Retro::Optionals {
             requires std::invocable<F, CommonReference<O>> && OptionalType<std::invoke_result_t<F, CommonReference<O>>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             return HasValue(std::forward<O>(Optional))
-                       ? std::invoke(std::forward<F>(Functor), get<O>(std::forward<O>(Optional)))
+                       ? std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))
                        : std::invoke_result_t<F, CommonReference<O>>();
         }
     };

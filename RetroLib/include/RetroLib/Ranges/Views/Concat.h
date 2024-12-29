@@ -103,34 +103,34 @@ namespace Retro::Ranges {
             }
 
             struct Next {
-                Iterator *pos;
+                Iterator *Pos;
                 template <std::input_iterator I, size_t N>
                 constexpr void operator()(IndexedElement<I, N> It) const {
-                    RETROLIB_ASSERT(It.get() != std::ranges::end(std::get<N>(pos->View->Ranges)));
-                    ++It.get();
-                    pos->Satisfy<N>();
+                    RETROLIB_ASSERT(It.Get() != std::ranges::end(std::get<N>(Pos->View->Ranges)));
+                    ++It.Get();
+                    Pos->Satisfy<N>();
                 }
             };
 
             struct Prev {
-                Iterator *pos;
+                Iterator *Pos;
 
                 template <std::bidirectional_iterator I>
                 constexpr void operator()(IndexedElement<I, 0> It) const {
-                    RETROLIB_ASSERT(It.get() != std::ranges::begin(std::get<0>(pos->View->Ranges)));
-                    --It.get();
+                    RETROLIB_ASSERT(It.Get() != std::ranges::begin(std::get<0>(Pos->View->Ranges)));
+                    --It.Get();
                 }
 
                 template <std::bidirectional_iterator I, size_t N>
                     requires(N != 0)
                 constexpr void operator()(IndexedElement<I, N> It) const {
-                    if (It.get() == std::ranges::begin(std::get<N>(pos->View->Ranges))) {
-                        auto &&Rng = std::get<N - 1>(pos->View->Ranges);
-                        pos->It.template emplace<N - 1>(
+                    if (It.Get() == std::ranges::begin(std::get<N>(Pos->View->Ranges))) {
+                        auto &&Rng = std::get<N - 1>(Pos->View->Ranges);
+                        Pos->It.template emplace<N - 1>(
                             std::ranges::next(std::ranges::begin(Rng), std::ranges::end(Rng)));
-                        visit_index(*this, pos->It);
+                        VisitIndex(*this, Pos->It);
                     } else {
-                        --It.get();
+                        --It.Get();
                     }
                 }
             };
@@ -141,17 +141,17 @@ namespace Retro::Ranges {
 
                 template <std::random_access_iterator I>
                 constexpr void operator()(IndexedElement<I, RangesSize - 1> It) const {
-                    std::ranges::advance(It.get(), N);
+                    std::ranges::advance(It.Get(), N);
                 }
 
                 template <std::random_access_iterator I, size_t N>
                 constexpr void operator()(IndexedElement<I, N> It) const {
                     auto Last = std::ranges::end(std::get<N>(Pos->View->Ranges));
-                    auto Rest = std::ranges::advance(It.get(), N, std::move(Last));
+                    auto Rest = std::ranges::advance(It.Get(), N, std::move(Last));
                     Pos->Satisfy<N>();
 
                     if (Rest != 0) {
-                        visit_index<void>(AdvanceForward{Pos, Rest}, Pos->It);
+                        VisitIndex<void>(AdvanceForward{Pos, Rest}, Pos->It);
                     }
                 }
             };
@@ -161,22 +161,22 @@ namespace Retro::Ranges {
                 difference_type N;
 
                 template <std::random_access_iterator I>
-                constexpr void operator()(IndexedElement<I, 0> it) const {
-                    std::ranges::advance(it.get(), N);
+                constexpr void operator()(IndexedElement<I, 0> It) const {
+                    std::ranges::advance(It.Get(), N);
                 }
 
                 template <std::random_access_iterator I, std::size_t N>
                 constexpr void operator()(IndexedElement<I, N> It) const {
                     auto First = std::ranges::begin(std::get<N>(Pos->View->Ranges));
-                    if (It.get() == First) {
-                        auto &&rng = std::get<N - 1>(Pos->View->Ranges);
+                    if (It.Get() == First) {
+                        auto &&Rng = std::get<N - 1>(Pos->View->Ranges);
                         Pos->It.template emplace<N - 1>(
-                            std::ranges::next(std::ranges::begin(rng), std::ranges::end(rng)));
-                        visit_index(*this, Pos->It);
+                            std::ranges::next(std::ranges::begin(Rng), std::ranges::end(Rng)));
+                        VisitIndex(*this, Pos->It);
                     } else {
-                        auto Rest = std::ranges::advance(It.get(), N, std::move(First));
+                        auto Rest = std::ranges::advance(It.Get(), N, std::move(First));
                         if (Rest != 0) {
-                            visit_index<void>(AdvanceReverse{Pos, Rest}, Pos->It);
+                            VisitIndex<void>(AdvanceReverse{Pos, Rest}, Pos->It);
                         }
                     }
                 }
@@ -220,13 +220,13 @@ namespace Retro::Ranges {
             constexpr Iterator() = default;
 
             constexpr Iterator(ConcatViewType &View, BeginTag)
-                : View(&View), It(std::in_place_index<0>, std::ranges::begin(std::get<0>(View.ranges))) {
+                : View(&View), It(std::in_place_index<0>, std::ranges::begin(std::get<0>(View.Ranges))) {
                 Satisfy<0>();
             }
 
             constexpr Iterator(ConcatViewType &View, EndTag)
                 : View(&View),
-                  It(std::in_place_index<RangesSize - 1>, std::ranges::end(std::get<RangesSize - 1>(View.ranges))) {
+                  It(std::in_place_index<RangesSize - 1>, std::ranges::end(std::get<RangesSize - 1>(View.Ranges))) {
             }
 
             template <bool Other>
@@ -240,7 +240,7 @@ namespace Retro::Ranges {
             }
 
             constexpr Iterator &operator++() {
-                visit_index(Next{this}, It);
+                VisitIndex(Next{this}, It);
                 return *this;
             }
 
@@ -282,15 +282,15 @@ namespace Retro::Ranges {
             constexpr Iterator &operator--()
                 requires(std::bidirectional_iterator<std::ranges::iterator_t<R>> && ...)
             {
-                visit_index(Prev{this}, It);
+                VisitIndex(Prev{this}, It);
                 return *this;
             }
 
             constexpr auto operator--(int) {
                 if constexpr ((std::ranges::forward_range<R> && ...)) {
-                    auto tmp = *this;
+                    auto Tmp = *this;
                     --*this;
-                    return tmp;
+                    return Tmp;
                 } else {
                     --*this;
                 }
@@ -314,9 +314,9 @@ namespace Retro::Ranges {
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 if (N > 0) {
-                    visit_index<void>(AdvanceForward{this, N}, It);
+                    VisitIndex<void>(AdvanceForward{this, N}, It);
                 } else if (N < 0) {
-                    visit_index<void>(AdvanceReverse{this, N}, It);
+                    VisitIndex<void>(AdvanceReverse{this, N}, It);
                 }
                 return *this;
             }

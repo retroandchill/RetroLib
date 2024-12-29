@@ -71,7 +71,7 @@ namespace Retro::Ranges {
                     Parent->Dirty = false;
                 }
 
-                return std::move(*Parent->cache);
+                return std::move(*Parent->Cache);
             }
 
             constexpr bool operator==(const Iterator &Other) const
@@ -86,7 +86,7 @@ namespace Retro::Ranges {
 
             constexpr Iterator &operator++() {
                 ++It;
-                Parent->dirty = true;
+                Parent->Dirty = true;
                 return *this;
             }
 

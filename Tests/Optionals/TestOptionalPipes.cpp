@@ -111,12 +111,12 @@ TEST_CASE("Can transform an optional between various types", "[optionals]") {
         };
         Retro::Optional index = 2;
         auto transformed = index | Retro::Optionals::Transform(transformer);
-        CHECK(transformed.has_value());
-        CHECK(transformed.value() == 3);
+        CHECK(transformed.HasValue());
+        CHECK(transformed.Value() == 3);
 
         index = 6;
         auto second_pass = index | Retro::Optionals::Transform(transformer);
-        CHECK_FALSE(second_pass.has_value());
+        CHECK_FALSE(second_pass.HasValue());
     }
 }
 
@@ -151,14 +151,14 @@ TEST_CASE("Can flat map down an optional result", "[optionals]") {
         };
 
         auto mapped1 = std::optional(4) | Retro::Optionals::AndThen<mapper>();
-        CHECK(mapped1.has_value());
-        CHECK(mapped1.value() == 8);
+        CHECK(mapped1.HasValue());
+        CHECK(mapped1.Value() == 8);
 
         auto mapped2 = std::optional(-3) | Retro::Optionals::AndThen<mapper>();
-        CHECK_FALSE(mapped2.has_value());
+        CHECK_FALSE(mapped2.HasValue());
 
         auto mapped3 = std::optional<int>() | Retro::Optionals::AndThen<mapper>();
-        CHECK_FALSE(mapped3.has_value());
+        CHECK_FALSE(mapped3.HasValue());
     }
 }
 
@@ -193,7 +193,7 @@ TEST_CASE("Test getting a value or a null pointer", "[optionals]") {
     auto result3 = Retro::Optionals::MakeOptionalReference(value2) | Retro::Optionals::PtrOrNull;
     CHECK(result3 == nullptr);
 
-    auto result4 = Retro::Optionals::of_nullable(result1) | Retro::Optionals::PtrOrNull;
+    auto result4 = Retro::Optionals::OfNullable(result1) | Retro::Optionals::PtrOrNull;
     CHECK(result4 == result1);
 }
 
@@ -210,7 +210,7 @@ TEST_CASE("Can convert between various optional types", "[optionals]") {
         std::optional value1 = 34;
         auto value2 = value1 | Retro::Optionals::To<Retro::Optional>();
         CHECK(value2.HasValue());
-        CHECK(value2.value() == 34);
+        CHECK(value2.Value() == 34);
 
         std::optional<int> value3 = std::nullopt;
         auto value4 = value3 | Retro::Optionals::To<Retro::Optional>();
@@ -219,12 +219,12 @@ TEST_CASE("Can convert between various optional types", "[optionals]") {
 
     SECTION("Can convert between two unlike optional types") {
         std::optional value1 = 34;
-        auto value2 = value1 | Retro::Optionals::to<Retro::Optional<double>>();
+        auto value2 = value1 | Retro::Optionals::To<Retro::Optional<double>>();
         CHECK(value2.HasValue());
-        CHECK(value2.value() == 34.0);
+        CHECK(value2.Value() == 34.0);
 
         std::optional<int> value3 = std::nullopt;
-        auto value4 = value3 | Retro::Optionals::to<Retro::Optional<double>>();
+        auto value4 = value3 | Retro::Optionals::To<Retro::Optional<double>>();
         CHECK_FALSE(value4.HasValue());
     }
 
@@ -232,12 +232,12 @@ TEST_CASE("Can convert between various optional types", "[optionals]") {
         int ref_value = 34;
         std::optional value1 = std::ref(ref_value);
         auto value2 = value1 | Retro::Optionals::To<Retro::Optional>();
-        CHECK(value2.has_value());
-        CHECK(value2.value() == 34);
+        CHECK(value2.HasValue());
+        CHECK(value2.Value() == 34);
 
         std::optional<std::reference_wrapper<int>> value3 = std::nullopt;
         auto value4 = value3 | Retro::Optionals::To<Retro::Optional>();
-        CHECK_FALSE(value4.has_value());
+        CHECK_FALSE(value4.HasValue());
     }
 
     SECTION("Can convert from a raw reference optional to a reference-wrapped optional") {

@@ -348,8 +348,8 @@ namespace Retro {
                 auto &Promise = Handle.promise();
                 auto &CurrentRoot = *Promise.Root;
                 if (&CurrentRoot != &Promise) {
-                    auto Parent = Promise.ParentOfLeaf;
-                    CurrentRoot.ParentOfLeaf = Parent;
+                    auto Parent = Promise.ParentOrLeaf;
+                    CurrentRoot.ParentOrLeaf = Parent;
                     return Parent;
                 }
                 return std::noop_coroutine();
@@ -365,14 +365,14 @@ namespace Retro {
         }
 
         std::suspend_always yield_value(T &&x) noexcept(std::is_nothrow_move_constructible_v<T>) {
-            Root->Value.construct(std::move(x));
+            Root->Value.Construct(std::move(x));
             return {};
         }
 
         template <typename V>
             requires(!std::is_reference_v<T>) && std::is_convertible_v<V, T>
         std::suspend_always yield_value(V &&x) noexcept(std::is_nothrow_constructible_v<T, V>) {
-            Root->Value.construct(std::forward<V>(x));
+            Root->Value.Construct(std::forward<V>(x));
             return {};
         }
 
@@ -396,7 +396,7 @@ namespace Retro {
             std::coroutine_handle<> await_suspend(std::coroutine_handle<Promise> Handle) noexcept {
                 auto &Current = Handle.promise();
                 auto &Nested = *Gen.GetPromise();
-                auto &CurrentRoot = *Current.root;
+                auto &CurrentRoot = *Current.Root;
 
                 Nested.Root = Current.Root;
                 Nested.ParentOrLeaf = Handle;
@@ -412,7 +412,7 @@ namespace Retro {
             }
 
             void await_resume() {
-                if (auto &NestedPromise = *Gen.GetPromise(); NestedPromise.Exception.Gt()) {
+                if (auto &NestedPromise = *Gen.GetPromise(); NestedPromise.Exception.Get()) {
                     std::rethrow_exception(std::move(NestedPromise.Exception.Get()));
                 }
             }
@@ -619,20 +619,20 @@ namespace Retro {
             Iterator() noexcept = default;
             Iterator(const Iterator &) = delete;
 
-            Iterator(Iterator &&Other) noexcept : Coroutine(std::exchange(Other.coroutine, {})) {
+            Iterator(Iterator &&Other) noexcept : Coroutine(std::exchange(Other.Coroutine, {})) {
             }
 
             Iterator &operator=(const Iterator &Other) = delete;
 
             Iterator &operator=(Iterator &&Other) noexcept {
-                std::swap(Coroutine, Other.coroutine);
+                std::swap(Coroutine, Other.Coroutine);
                 return *this;
             }
 
             ~Iterator() = default;
 
             friend bool operator==(const Iterator &It, Sentinel) noexcept {
-                return It.coroutine.done();
+                return It.Coroutine.done();
             }
 
             Iterator &operator++() {
@@ -645,7 +645,7 @@ namespace Retro {
             }
 
             reference operator*() const noexcept {
-                return static_cast<reference>(Coroutine.promise().value.get());
+                return static_cast<reference>(Coroutine.promise().Value.Get());
             }
 
           private:
@@ -750,8 +750,8 @@ namespace Retro {
          * @param Other The Generator instance to move resources from.
          */
         Generator(Generator &&Other) noexcept
-            : Promise(std::exchange(Other.promise, nullptr)), Coroutine(std::exchange(Other.coroutine, {})),
-              Started(std::exchange(Other.started, false)) {
+            : Promise(std::exchange(Other.Promise, nullptr)), Coroutine(std::exchange(Other.Coroutine, {})),
+              Started(std::exchange(Other.Started, false)) {
         }
 
         /**
@@ -767,7 +767,7 @@ namespace Retro {
         ~Generator() noexcept {
             if (Coroutine) {
                 if (Started && !Coroutine.done()) {
-                    Promise->value.destruct();
+                    Promise->Value.Destruct();
                 }
                 Coroutine.destroy();
             }
@@ -818,25 +818,25 @@ namespace Retro {
             Iterator(const Iterator &) = delete;
 
             Iterator(Iterator &&Other) noexcept
-                : Promise(std::exchange(Other.promise, nullptr)), Coroutine(std::exchange(Other.coroutine, {})) {
+                : Promise(std::exchange(Other.Promise, nullptr)), Coroutine(std::exchange(Other.Coroutine, {})) {
             }
 
             Iterator &operator=(const Iterator &) = default;
 
             Iterator &operator=(Iterator &&Other) noexcept {
-                Promise = std::exchange(Other.promise, nullptr);
-                Coroutine = std::exchange(Other.coroutine, {});
+                Promise = std::exchange(Other.Promise, nullptr);
+                Coroutine = std::exchange(Other.Coroutine, {});
                 return *this;
             }
 
             ~Iterator() = default;
 
             friend bool operator==(const Iterator &It, Sentinel) noexcept {
-                return It.coroutine.done();
+                return It.Coroutine.done();
             }
 
             Iterator &operator++() {
-                Promise->value.destruct();
+                Promise->Value.Destruct();
                 Promise->resume();
                 return *this;
             }
@@ -846,7 +846,7 @@ namespace Retro {
             }
 
             reference operator*() const noexcept {
-                return static_cast<reference>(Promise->value.get());
+                return static_cast<reference>(Promise->Value.Get());
             }
 
           private:

@@ -140,41 +140,41 @@ TEST_CASE("Can use the new optional type", "[optionals]") {
     }
 
     SECTION("Can have an optional of a reference") {
-        Retro::Optional optional1 = 3;
-        auto optional2 = Retro::Optionals::make_optional_reference(optional1);
-        CHECK(optional2.has_value());
-        CHECK(*optional2 == 3);
-        CHECK(std::addressof(std::as_const(*optional2)) == std::addressof(*optional1));
+        Retro::Optional Optional1 = 3;
+        auto Optional2 = Retro::Optionals::MakeOptionalReference(Optional1);
+        CHECK(Optional2.HasValue());
+        CHECK(*Optional2 == 3);
+        CHECK(std::addressof(std::as_const(*Optional2)) == std::addressof(*Optional1));
 
-        optional2.reset();
-        CHECK_FALSE(optional2.has_value());
+        Optional2.Reset();
+        CHECK_FALSE(Optional2.HasValue());
 
-        int free_variable = 7;
-        optional2 = free_variable;
-        CHECK(optional2.has_value());
-        CHECK(*optional2 == 7);
+        int FreeVariable = 7;
+        Optional2 = FreeVariable;
+        CHECK(Optional2.HasValue());
+        CHECK(*Optional2 == 7);
 
-        free_variable++;
-        CHECK(*optional2 == 8);
+        FreeVariable++;
+        CHECK(*Optional2 == 8);
 
-        int other_variable = 4;
-        Retro::Optional<int &> optional3 = other_variable;
-        CHECK(optional3.HasValue());
-        swap(optional2, optional3);
-        CHECK(*optional3 == 8);
-        CHECK(free_variable == 4);
-        CHECK(other_variable == 8);
+        int OtherVariable = 4;
+        Retro::Optional<int &> Optional3 = OtherVariable;
+        CHECK(Optional3.HasValue());
+        swap(Optional2, Optional3);
+        CHECK(*Optional3 == 8);
+        CHECK(FreeVariable == 4);
+        CHECK(OtherVariable == 8);
 
-        optional3.Reset();
-        swap(optional3, optional2);
-        CHECK(*optional3 == 4);
-        CHECK_FALSE(optional2.has_value());
-        CHECK(free_variable == 4);
+        Optional3.Reset();
+        swap(Optional3, Optional2);
+        CHECK(*Optional3 == 4);
+        CHECK_FALSE(Optional2.HasValue());
+        CHECK(FreeVariable == 4);
 
-        std::string testString = "Hello world";
-        Retro::Optional<std::string &> optional4 = testString;
-        CHECK(optional4.HasValue());
-        CHECK(optional4->length() == 11);
-        CHECK(std::as_const(optional4)->length() == 11);
+        std::string TestString = "Hello world";
+        Retro::Optional<std::string &> Optional4 = TestString;
+        CHECK(Optional4.HasValue());
+        CHECK(Optional4->length() == 11);
+        CHECK(std::as_const(Optional4)->length() == 11);
     }
 }

@@ -29,7 +29,7 @@ namespace Retro::Ranges {
 
   RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
       requires ValidFunctorParameter<Functor>
-  constexpr auto ForEach(A &&...Args) {
+  constexpr auto NoneOf(A &&...Args) {
     return ExtensionMethod<NoneOfCallback<Functor>>(std::forward<A>(Args)...);
   }
 } // namespace retro::ranges

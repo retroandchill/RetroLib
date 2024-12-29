@@ -390,7 +390,7 @@ namespace Retro::Ranges {
 #ifdef RTTI_ENABLED
             RETROLIB_ASSERT(typeid(*this) == typeid(other));
 #endif
-            return Iter == static_cast<const AnyViewIteratorImpl<I, T> &>(other).iter;
+            return Iter == static_cast<const AnyViewIteratorImpl<I, T> &>(other).Iter;
         }
 
         void Next() override {
@@ -460,7 +460,7 @@ namespace Retro::Ranges {
          * @return true if both AnyViewIterator objects are equal, false otherwise.
          */
         constexpr bool operator==(const AnyViewIterator &Other) const {
-            return Delegate->equal(*Other.delegate);
+            return Delegate->Equal(*Other.Delegate);
         }
 
         /**
@@ -470,11 +470,11 @@ namespace Retro::Ranges {
          * AnyViewSentinel object. Equality is determined by checking if the iteration
          * represented by delegate's iterator has reached the end of its associated view.
          *
-         * @param other The other AnyViewSentinel object to compare against.
+         * @param Other The other AnyViewSentinel object to compare against.
          * @return true if the current iterator has reached the end of the view, false otherwise.
          */
-        constexpr bool operator==(const AnyViewSentinel &other) const {
-            return other.View->AtEnd(Delegate->iterator());
+        constexpr bool operator==(const AnyViewSentinel &Other) const {
+            return Other.View->AtEnd(Delegate->Iterator());
         }
 
         /**

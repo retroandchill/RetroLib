@@ -33,7 +33,7 @@ namespace Retro::Optionals {
         template <OptionalType O, typename F>
             requires std::invocable<F> && std::same_as<std::invoke_result_t<F>, std::decay_t<O>>
         constexpr std::decay_t<O> operator()(O &&Optional, F &&Functor) const {
-            if (has_value(std::forward<O>(Optional))) {
+            if (HasValue(std::forward<O>(Optional))) {
                 return std::forward<O>(Optional);
             }
 

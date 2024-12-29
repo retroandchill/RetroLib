@@ -25,14 +25,14 @@ namespace Retro::Optionals {
         template <OptionalType O>
             requires(std::is_lvalue_reference_v<O> || OptionalReference<O>) &&
                     (!SpecializationOf<ValueType<O>, std::reference_wrapper>)
-        constexpr std::add_pointer_t<ValueType<O>> operator()(O &&optional) const {
-            return HasValue(std::forward<O>(optional)) ? &get(std::forward<O>(optional)) : nullptr;
+        constexpr std::add_pointer_t<ValueType<O>> operator()(O &&Optional) const {
+            return HasValue(std::forward<O>(Optional)) ? &Get(std::forward<O>(Optional)) : nullptr;
         }
 
         template <template <typename...> typename O, typename T>
             requires OptionalType<O<std::reference_wrapper<T>>>
-        constexpr std::add_pointer_t<T> operator()(const O<std::reference_wrapper<T>> &optional) const {
-            return HasValue(optional) ? &get(optional).get() : nullptr;
+        constexpr std::add_pointer_t<T> operator()(const O<std::reference_wrapper<T>> &Optional) const {
+            return HasValue(Optional) ? &Get(Optional).get() : nullptr;
         }
     };
 

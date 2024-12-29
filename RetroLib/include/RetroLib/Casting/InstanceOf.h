@@ -47,7 +47,7 @@ namespace Retro {
 
 
     template <Class T>
-    static constexpr TInstanceChecker<T> IsValidInstance;
+    static constexpr InstanceChecker<T> IsValidInstance;
 
     /**
      * @struct InstanceOfFunction
@@ -84,7 +84,7 @@ namespace Retro {
          */
         template <PointerType U>
         constexpr bool operator()(U &&Ptr) const {
-            return valid_ptr(std::forward<U>(Ptr)) && (*this)(*std::forward<U>(Ptr));
+            return ValidPtr(std::forward<U>(Ptr)) && (*this)(*std::forward<U>(Ptr));
         }
 
         /**

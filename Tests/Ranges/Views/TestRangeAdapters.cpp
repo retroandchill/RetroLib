@@ -65,7 +65,7 @@ TEST_CASE("Can use the constexpr range adapters", "[ranges]") {
 
     SECTION("Can use the regular functional operators") {
         auto filtered = Retro::Ranges::Views::Filter<is_even>(values);
-        auto transformed = Retro::Ranges::Views::transform<double_value>(filtered, 2);
+        auto transformed = Retro::Ranges::Views::Transform<double_value>(filtered, 2);
 
         auto it = transformed.begin();
         CHECK(*it == 4);

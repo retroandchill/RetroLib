@@ -102,7 +102,7 @@ namespace Retro::Ranges {
      * @tparam T The type to check
      */
     RETROLIB_EXPORT template <typename T>
-    concept ReservableContainer = std::ranges::sized_range<T> && ReservableContainerType<std::decay_t<T>>::is_valid &&
+    concept ReservableContainer = std::ranges::sized_range<T> && ReservableContainerType<std::decay_t<T>>::IsValid &&
                                   requires(T &Container, std::ranges::range_size_t<T> Size) {
                                       ReservableContainerType<std::decay_t<T>>::Reserve(Container, Size);
                                       {
@@ -269,7 +269,7 @@ namespace Retro::Ranges {
      * @tparam T the type of element to add
      */
     template <typename C, typename T>
-    concept AppendableContainer = AppendableContainerType<C>::is_valid && requires(C &Container, T &&Value) {
+    concept AppendableContainer = AppendableContainerType<C>::IsValid && requires(C &Container, T &&Value) {
         AppendableContainerType<C>::Append(Container, std::forward<T>(Value));
     };
 
@@ -295,7 +295,7 @@ namespace Retro::Ranges {
     template <typename C, typename T>
         requires AppendableContainer<C, T>
     constexpr decltype(auto) AppendContainer(C &Container, T &&Value) {
-        return AppendableContainerType<C>::append(Container, std::forward<T>(Value));
+        return AppendableContainerType<C>::Append(Container, std::forward<T>(Value));
     }
 
     /**

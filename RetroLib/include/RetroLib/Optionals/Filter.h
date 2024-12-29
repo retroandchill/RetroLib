@@ -41,14 +41,14 @@ namespace Retro::Optionals {
             requires std::is_invocable_r_v<bool, F, CommonReference<O>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             if constexpr (std::is_lvalue_reference_v<O>) {
-                using FilteredType = decltype(make_optional_reference(std::forward<O>(Optional)));
+                using FilteredType = decltype(MakeOptionalReference(std::forward<O>(Optional)));
                 return HasValue(std::forward<O>(Optional)) &&
-                               std::invoke(std::forward<F>(Functor), get<O>(std::forward<O>(Optional)))
-                           ? make_optional_reference(std::forward<O>(Optional))
+                               std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))
+                           ? MakeOptionalReference(std::forward<O>(Optional))
                            : FilteredType();
             } else {
                 return HasValue(std::forward<O>(Optional)) &&
-                               std::invoke(std::forward<F>(Functor), get<O>(std::forward<O>(Optional)))
+                               std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))
                            ? O(std::forward<O>(Optional))
                            : O();
             }

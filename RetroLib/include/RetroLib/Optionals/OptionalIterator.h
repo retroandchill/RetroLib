@@ -60,9 +60,9 @@ namespace Retro::Optionals {
          * to an object to manage. This ensures the iterator has a defined value it can
          * access and operate on.
          *
-         * @param value A reference to the object this iterator will manage.
+         * @param Value A reference to the object this iterator will manage.
          */
-        constexpr explicit OptionalIterator(O &value) : Value(&value) {
+        constexpr explicit OptionalIterator(O &Value) : Value(&Value) {
         }
 
         /**
@@ -75,7 +75,7 @@ namespace Retro::Optionals {
          * @return A constant reference or value of the dereferenced stored object.
          */
         constexpr decltype(auto) operator*() const {
-            RETROLIB_ASSERT(Value != nullptr && has_value(*Value));
+            RETROLIB_ASSERT(Value != nullptr && HasValue(*Value));
             return **Value;
         }
 
@@ -103,7 +103,7 @@ namespace Retro::Optionals {
          * @return `true` if the instances are considered equal, `false` otherwise.
          */
         constexpr bool operator==(const OptionalSentinel &) const {
-            return Value == nullptr || !has_value(*Value);
+            return Value == nullptr || !HasValue(*Value);
         }
 
         /**

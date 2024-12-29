@@ -39,7 +39,7 @@ namespace Retro::Optionals {
         requires std::convertible_to<TypeParam<F>, TypeParam<T>>
     constexpr T To(F &&Optional) {
         if (HasValue(Optional)) {
-            return T(get(std::forward<F>(Optional)));
+            return T(Get(std::forward<F>(Optional)));
         }
 
         return T();

@@ -818,7 +818,7 @@ namespace Retro {
         requires Method<decltype(Functor)>
     constexpr auto BindMethod(C &&Object, A &&...Args) {
         if constexpr (sizeof...(A) == 0) {
-            return bind_front<Functor>(std::forward<C>(Object));
+            return BindFront<Functor>(std::forward<C>(Object));
         } else {
             return MethodConstBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(Object),
                                                                                     std::forward<A>(Args)...);

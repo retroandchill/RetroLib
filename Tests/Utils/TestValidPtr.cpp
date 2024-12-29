@@ -25,13 +25,13 @@ TEST_CASE("Can check if a pointer is valid or invalid", "[utils]") {
         CHECK_FALSE(Retro::ValidPtr(ptr));
         CHECK(Retro::ValidPtr(valid_ptr));
 
-        CHECK(Retro::invalid_ptr(ptr));
-        CHECK_FALSE(Retro::invalid_ptr(valid_ptr));
+        CHECK(Retro::InvalidPtr(ptr));
+        CHECK_FALSE(Retro::InvalidPtr(valid_ptr));
     }
 
     SECTION("Handles nullptr literals") {
         CHECK_FALSE(Retro::ValidPtr(nullptr));
-        CHECK(Retro::invalid_ptr(nullptr));
+        CHECK(Retro::InvalidPtr(nullptr));
     }
 
     SECTION("Can work with wrapped pointer types (smart pointers)") {
@@ -41,7 +41,7 @@ TEST_CASE("Can check if a pointer is valid or invalid", "[utils]") {
         CHECK_FALSE(Retro::ValidPtr(ptr));
         CHECK(Retro::ValidPtr(valid_ptr));
 
-        CHECK(Retro::invalid_ptr(ptr));
-        CHECK_FALSE(Retro::invalid_ptr(valid_ptr));
+        CHECK(Retro::InvalidPtr(ptr));
+        CHECK_FALSE(Retro::InvalidPtr(valid_ptr));
     }
 }

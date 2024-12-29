@@ -75,7 +75,7 @@ namespace Retro {
          */
         template <Class U>
         constexpr decltype(auto) operator()(U &Value) {
-            return dyn_cast_ref<T, U, Checked>(Value);
+            return DynCastRef<T, U, Checked>(Value);
         }
 
         /**
@@ -94,15 +94,15 @@ namespace Retro {
         constexpr decltype(auto) operator()(U &&Value) const {
             if constexpr (Checked) {
                 RETROLIB_ASSERT(valid_ptr(std::forward<U>(Value)));
-                return dyn_cast_ref<T, std::remove_pointer_t<U>, Checked>(*std::forward<U>(Value));
+                return DynCastRef<T, std::remove_pointer_t<U>, Checked>(*std::forward<U>(Value));
             } else if constexpr (std::derived_from<std::decay_t<DereferencedType<U>>, std::decay_t<T>>) {
-                return valid_ptr(std::forward<U>(Value)) ? Optional<T &>(*std::forward<U>(Value)) : Optional<T &>();
+                return ValidPtr(std::forward<U>(Value)) ? Optional<T &>(*std::forward<U>(Value)) : Optional<T &>();
             } else {
-                if (!valid_ptr(std::forward<U>(Value))) {
+                if (!ValidPtr(std::forward<U>(Value))) {
                     return Optional<T &>();
                 }
 
-                return dyn_cast_ref<T, std::decay_t<DereferencedType<U>>, Checked>(*std::forward<U>(Value));
+                return DynCastRef<T, std::decay_t<DereferencedType<U>>, Checked>(*std::forward<U>(Value));
             }
         }
 

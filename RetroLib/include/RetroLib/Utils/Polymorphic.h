@@ -80,7 +80,7 @@ namespace Retro {
         template <typename U>
             requires std::derived_from<std::decay_t<U>, T>
         explicit(false) constexpr Polymorphic(U &&Value) noexcept : Vtable(GetVtable<U>()) {
-            Storage.template emplace<std::decay_t<U>>(std::forward<U>(Value));
+            Storage.template Emplace<std::decay_t<U>>(std::forward<U>(Value));
         }
 
         /**
@@ -108,7 +108,7 @@ namespace Retro {
         template <typename U, typename... A>
             requires std::derived_from<U, T> && std::constructible_from<U, A...>
         explicit constexpr Polymorphic(std::in_place_type_t<U>, A &&...Args) noexcept : Vtable(GetVtable<U>()) {
-            Storage.template emplace<U>(std::forward<A>(Args)...);
+            Storage.template Emplace<U>(std::forward<A>(Args)...);
         }
 
         /**
@@ -207,13 +207,13 @@ namespace Retro {
          * @note The operation is noexcept, ensuring that it does not throw exceptions.
          */
         constexpr Polymorphic &operator=(Polymorphic &&Other) noexcept {
-            if (Vtable->get_type() == Other.Vtable->get_type()) {
+            if (Vtable->GetType() == Other.Vtable->GetType()) {
                 Vtable = Other.Vtable;
-                Vtable->move_assign(Other.Storage, Storage);
+                Vtable->MoveAssign(Other.Storage, Storage);
             } else {
-                Vtable->destroy(Storage);
+                Vtable->Destroy(Storage);
                 Vtable = Other.Vtable;
-                Vtable->move(Other.Storage, Storage);
+                Vtable->Move(Other.Storage, Storage);
             }
             return *this;
         }
@@ -234,7 +234,7 @@ namespace Retro {
         template <typename U>
             requires std::derived_from<std::decay_t<U>, T>
         constexpr Polymorphic &operator=(U &&Value) noexcept {
-            emplace<std::decay_t<U>>(std::forward<U>(Value));
+            Emplace<std::decay_t<U>>(std::forward<U>(Value));
             return *this;
         }
 
@@ -247,7 +247,7 @@ namespace Retro {
          * @return A pointer to the stored value of type T.
          */
         constexpr T *Get() {
-            return Vtable->get_value(Storage);
+            return Vtable->GetValue(Storage);
         }
 
         /**
@@ -259,7 +259,7 @@ namespace Retro {
          * @return A pointer to the stored value of type T.
          */
         constexpr const T *Get() const {
-            return Vtable->get_const_value(Storage);
+            return Vtable->GetConstValue(Storage);
         }
 
         /**
@@ -333,12 +333,12 @@ namespace Retro {
         template <typename U, typename... A>
             requires std::derived_from<U, T>
         constexpr void Emplace(A &&...Args) noexcept {
-            Vtable->destroy(Storage);
+            Vtable->Destroy(Storage);
             Vtable = GetVtable<U>();
             if constexpr (FitsSmallStorage<U>) {
-                new (std::bit_cast<U *>(Storage.small_storage.data())) U(std::forward<A>(Args)...);
+                new (std::bit_cast<U *>(Storage.SmallStorage.data())) U(std::forward<A>(Args)...);
             } else {
-                Storage.large_storage = new U(std::forward<A>(Args)...);
+                Storage.LargeStorage = new U(std::forward<A>(Args)...);
             }
         }
 
@@ -348,7 +348,7 @@ namespace Retro {
          * @return The size as a constant expression.
          */
         constexpr size_t GetSize() const {
-            return Vtable->get_size();
+            return Vtable->GetSize();
         }
 
       private:
@@ -392,59 +392,59 @@ namespace Retro {
 
             static constexpr T *GetValue(OpaqueStorage &Data) {
                 if constexpr (FitsSmallStorage<U>) {
-                    return std::bit_cast<U *>(Data.small_storage.data());
+                    return std::bit_cast<U *>(Data.SmallStorage.data());
                 } else {
-                    return static_cast<U *>(Data.large_storage);
+                    return static_cast<U *>(Data.LargeStorage);
                 }
             }
 
             static constexpr const T *GetConstValue(const OpaqueStorage &Data) {
                 if constexpr (FitsSmallStorage<U>) {
-                    return std::bit_cast<const U *>(Data.small_storage.data());
+                    return std::bit_cast<const U *>(Data.SmallStorage.data());
                 } else {
-                    return static_cast<const U *>(Data.large_storage);
+                    return static_cast<const U *>(Data.LargeStorage);
                 }
             }
 
             static constexpr void Destroy(OpaqueStorage &Data) {
                 if constexpr (FitsSmallStorage<U>) {
-                    std::bit_cast<const U *>(Data.small_storage.data())->~U();
+                    std::bit_cast<const U *>(Data.SmallStorage.data())->~U();
                 } else {
-                    delete static_cast<const U *>(Data.large_storage);
+                    delete static_cast<const U *>(Data.LargeStorage);
                 }
             }
 
             static constexpr void Copy(const OpaqueStorage &Src, OpaqueStorage &Dest) {
                 if constexpr (FitsSmallStorage<U>) {
-                    Dest.template emplace<U>(*std::bit_cast<const U *>(Src.small_storage.data()));
+                    Dest.template Emplace<U>(*std::bit_cast<const U *>(Src.SmallStorage.data()));
                 } else {
-                    Dest.template emplace<U>(*static_cast<const U *>(Src.large_storage));
+                    Dest.template Emplace<U>(*static_cast<const U *>(Src.LargeStorage));
                 }
             }
 
             static constexpr void CopyAssign(const OpaqueStorage &Src, OpaqueStorage &Dest) {
                 if constexpr (FitsSmallStorage<U>) {
-                    *std::bit_cast<U *>(Dest.small_storage.data()) =
-                        *std::bit_cast<const U *>(Src.small_storage.data());
+                    *std::bit_cast<U *>(Dest.SmallStorage.data()) =
+                        *std::bit_cast<const U *>(Src.SmallStorage.data());
                 } else {
-                    *static_cast<U *>(Dest.large_storage) = *static_cast<const U *>(Src.large_storage);
+                    *static_cast<U *>(Dest.LargeStorage) = *static_cast<const U *>(Src.LargeStorage);
                 }
             }
 
             static constexpr void Move(OpaqueStorage &Src, OpaqueStorage &Dest) {
                 if constexpr (FitsSmallStorage<U>) {
-                    Dest.template emplace<U>(std::move(*std::bit_cast<U *>(Src.small_storage.data())));
+                    Dest.template Emplace<U>(std::move(*std::bit_cast<U *>(Src.SmallStorage.data())));
                 } else {
-                    Dest.template emplace<U>(std::move(*static_cast<U *>(Src.large_storage)));
+                    Dest.template Emplace<U>(std::move(*static_cast<U *>(Src.LargeStorage)));
                 }
             }
 
             static constexpr void MoveAssign(OpaqueStorage &Src, OpaqueStorage &Dest) {
                 if constexpr (FitsSmallStorage<U>) {
-                    *std::bit_cast<U *>(Dest.small_storage.data()) =
-                        std::move(*std::bit_cast<U *>(Src.small_storage.data()));
+                    *std::bit_cast<U *>(Dest.SmallStorage.data()) =
+                        std::move(*std::bit_cast<U *>(Src.SmallStorage.data()));
                 } else {
-                    *static_cast<U *>(Dest.large_storage) = std::move(*static_cast<U *>(Src.large_storage));
+                    *static_cast<U *>(Dest.LargeStorage) = std::move(*static_cast<U *>(Src.LargeStorage));
                 }
             }
         };
@@ -453,15 +453,15 @@ namespace Retro {
             requires std::derived_from<U, T>
         static const VTable *GetVtable() {
             using ImplType = VTableImpl<U>;
-            static constexpr VTable Vtable = {.GetType = &ImplType::get_type,
-                                              .GetSize = &ImplType::get_size,
-                                              .GetValue = &ImplType::get_value,
-                                              .GetConstValue = &ImplType::get_const_value,
-                                              .Destroy = &ImplType::destroy,
-                                              .Copy = &ImplType::copy,
-                                              .CopyAssign = &ImplType::copy_assign,
-                                              .Move = &ImplType::move,
-                                              .MoveAssign = &ImplType::move_assign};
+            static constexpr VTable Vtable = {.GetType = &ImplType::GetType,
+                                              .GetSize = &ImplType::GetSize,
+                                              .GetValue = &ImplType::GetValue,
+                                              .GetConstValue = &ImplType::GetConstValue,
+                                              .Destroy = &ImplType::Destroy,
+                                              .Copy = &ImplType::Copy,
+                                              .CopyAssign = &ImplType::CopyAssign,
+                                              .Move = &ImplType::Move,
+                                              .MoveAssign = &ImplType::MoveAssign};
             return &Vtable;
         }
 

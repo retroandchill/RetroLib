@@ -113,10 +113,10 @@ namespace Retro::Optionals {
      * @tparam T The type to check inside the optional
      */
     RETROLIB_EXPORT template <typename T>
-    concept OptionalType = OptionalOperations<std::decay_t<T>>::is_valid && requires(T &&value) {
-        OptionalOperations<std::decay_t<T>>::Get(std::forward<T>(value));
-        OptionalOperations<std::decay_t<T>>::GetValue(std::forward<T>(value));
-        { OptionalOperations<std::decay_t<T>>::HasValue(std::forward<T>(value)) } -> std::same_as<bool>;
+    concept OptionalType = OptionalOperations<std::decay_t<T>>::IsValid && requires(T &&Value) {
+        OptionalOperations<std::decay_t<T>>::Get(std::forward<T>(Value));
+        OptionalOperations<std::decay_t<T>>::GetValue(std::forward<T>(Value));
+        { OptionalOperations<std::decay_t<T>>::HasValue(std::forward<T>(Value)) } -> std::same_as<bool>;
     };
 
     /**
@@ -170,7 +170,7 @@ namespace Retro::Optionals {
      * @tparam T The optional to dereference
      */
     RETROLIB_EXPORT template <OptionalType T>
-    using CommonReference = decltype(OptionalOperations<std::decay_t<T>>::get(std::declval<T>()));
+    using CommonReference = decltype(OptionalOperations<std::decay_t<T>>::Get(std::declval<T>()));
 
     /**
      * Obtain the raw value type from the optional in question.
@@ -237,7 +237,7 @@ namespace Retro::Optionals {
      * @tparam T The optional type in question
      */
     RETROLIB_EXPORT template <OptionalType T>
-        requires OptionalParameters<std::decay_t<T>>::is_valid
+        requires OptionalParameters<std::decay_t<T>>::IsValid
     using TypeParam = typename OptionalParameters<std::decay_t<T>>::ContainedType;
 
     /**
@@ -453,7 +453,7 @@ namespace Retro::Optionals {
      * @tparam O The optional to insert into
      */
     RETROLIB_EXPORT template <typename T, template <typename...> typename O>
-    concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::is_valid && requires(T &&value) {
+    concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::IsValid && requires(T &&value) {
         {
             NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(value))
         } -> OptionalType;

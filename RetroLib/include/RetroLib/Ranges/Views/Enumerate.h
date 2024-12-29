@@ -42,15 +42,15 @@ namespace Retro::Ranges {
 
         template <typename A, typename B>
             requires std::convertible_to<A&, T> && std::convertible_to<B&, T>
-        constexpr explicit(false) EnumerateViewResult(EnumerateViewResult<A, B>& Tuple) : Index(Tuple.index), Value(Tuple.value) {}
+        constexpr explicit(false) EnumerateViewResult(EnumerateViewResult<A, B>& Tuple) : Index(Tuple.Index), Value(Tuple.Value) {}
 
         template <typename A, typename B>
             requires std::convertible_to<const A&, T> && std::convertible_to<const B&, T>
-        constexpr explicit(false) EnumerateViewResult(const EnumerateViewResult<A, B>& Tuple) : Index(Tuple.index), Value(Tuple.value) {}
+        constexpr explicit(false) EnumerateViewResult(const EnumerateViewResult<A, B>& Tuple) : Index(Tuple.Index), Value(Tuple.Value) {}
 
         template <typename A, typename B>
             requires std::convertible_to<A, T> && std::convertible_to<B, T>
-        constexpr explicit(false) EnumerateViewResult(EnumerateViewResult<A, B>&& Tuple) : Index(std::forward<A>(Tuple.index)), Value(std::forward<B>(Tuple.value)) {}
+        constexpr explicit(false) EnumerateViewResult(EnumerateViewResult<A, B>&& Tuple) : Index(std::forward<A>(Tuple.Index)), Value(std::forward<B>(Tuple.Value)) {}
 
         template <typename A, typename B>
             requires std::convertible_to<T&, A> && std::convertible_to<U&, B>
@@ -929,10 +929,10 @@ namespace Retro::Ranges {
         requires (I < 2)
     constexpr auto get(EnumerateViewResult<T, U>& t ) noexcept -> std::tuple_element_t<I, EnumerateViewResult<T, U>>& {
         if constexpr (I == 0) {
-            return t.index;
+            return t.Index;
         } else {
             static_assert(I == 1);
-            return t.value;
+            return t.Value;
         }
     }
 
@@ -940,10 +940,10 @@ namespace Retro::Ranges {
         requires (I < 2)
     constexpr auto get(const EnumerateViewResult<T, U>& t ) noexcept -> const std::tuple_element_t<I, EnumerateViewResult<T, U>>& {
         if constexpr (I == 0) {
-            return t.index;
+            return t.Index;
         } else {
             static_assert(I == 1);
-            return t.value;
+            return t.Value;
         }
     }
 
@@ -951,10 +951,10 @@ namespace Retro::Ranges {
         requires (I < 2)
     constexpr auto get(EnumerateViewResult<T, U>&& t ) noexcept -> std::tuple_element_t<I, EnumerateViewResult<T, U>>&& {
         if constexpr (I == 0) {
-            return static_cast<std::tuple_element_t<I, EnumerateViewResult<T, U>>&&>(t.index);
+            return static_cast<std::tuple_element_t<I, EnumerateViewResult<T, U>>&&>(t.Index);
         } else {
             static_assert(I == 1);
-            return static_cast<std::tuple_element_t<I, EnumerateViewResult<T, U>>&&>(t.value);
+            return static_cast<std::tuple_element_t<I, EnumerateViewResult<T, U>>&&>(t.Value);
         }
     }
 }

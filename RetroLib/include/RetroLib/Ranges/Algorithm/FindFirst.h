@@ -34,7 +34,7 @@ namespace Retro::Ranges {
         requires std::constructible_from<O, RangeCommonReference<R>>
     constexpr O FindFirst(R &&Range) {
         auto Result = std::ranges::begin(Range);
-        return Result != std::ranges::end(Range) ? O(*forward_like<R>(Result)) : O();
+        return Result != std::ranges::end(Range) ? O(*ForwardLike<R>(Result)) : O();
     }
 
     /**
@@ -84,7 +84,7 @@ namespace Retro::Ranges {
         template <std::ranges::input_range R>
             requires std::constructible_from<O, RangeCommonReference<R>>
         constexpr O operator()(R &&Range) const {
-            return find_first<O>(std::forward<R>(Range));
+            return FindFirst<O>(std::forward<R>(Range));
         }
     };
 

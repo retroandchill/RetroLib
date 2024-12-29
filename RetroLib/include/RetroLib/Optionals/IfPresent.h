@@ -29,7 +29,7 @@ namespace Retro::Optionals {
             requires std::invocable<F, CommonReference<O>>
         constexpr void operator()(O &&Optional, F &&Functor) const {
             if (HasValue(Optional)) {
-                std::invoke(std::forward<F>(Functor), get(std::forward<O>(Optional)));
+                std::invoke(std::forward<F>(Functor), Get(std::forward<O>(Optional)));
             }
         }
     };
