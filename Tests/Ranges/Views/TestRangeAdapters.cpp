@@ -17,9 +17,10 @@ import RetroLib;
 #include "RetroLib/Ranges/Views/Elements.h"
 #include "RetroLib/Ranges/Views/Enumerate.h"
 #include "RetroLib/Ranges/Views/Filter.h"
-#include "RetroLib/Ranges/Views/Join.h"
+#include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
 #include "RetroLib/Utils/Tuple.h"
+#include "RetroLib/Ranges/Views/NameAliases.h"
 
 #include <array>
 #include <map>
@@ -250,7 +251,7 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
         // type that isn't range-compatible.
         auto View = Values | std::ranges::views::transform(Transformer) | Retro::Ranges::Views::CacheLast |
                     Retro::Ranges::Views::Transform([](auto &&vec) { return std::span(vec); }) |
-                    std::ranges::views::join;
+                    Retro::Ranges::Views::Join;
 
         int Sum = 0;
         for (auto &i : View) {

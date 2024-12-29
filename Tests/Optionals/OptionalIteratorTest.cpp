@@ -13,6 +13,7 @@ import RetroLib;
 #else
 #include "RetroLib/Optionals/Optional.h"
 #include "RetroLib/Ranges/Views/Concat.h"
+#include "RetroLib/Ranges/Views/NameAliases.h"
 
 #include <ranges>
 #endif
@@ -40,7 +41,7 @@ TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
 
     SECTION("Can use as part of a range pipe") {
         std::vector<Retro::Optional<int>> Values = {1, std::nullopt, 2, 3, std::nullopt, std::nullopt, std::nullopt};
-        auto View = Values | std::ranges::views::join;
+        auto View = Values | Retro::Ranges::Views::Join;
 
         int Sum = 0;
         for (auto i : View) {

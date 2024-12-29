@@ -1,5 +1,5 @@
 /**
- * @file Join.h
+ * @file JoinWith.h
  * @brief Allows the user to join with another view in-between.
  *
  * @author Retro & Chill
@@ -333,8 +333,6 @@ namespace Retro::Ranges {
         };
 
         constexpr JoinWithInvoker JoinWithFunction;
-
-        RETROLIB_EXPORT constexpr auto Join = std::ranges::views::join;
 
         /**
          * @brief Combines elements of a range with a specified separator.

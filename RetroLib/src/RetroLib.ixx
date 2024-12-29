@@ -92,6 +92,7 @@ import std;
 #include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 
+#include "RetroLib/Ranges/Views/NameAliases.h.h"
 #include "RetroLib/Ranges/Views/AnyView.h"
 #include "RetroLib/Ranges/Views/CacheLast.h"
 #include "RetroLib/Ranges/Views/Concat.h"
@@ -99,6 +100,6 @@ import std;
 #include "RetroLib/Ranges/Views/Enumerate.h"
 #include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Views/Generator.h"
-#include "RetroLib/Ranges/Views/Join.h"
+#include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
 // clang-format on
