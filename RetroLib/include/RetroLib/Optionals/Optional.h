@@ -2012,7 +2012,7 @@ namespace Retro {
         RETROLIB_EXPORT template <template <typename...> typename O = Optional, typename T>
             requires Nullable<T, O>
         constexpr auto OfNullable(T &&Value) {
-            return NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(Value));
+            return NullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value));
         }
 
     } // namespace optionals

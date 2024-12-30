@@ -23,7 +23,6 @@
 namespace Retro::Optionals {
 
     template <template <typename...> typename O, typename T, typename U>
-        requires OptionalType<O<std::decay_t<T>>>
     constexpr auto FromResult(const O<U> &, T &&Value) {
         if constexpr (Nullable<T, O>) {
             return OfNullable<O>(std::forward<T>(Value));

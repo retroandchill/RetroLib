@@ -429,18 +429,18 @@ namespace Retro::Optionals {
      *       for processing type definitions.
      */
     RETROLIB_EXPORT template <typename T>
-        requires std::is_pointer_v<T>
+        requires std::is_pointer_v<T> && (!std::is_void_v<std::remove_pointer_t<T>>)
     struct NullableOptionalParam<T> : ValidType {
         using RawType = std::remove_pointer_t<T>;
         using ReferenceType = std::add_lvalue_reference_t<RawType>;
 
         template <template <typename...> typename O, typename U>
-            requires std::assignable_from<ReferenceType, std::remove_pointer_t<U> &> && OptionalType<O<U>>
-        static constexpr auto of_nullable(U *ptr) {
+            requires std::convertible_to<ReferenceType, std::remove_pointer_t<U> &> && OptionalType<O<std::reference_wrapper<U>>>
+        static constexpr auto OfNullable(U *Ptr) {
             if constexpr (RawReferenceOptionalValid<O, U>) {
-                return ptr != nullptr ? O<ReferenceType>(*ptr) : O<ReferenceType>();
+                return Ptr != nullptr ? O<ReferenceType>(*Ptr) : O<ReferenceType>();
             } else {
-                return ptr != nullptr ? O<std::reference_wrapper<T>>(*ptr) : O<std::reference_wrapper<T>>();
+                return Ptr != nullptr ? O<std::reference_wrapper<T>>(*Ptr) : O<std::reference_wrapper<T>>();
             }
         }
     };
@@ -453,9 +453,9 @@ namespace Retro::Optionals {
      * @tparam O The optional to insert into
      */
     RETROLIB_EXPORT template <typename T, template <typename...> typename O>
-    concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::IsValid && requires(T &&value) {
+    concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::IsValid && requires(T &&Value) {
         {
-            NullableOptionalParam<std::remove_reference_t<T>>::template of_nullable<O>(std::forward<T>(value))
+            NullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value))
         } -> OptionalType;
     };
 } // namespace retro::optionals

@@ -61,6 +61,16 @@ namespace Retro::Optionals {
 
             return Value;
         }
+
+        template <OptionalType O>
+            requires std::is_pointer_v<ValueType<O>>
+        constexpr auto operator()(O &&Optional, std::nullptr_t) const {
+            if (HasValue(Optional)) {
+                return Get(std::forward<O>(Optional));
+            }
+
+            return static_cast<ValueType<O>>(nullptr);
+        }
     };
 
     /**
