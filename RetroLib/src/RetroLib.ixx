@@ -92,7 +92,7 @@ import std;
 #include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 
-#include "RetroLib/Ranges/Views/NameAliases.h.h"
+#include "RetroLib/Ranges/Views/NameAliases.h"
 #include "RetroLib/Ranges/Views/AnyView.h"
 #include "RetroLib/Ranges/Views/CacheLast.h"
 #include "RetroLib/Ranges/Views/Concat.h"
