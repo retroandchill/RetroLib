@@ -137,17 +137,17 @@ namespace Retro::Ranges {
 
             struct AdvanceForward {
                 Iterator *Pos;
-                difference_type N;
+                difference_type Index;
 
                 template <std::random_access_iterator I>
                 constexpr void operator()(IndexedElement<I, RangesSize - 1> It) const {
-                    std::ranges::advance(It.Get(), N);
+                    std::ranges::advance(It.Get(), Index);
                 }
 
                 template <std::random_access_iterator I, size_t N>
                 constexpr void operator()(IndexedElement<I, N> It) const {
                     auto Last = std::ranges::end(std::get<N>(Pos->View->Ranges));
-                    auto Rest = std::ranges::advance(It.Get(), N, std::move(Last));
+                    auto Rest = std::ranges::advance(It.Get(), Index, std::move(Last));
                     Pos->Satisfy<N>();
 
                     if (Rest != 0) {
@@ -158,11 +158,11 @@ namespace Retro::Ranges {
 
             struct AdvanceReverse {
                 Iterator *Pos;
-                difference_type N;
+                difference_type Index;
 
                 template <std::random_access_iterator I>
                 constexpr void operator()(IndexedElement<I, 0> It) const {
-                    std::ranges::advance(It.Get(), N);
+                    std::ranges::advance(It.Get(), Index);
                 }
 
                 template <std::random_access_iterator I, std::size_t N>
@@ -174,7 +174,7 @@ namespace Retro::Ranges {
                             std::ranges::next(std::ranges::begin(Rng), std::ranges::end(Rng)));
                         VisitIndex(*this, Pos->It);
                     } else {
-                        auto Rest = std::ranges::advance(It.Get(), N, std::move(First));
+                        auto Rest = std::ranges::advance(It.Get(), Index, std::move(First));
                         if (Rest != 0) {
                             VisitIndex<void>(AdvanceReverse{Pos, Rest}, Pos->It);
                         }
@@ -299,9 +299,9 @@ namespace Retro::Ranges {
             constexpr Iterator operator+(difference_type N) const
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
-                Iterator tmp(*this);
-                tmp += N;
-                return tmp;
+                Iterator Tmp(*this);
+                Tmp += N;
+                return Tmp;
             }
 
             friend Iterator operator+(difference_type N, const Iterator &It)

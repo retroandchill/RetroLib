@@ -46,6 +46,6 @@ namespace Retro::Ranges {
     RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
         requires ValidFunctorParameter<Functor>
     constexpr auto AnyOf(A &&...Args) {
-        return ExtensionMethod<AllOfCallback<Functor>>(std::forward<A>(Args)...);
+        return ExtensionMethod<AnyOfCallback<Functor>>(std::forward<A>(Args)...);
     }
 } // namespace retro::ranges
