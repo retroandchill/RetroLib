@@ -10,6 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
+#include "RetroLib/Optionals/Optional.h"
 
 #include <array>
 #include <bit>
@@ -111,6 +112,8 @@ namespace Retro {
             Storage.template Emplace<U>(std::forward<A>(Args)...);
         }
 
+        explicit constexpr Polymorphic(IntrusiveUnsetStateTag) noexcept : Vtable(nullptr) {}
+
         /**
          * @brief Copy constructor for the Polymorphic class.
          *
@@ -127,7 +130,9 @@ namespace Retro {
          * @throws No exceptions are thrown. The constructor is marked noexcept.
          */
         constexpr Polymorphic(const Polymorphic &Other) noexcept : Vtable(Other.Vtable) {
-            Vtable->Copy(Other.Storage, Storage);
+            if (Vtable != nullptr) {
+                Vtable->Copy(Other.Storage, Storage);
+            }
         }
 
         /**
@@ -148,7 +153,9 @@ namespace Retro {
          * @throws No exceptions are thrown. The constructor is marked noexcept.
          */
         constexpr Polymorphic(Polymorphic &&Other) noexcept : Vtable(Other.Vtable) {
-            Vtable->Move(Other.Storage, Storage);
+            if (Vtable != nullptr) {
+                Vtable->Move(Other.Storage, Storage);
+            }
         }
 
         /**
@@ -163,7 +170,9 @@ namespace Retro {
          *       thrown during the destruction process.
          */
         constexpr ~Polymorphic() noexcept {
-            Vtable->Destroy(Storage);
+            if (Vtable != nullptr) {
+                Vtable->Destroy(Storage);
+            }
         }
 
         /**
@@ -178,7 +187,15 @@ namespace Retro {
          * @note The operation is noexcept, implying it does not throw exceptions.
          */
         constexpr Polymorphic &operator=(const Polymorphic &Other) noexcept {
-            if (Vtable->GetType() == Other.Vtable->GetType()) {
+            if (Vtable == nullptr) {
+                Vtable = Other.Vtable;
+                if (Vtable != nullptr) {
+                    Vtable->Copy(Other.Storage, Storage);
+                }
+            } else if (Other.Vtable == nullptr) {
+                Vtable->Destroy(Storage);
+                Vtable = nullptr;
+            } else if (Vtable->GetType() == Other.Vtable->GetType()) {
                 Vtable = Other.Vtable;
                 Vtable->CopyAssign(Other.Storage, Storage);
             } else {
@@ -207,7 +224,15 @@ namespace Retro {
          * @note The operation is noexcept, ensuring that it does not throw exceptions.
          */
         constexpr Polymorphic &operator=(Polymorphic &&Other) noexcept {
-            if (Vtable->GetType() == Other.Vtable->GetType()) {
+            if (Vtable == nullptr) {
+                Vtable = Other.Vtable;
+                if (Vtable != nullptr) {
+                    Vtable->Move(Other.Storage, Storage);
+                }
+            } else if (Other.Vtable == nullptr) {
+                Vtable->Destroy(Storage);
+                Vtable = nullptr;
+            } else if (Vtable->GetType() == Other.Vtable->GetType()) {
                 Vtable = Other.Vtable;
                 Vtable->MoveAssign(Other.Storage, Storage);
             } else {
@@ -236,6 +261,10 @@ namespace Retro {
         constexpr Polymorphic &operator=(U &&Value) noexcept {
             Emplace<std::decay_t<U>>(std::forward<U>(Value));
             return *this;
+        }
+
+        constexpr bool operator==(IntrusiveUnsetStateTag) const noexcept {
+            return Vtable == nullptr;
         }
 
         /**

@@ -137,3 +137,33 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     auto &dereferenced3 = *polymorphic4;
     CHECK(dereferenced3.get_value() == 120);
 }
+
+TEST_CASE("Polymorphic has an intrusive unset optional state", "[utils]") {
+    static_assert(Retro::HasIntrusiveUnsetState<Retro::Polymorphic<Base>>);
+    static_assert(sizeof(Retro::Polymorphic<Base>) == sizeof(Retro::Optional<Retro::Polymorphic<Base>>));
+    Retro::Optional<Retro::Polymorphic<Base>> Optional1;
+    CHECK_FALSE(Optional1.HasValue());
+    Optional1.Emplace(std::in_place_type<Derived1>, 12);
+    REQUIRE(Optional1.HasValue());
+    auto ObtainedValue1 = Optional1->Get();
+    CHECK(dynamic_cast<Derived1 *>(ObtainedValue1) != nullptr);
+    auto ObtainedValue2 = std::as_const(Optional1)->Get();
+    CHECK(dynamic_cast<const Derived1 *>(ObtainedValue2) != nullptr);
+
+    auto ObtainedValue3 = *Optional1;
+    CHECK(ObtainedValue3->get_value() == 12);
+    auto ObtainedValue4 = *std::as_const(Optional1);
+    CHECK(ObtainedValue4->get_value() == 12);
+
+    auto ObtainedValue5 = *Retro::Optional(Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 24));
+    CHECK(ObtainedValue5->get_value() == 24);
+
+    auto Optional2 = Optional1;
+    Optional1.Reset();
+    CHECK(Optional2.HasValue());
+    CHECK_FALSE(Optional1.HasValue());
+
+    swap(Optional1, Optional2);
+    CHECK_FALSE(Optional2.HasValue());
+    CHECK(Optional1.HasValue());
+}

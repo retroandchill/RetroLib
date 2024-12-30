@@ -36,7 +36,6 @@ import std;
 
 #include "RetroLib/Utils/ForwardLike.h"
 #include "RetroLib/Utils/Operators.h"
-#include "RetroLib/Utils/Polymorphic.h"
 #include "RetroLib/Utils/Unreachable.h"
 #include "RetroLib/Utils/ValidPtr.h"
 #include "RetroLib/Utils/Variant.h"
@@ -45,6 +44,7 @@ import std;
 #include "RetroLib/Optionals/OptionalIterator.h"
 #include "RetroLib/Optionals/Optional.h"
 
+#include "RetroLib/Utils/Polymorphic.h"
 #include "RetroLib/Utils/Tuple.h"
 #include "RetroLib/Utils/NonPropagatingCache.h"
 #include "RetroLib/Utils/UniqueAny.h"
