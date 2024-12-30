@@ -119,7 +119,7 @@ namespace Retro {
          * @return The result of invoking the BaseFunctor with the given operand and bound arguments.
          */
         template <typename T, typename... A>
-            requires(sizeof...(A) >= 1) && (!DynamicFunctorBinding<BoundFunctor>) && std::invocable<BaseFunctorType, T, BindingType<BoundFunctorType, A...>>
+            requires(sizeof...(A) >= 1) && (!DynamicFunctorBinding<BoundFunctor>) && std::invocable<BaseFunctorType, T, ConstBindingType<BoundFunctor, A...>>
         constexpr decltype(auto) operator()(T &&Operand, A &&...Args) const {
             return std::invoke(BaseFunctor, std::forward<T>(Operand),
                                CreateBinding<BoundFunctor>(std::forward<A>(Args)...));
