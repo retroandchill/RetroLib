@@ -37,7 +37,7 @@ namespace Retro {
      * @return A reference of type T if the cast is successful. If Checked is false and the cast is unsuccessful, an
      * Optional reference to T is returned.
      */
-    RETROLIB_EXPORT template <Class T, Class U, bool Checked = false>
+    RETROLIB_EXPORT template <PolymorphicType T, PolymorphicType U, bool Checked = false>
     constexpr decltype(auto) DynCastRef(U &Value) {
         if constexpr (std::is_base_of_v<T, U>) {
             return static_cast<T &>(Value);
@@ -62,7 +62,7 @@ namespace Retro {
      * @tparam T The target type to which the value will be dynamically casted.
      * @tparam Checked A boolean template parameter to indicate whether to perform runtime checks during casting.
      */
-    template <Class T, bool Checked = false>
+    template <PolymorphicType T, bool Checked = false>
     struct DynamicCastFunction {
         /**
          * Overloaded function call operator which performs a dynamic cast of a reference type.
@@ -73,7 +73,8 @@ namespace Retro {
          * @return The result of the dynamic cast to type T. The return is of the same reference type,
          * which is determined by the use of `decltype(auto)`.
          */
-        template <Class U>
+        template <PolymorphicType U>
+            requires std::is_polymorphic_v<U>
         constexpr decltype(auto) operator()(U &Value) {
             return DynCastRef<T, U, Checked>(Value);
         }
