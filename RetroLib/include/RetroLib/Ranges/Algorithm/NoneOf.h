@@ -24,11 +24,11 @@
 
 namespace Retro::Ranges {
   template <auto Functor = DynamicFunctor>
-      requires ValidFunctorParameter<Functor>
+      requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
   constexpr FunctorBindingInvoker<Functor, std::ranges::none_of> NoneOfCallback;
 
   RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-      requires ValidFunctorParameter<Functor>
+      requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
   constexpr auto NoneOf(A &&...Args) {
     return ExtensionMethod<NoneOfCallback<Functor>>(std::forward<A>(Args)...);
   }

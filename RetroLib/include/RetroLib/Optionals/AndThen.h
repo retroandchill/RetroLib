@@ -43,7 +43,7 @@ namespace Retro::Optionals {
     constexpr AndThenInvoker AndThenFunction;
 
     template <auto Functor = DynamicFunctor>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr FunctorBindingInvoker<Functor, AndThenFunction> AndThenCallback;
 
     /**
@@ -56,7 +56,7 @@ namespace Retro::Optionals {
      * arguments.
      */
     RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr auto AndThen(A &&...Args) {
         return ExtensionMethod<AndThenCallback<Functor>>(std::forward<A>(Args)...);
     }

@@ -28,6 +28,12 @@ import std;
 #include <array>
 #endif
 
+namespace Retro::Testing::Optionals {
+    struct DataStruct {
+        int Member;
+    };
+}
+
 TEST_CASE("Can filter an optional value", "[optionals]") {
     SECTION("Can filter on a constant functor") {
         constexpr auto IsEven = [](int x, int y) { return x % y == 0; };
@@ -341,5 +347,27 @@ TEST_CASE("Can execute on a value if said value is present", "[optionals]") {
         std::optional<int> Value2 = std::nullopt;
         Value2 | Retro::Optionals::IfPresentOrElse([&Sum](int Value) { Sum += Value; }, [&Sum] { Sum += 5; });
         CHECK(Sum == 39);
+    }
+}
+
+TEST_CASE("Can execute in a a member reference", "[optionals]") {
+    using namespace Retro::Testing::Optionals;
+
+    SECTION("Can use the member as a runtime pointer") {
+        Retro::Optional Value = DataStruct{3};
+
+        auto Result = Value |
+            Retro::Optionals::Transform(&DataStruct::Member);
+        CHECK(Result.HasValue());
+        CHECK(Result.Value() == 3);
+    }
+
+    SECTION("Can use the member as a compile time pointer") {
+        Retro::Optional Value = DataStruct{3};
+
+        auto Result = Value |
+            Retro::Optionals::Transform<&DataStruct::Member>();
+        CHECK(Result.HasValue());
+        CHECK(Result.Value() == 3);
     }
 }

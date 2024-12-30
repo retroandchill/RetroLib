@@ -44,7 +44,7 @@ namespace Retro::Optionals {
     constexpr OrElseInvoker OrElseFunction;
 
     template <auto Functor = DynamicFunctor>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr FunctorBindingInvoker<Functor, OrElseFunction> OrElseCallback;
 
     /**
@@ -56,7 +56,7 @@ namespace Retro::Optionals {
      * @return The result of invoking the or_else_invoker with the given Functor and forwarded arguments.
      */
     RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr auto OrElse(A &&...Args) {
         return ExtensionMethod<OrElseCallback<Functor>>(std::forward<A>(Args)...);
     }

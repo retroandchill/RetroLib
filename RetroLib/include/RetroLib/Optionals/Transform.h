@@ -58,7 +58,7 @@ namespace Retro::Optionals {
     constexpr TransformInvoker TransformFunction;
 
     template <auto Functor = DynamicFunctor>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr FunctorBindingInvoker<Functor, TransformFunction> TransformCallback;
 
     /**
@@ -71,7 +71,7 @@ namespace Retro::Optionals {
      *         The return type depends on the implementation of `ExtensionMethod` and `transform_invoker`.
      */
     RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr auto Transform(A &&...Args) {
         return ExtensionMethod<TransformCallback<Functor>>(std::forward<A>(Args)...);
     }

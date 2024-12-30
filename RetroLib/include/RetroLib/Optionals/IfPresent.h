@@ -37,7 +37,7 @@ namespace Retro::Optionals {
     constexpr IfPresentInvoker IfPresentFunction;
 
     template <auto Functor = DynamicFunctor>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr FunctorBindingInvoker<Functor, IfPresentFunction> IfPresentCallback;
 
     /**
@@ -52,7 +52,7 @@ namespace Retro::Optionals {
      *         which acts as a wrapper for if_present_invoker with Functor.
      */
     RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires ValidFunctorParameter<Functor>
+        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
     constexpr auto IfPresent(A &&...Args) {
         return ExtensionMethod<IfPresentCallback<Functor>>(std::forward<A>(Args)...);
     }

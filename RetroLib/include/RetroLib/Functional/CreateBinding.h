@@ -267,7 +267,4 @@ namespace Retro {
     template <auto Functor>
     concept DynamicFunctorBinding = std::same_as<std::decay_t<decltype(Functor)>, DynamicFunctorTag>;
 
-    template <auto Functor>
-    concept ValidFunctorParameter = DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor);
-
 } // namespace retro

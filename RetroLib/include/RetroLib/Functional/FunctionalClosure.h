@@ -53,7 +53,7 @@ namespace Retro {
      *   of the callable should be managed by the user as necessary.
      */
     RETROLIB_EXPORT template <auto BoundFunctor, auto BaseFunctor>
-        requires(ValidFunctorParameter<BoundFunctor> && IsValidFunctorObject(BaseFunctor))
+        requires((DynamicFunctorBinding<BoundFunctor> || IsValidFunctorObject(BoundFunctor)) && IsValidFunctorObject(BaseFunctor))
     struct FunctorBindingInvoker {
         using BoundFunctorType = decltype(BoundFunctor);
         using BaseFunctorType = decltype(BaseFunctor);
