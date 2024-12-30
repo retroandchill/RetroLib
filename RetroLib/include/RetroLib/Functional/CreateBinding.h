@@ -23,12 +23,15 @@ namespace Retro {
     /**
      * @brief Struct tag to signify the usage of the `this` parameter in a functional type.
      */
-    struct ThisType {};
+    RETROLIB_EXPORT template <typename T>
+    struct This {
+        T Value;
 
-    /**
-     * @brief Constant value that represents the `this` parameter in functional types or type traits.
-     */
-    RETROLIB_EXPORT constexpr ThisType This;
+
+        constexpr explicit This(const T& Value) : Value(Value) {}
+
+        constexpr explicit This(T&& Value) : Value(std::move(Value)) {}
+    };
 
     /**
      * @brief A utility class that wraps a callable object, enabling invocation and optional state management.
@@ -232,8 +235,8 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <auto Functor, typename C, typename... A>
         requires Member<decltype(Functor)>
-    constexpr auto CreateBinding(ThisType, C &&Obj, A &&...Args) {
-        return WrappedFunctor(BindMethod<Functor>(std::forward<C>(Obj), std::forward<A>(Args)...));
+    constexpr auto CreateBinding(This<C> Obj, A &&...Args) {
+        return WrappedFunctor(BindMethod<Functor>(std::move(Obj.Value), std::forward<A>(Args)...));
     }
 
     RETROLIB_EXPORT template <typename>
