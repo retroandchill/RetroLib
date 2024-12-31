@@ -21,121 +21,121 @@ class Base {
   public:
     virtual ~Base() = default;
 
-    virtual int get_value() const {
+    virtual int GetValue() const {
         return 0;
     }
 };
 
 class Derived1 : public Base {
   public:
-    explicit Derived1(int value) : value(value) {
+    explicit Derived1(int Value) : Value(Value) {
     }
 
-    int get_value() const override {
-        return value;
+    int GetValue() const override {
+        return Value;
     }
 
   private:
-    int value;
+    int Value;
 };
 
 class Derived2 : public Base {
   public:
-    explicit Derived2(const std::array<int, 15> &values) : values(values) {
+    explicit Derived2(const std::array<int, 15> &Values) : Values(Values) {
     }
 
-    int get_value() const override {
-        int value = 0;
-        for (int val : values) {
-            value += val;
+    int GetValue() const override {
+        int Value = 0;
+        for (int Val : Values) {
+            Value += Val;
         }
-        return value;
+        return Value;
     }
 
   private:
-    std::array<int, 15> values;
+    std::array<int, 15> Values;
 };
 
 class Derived3 : public Base {
   public:
-    explicit Derived3(std::shared_ptr<int> value) : value(std::move(value)) {
+    explicit Derived3(std::shared_ptr<int> Value) : Value(std::move(Value)) {
     }
 
-    int get_value() const override {
-        return *value;
+    int GetValue() const override {
+        return *Value;
     }
 
   private:
-    std::shared_ptr<int> value;
+    std::shared_ptr<int> Value;
 };
 
-constexpr std::array VALUE_ARRAY1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-constexpr std::array VALUE_ARRAY2 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
+constexpr std::array ValueArray1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+constexpr std::array ValueArray2 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
 
 TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     // We want to test that we can assign different polymorphic values into each other
-    Retro::Polymorphic<Base> polymorphic1 = Derived1(42);
-    CHECK(polymorphic1->get_value() == 42);
-    CHECK(polymorphic1.GetSize() == sizeof(Derived1));
+    Retro::Polymorphic<Base> Polymorphic1 = Derived1(42);
+    CHECK(Polymorphic1->GetValue() == 42);
+    CHECK(Polymorphic1.GetSize() == sizeof(Derived1));
 
-    Retro::Polymorphic<Base> polymorphic2(std::in_place_type<Derived2>, VALUE_ARRAY1);
-    CHECK(polymorphic2->get_value() == 120);
-    CHECK(polymorphic2.GetSize() == sizeof(Derived2));
+    Retro::Polymorphic<Base> Polymorphic2(std::in_place_type<Derived2>, ValueArray1);
+    CHECK(Polymorphic2->GetValue() == 120);
+    CHECK(Polymorphic2.GetSize() == sizeof(Derived2));
 
-    polymorphic1 = polymorphic2;
-    CHECK(polymorphic1->get_value() == 120);
+    Polymorphic1 = Polymorphic2;
+    CHECK(Polymorphic1->GetValue() == 120);
 
-    polymorphic2.Emplace<Derived1>(40);
-    polymorphic1 = polymorphic2;
-    CHECK(polymorphic1->get_value() == 40);
+    Polymorphic2.Emplace<Derived1>(40);
+    Polymorphic1 = Polymorphic2;
+    CHECK(Polymorphic1->GetValue() == 40);
 
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY2);
-    CHECK(polymorphic1->get_value() == 240);
+    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray2);
+    CHECK(Polymorphic1->GetValue() == 240);
 
     // Here we want to check that during reassignment the destructor for a different type gets invoked
-    auto value = std::make_shared<int>(4);
-    std::weak_ptr<int> weakValue = value;
-    polymorphic1 = Derived3(std::move(value));
-    CHECK(polymorphic1->get_value() == 4);
+    auto Value = std::make_shared<int>(4);
+    std::weak_ptr<int> WeakValue = Value;
+    Polymorphic1 = Derived3(std::move(Value));
+    CHECK(Polymorphic1->GetValue() == 4);
 
-    polymorphic1 = Retro::Polymorphic<Base>();
-    CHECK(polymorphic1->get_value() == 0);
-    CHECK(weakValue.expired());
+    Polymorphic1 = Retro::Polymorphic<Base>();
+    CHECK(Polymorphic1->GetValue() == 0);
+    CHECK(WeakValue.expired());
 
     // Here we want to verify that the polymorphic values can copy into like types when using small storage
-    polymorphic1 = Derived1(12);
-    polymorphic2 = Derived1(64);
-    CHECK(polymorphic1->get_value() == 12);
-    CHECK(polymorphic2->get_value() == 64);
+    Polymorphic1 = Derived1(12);
+    Polymorphic2 = Derived1(64);
+    CHECK(Polymorphic1->GetValue() == 12);
+    CHECK(Polymorphic2->GetValue() == 64);
 
-    polymorphic1 = polymorphic2;
-    CHECK(polymorphic1->get_value() == 64);
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 100);
-    CHECK(polymorphic1->get_value() == 100);
+    Polymorphic1 = Polymorphic2;
+    CHECK(Polymorphic1->GetValue() == 64);
+    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 100);
+    CHECK(Polymorphic1->GetValue() == 100);
 
     // Here we're going to do the same thing with large storage
-    polymorphic1.Emplace<Derived2>(VALUE_ARRAY1);
-    polymorphic2.Emplace<Derived2>(VALUE_ARRAY2);
-    CHECK(polymorphic1->get_value() == 120);
-    CHECK(polymorphic2->get_value() == 240);
+    Polymorphic1.Emplace<Derived2>(ValueArray1);
+    Polymorphic2.Emplace<Derived2>(ValueArray2);
+    CHECK(Polymorphic1->GetValue() == 120);
+    CHECK(Polymorphic2->GetValue() == 240);
 
-    polymorphic1 = polymorphic2;
-    CHECK(polymorphic1->get_value() == 240);
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
-    CHECK(polymorphic1->get_value() == 120);
+    Polymorphic1 = Polymorphic2;
+    CHECK(Polymorphic1->GetValue() == 240);
+    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
+    CHECK(Polymorphic1->GetValue() == 120);
 
     // Check that dereferencing works correctly
-    auto &dereferenced1 = *polymorphic1;
-    CHECK(dereferenced1.get_value() == 120);
+    auto &Dereferenced1 = *Polymorphic1;
+    CHECK(Dereferenced1.GetValue() == 120);
 
-    const Retro::Polymorphic<Base> polymorphic3 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
-    auto &dereferenced2 = *polymorphic3;
-    CHECK(dereferenced2.get_value() == 150);
+    const auto Polymorphic3 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
+    auto &Dereferenced2 = *Polymorphic3;
+    CHECK(Dereferenced2.GetValue() == 150);
 
-    polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, VALUE_ARRAY1);
-    const Retro::Polymorphic<Base> polymorphic4 = polymorphic1;
-    auto &dereferenced3 = *polymorphic4;
-    CHECK(dereferenced3.get_value() == 120);
+    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
+    const Retro::Polymorphic<Base> Polymorphic4 = Polymorphic1;
+    auto &Dereferenced3 = *Polymorphic4;
+    CHECK(Dereferenced3.GetValue() == 120);
 }
 
 TEST_CASE("Polymorphic has an intrusive unset optional state", "[utils]") {
@@ -151,12 +151,12 @@ TEST_CASE("Polymorphic has an intrusive unset optional state", "[utils]") {
     CHECK(dynamic_cast<const Derived1 *>(ObtainedValue2) != nullptr);
 
     auto ObtainedValue3 = *Optional1;
-    CHECK(ObtainedValue3->get_value() == 12);
+    CHECK(ObtainedValue3->GetValue() == 12);
     auto ObtainedValue4 = *std::as_const(Optional1);
-    CHECK(ObtainedValue4->get_value() == 12);
+    CHECK(ObtainedValue4->GetValue() == 12);
 
     auto ObtainedValue5 = *Retro::Optional(Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 24));
-    CHECK(ObtainedValue5->get_value() == 24);
+    CHECK(ObtainedValue5->GetValue() == 24);
 
     auto Optional2 = Optional1;
     Optional1.Reset();

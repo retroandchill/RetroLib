@@ -19,12 +19,12 @@ import RetroLib;
 #include <vector>
 #endif
 
-static int Add(int a, int b) {
-    return a + b;
+static int Add(int A, int B) {
+    return A + B;
 }
 
-static void AddToSharedBack(int a, std::shared_ptr<int> ptr) {
-    *ptr += a;
+static void AddToSharedBack(int A, std::shared_ptr<int> Ptr) {
+    *Ptr += A;
 }
 
 struct FunctionalObject {
@@ -38,12 +38,12 @@ struct FunctionalObject {
 
 constexpr FunctionalObject Functor;
 
-static int AddMany(int a, int b, int c, int d) {
-    return a + b + c + d;
+static int AddMany(int A, int B, int C, int D) {
+    return A + B + C + D;
 }
 
-static int AddNumbers(int a, int b, int c) {
-    return a + b + c;
+static int AddNumbers(int A, int B, int C) {
+    return A + B + C;
 }
 
 class TestClass {

@@ -18,15 +18,15 @@ import RetroLib;
 
 TEST_CASE("Can check if a pointer is valid or invalid", "[utils]") {
     SECTION("Can work with raw pointers") {
-        int value = 3;
-        int *ptr = nullptr;
-        int *valid_ptr = &value;
+        int Value = 3;
+        int *Ptr = nullptr;
+        int *ValidPtr = &Value;
 
-        CHECK_FALSE(Retro::ValidPtr(ptr));
-        CHECK(Retro::ValidPtr(valid_ptr));
+        CHECK_FALSE(Retro::ValidPtr(Ptr));
+        CHECK(Retro::ValidPtr(ValidPtr));
 
-        CHECK(Retro::InvalidPtr(ptr));
-        CHECK_FALSE(Retro::InvalidPtr(valid_ptr));
+        CHECK(Retro::InvalidPtr(Ptr));
+        CHECK_FALSE(Retro::InvalidPtr(ValidPtr));
     }
 
     SECTION("Handles nullptr literals") {
@@ -35,13 +35,13 @@ TEST_CASE("Can check if a pointer is valid or invalid", "[utils]") {
     }
 
     SECTION("Can work with wrapped pointer types (smart pointers)") {
-        std::unique_ptr<int> ptr = nullptr;
-        auto valid_ptr = std::make_unique<int>(3);
+        std::unique_ptr<int> Ptr = nullptr;
+        auto ValidPtr = std::make_unique<int>(3);
 
-        CHECK_FALSE(Retro::ValidPtr(ptr));
-        CHECK(Retro::ValidPtr(valid_ptr));
+        CHECK_FALSE(Retro::ValidPtr(Ptr));
+        CHECK(Retro::ValidPtr(ValidPtr));
 
-        CHECK(Retro::InvalidPtr(ptr));
-        CHECK_FALSE(Retro::InvalidPtr(valid_ptr));
+        CHECK(Retro::InvalidPtr(Ptr));
+        CHECK_FALSE(Retro::InvalidPtr(ValidPtr));
     }
 }

@@ -19,8 +19,8 @@ import RetroLib;
 
 enum class TestEnum { Ordinal1, Ordinal2 };
 
-std::string_view EnumToString(TestEnum test_enum) {
-    switch (test_enum) {
+std::string_view EnumToString(TestEnum Enum) {
+    switch (Enum) {
     case TestEnum::Ordinal1:
         return "Ordinal1";
     case TestEnum::Ordinal2:

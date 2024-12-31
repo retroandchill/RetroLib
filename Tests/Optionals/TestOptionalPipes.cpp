@@ -36,7 +36,7 @@ namespace Retro::Testing::Optionals {
 
 TEST_CASE("Can filter an optional value", "[optionals]") {
     SECTION("Can filter on a constant functor") {
-        constexpr auto IsEven = [](int x, int y) { return x % y == 0; };
+        constexpr auto IsEven = [](int X, int Y) { return X % Y == 0; };
         std::optional Odd = 3;
         std::optional Even = 4;
         std::optional<int> Empty;
