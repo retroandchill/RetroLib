@@ -19,26 +19,6 @@
 
 namespace Retro::Ranges::Views {
 
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, std::ranges::views::transform> TransformInvoker;
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, std::ranges::views::transform, Transform)
 
-    /**
-     * Applies a transformation operation on the given arguments, using the specified Functor.
-     * This method wraps the transformation logic within an extension method.
-     *
-     * @tparam A Variadic template for the argument types to be passed to the transformation.
-     * @tparam Functor The callable object or function used for the transformation operation.
-     *
-     * @param Args The arguments to be passed to the transformation operation. The parameters
-     *        will be perfectly forwarded to the underlying implementation.
-     *
-     * @return A transformed result wrapped in an extension method that applies the given Functor
-     *         with the specified arguments.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto Transform(A &&...Args) {
-        return ExtensionMethod<TransformInvoker<Functor>>(std::forward<A>(Args)...);
-    }
 } // namespace retro::ranges::views

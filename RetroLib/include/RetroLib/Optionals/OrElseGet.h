@@ -8,6 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/Optional.h"
@@ -41,26 +42,5 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr OrElseGetInvoker OrElseGetFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, OrElseGetFunction> OrElseGetCallback;
-
-    /**
-     * Applies a provided function or functor when a source optional contains no value.
-     * If the source optional is empty (std::nullopt), the provided function or functor is executed
-     * and its result is returned. Otherwise, the value of the source optional is returned.
-     *
-     * @param args... The arguments forwarded to the functor or callable object to retrieve an alternative value
-     *                when the source optional is empty.
-     * @return The value contained in the source optional if it's not empty,
-     *         otherwise, the result of invoking the provided callable object with the given arguments.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto OrElseGet(A &&...Args) {
-        return ExtensionMethod<OrElseGetCallback<Functor>>(std::forward<A>(Args)...);
-    }
-
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseGetInvoker{}, OrElseGet)
 } // namespace retro::optionals

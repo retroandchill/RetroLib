@@ -8,6 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/Optional.h"
@@ -41,11 +42,7 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr OrElseThrowInvoker OrElseThrowFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, OrElseThrowFunction> OrElseThrowCallback;
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseThrowInvoker{}, OrElseThrow)
 
     /**
      * Creates an extension method that acts as an operator for std::optional types,
@@ -59,20 +56,7 @@ namespace Retro::Optionals {
      *         applying to an empty optional value.
      */
     RETROLIB_EXPORT constexpr auto OrElseThrow() {
-        return ExtensionMethod<OrElseThrowCallback<DynamicFunctor>>([] { return std::bad_optional_access{}; });
-    }
-
-    /**
-     * Invokes a provided functor or throws an exception when the operation on a pipeable object fails.
-     *
-     * @tparam A The variadic template arguments to be forwarded to the functor.
-     * @return A processed result of the input or an exception if the operation fails, leveraging the
-     * `ExtensionMethod`.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto OrElseThrow(A &&...Args) {
-        return ExtensionMethod<OrElseThrowCallback<Functor>>(std::forward<A>(Args)...);
+        return OrElseThrow([] { return std::bad_optional_access{}; });
     }
 
 } // namespace retro::optionals

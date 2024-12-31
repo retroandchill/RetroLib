@@ -8,6 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
@@ -34,26 +35,5 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr IfPresentInvoker IfPresentFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, IfPresentFunction> IfPresentCallback;
-
-    /**
-     * Executes the provided functionality if a certain condition is met.
-     * This method forwards the input arguments to the underlying invoker,
-     * leveraging deferred execution and composition.
-     *
-     * @param Args Input arguments that are forwarded to the invoker. These arguments
-     *             are passed as a parameter pack of type A and will be used
-     *             by the underlying execution logic.
-     * @return The result of invoking the extension method with the provided arguments,
-     *         which acts as a wrapper for if_present_invoker with Functor.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto IfPresent(A &&...Args) {
-        return ExtensionMethod<IfPresentCallback<Functor>>(std::forward<A>(Args)...);
-    }
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, IfPresentInvoker{}, IfPresent)
 } // namespace retro::optionals

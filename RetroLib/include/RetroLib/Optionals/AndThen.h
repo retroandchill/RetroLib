@@ -8,6 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
@@ -40,24 +41,5 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr AndThenInvoker AndThenFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, AndThenFunction> AndThenCallback;
-
-    /**
-     * Applies the extension method associated with the specified functor and arguments.
-     *
-     * @tparam A The types of the arguments to be forwarded to the functor.
-     * @tparam Functor The type of the functor to be invoked.
-     * @param Args The arguments to be forwarded to the functor.
-     * @return An instance of the specified extension method, created using the provided functor and forwarded
-     * arguments.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto AndThen(A &&...Args) {
-        return ExtensionMethod<AndThenCallback<Functor>>(std::forward<A>(Args)...);
-    }
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, AndThenInvoker{}, AndThen)
 } // namespace retro::optionals

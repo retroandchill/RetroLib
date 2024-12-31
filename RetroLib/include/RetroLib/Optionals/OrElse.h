@@ -9,6 +9,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/Optional.h"
@@ -41,24 +42,6 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr OrElseInvoker OrElseFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, OrElseFunction> OrElseCallback;
-
-    /**
-     * Performs an operation using the provided arguments if the current context allows,
-     * leveraging the or_else_invoker with the specified Functor.
-     *
-     * @tparam A The types of the arguments to be passed to the extension method.
-     * @param Args The arguments to be forwarded to the extension method.
-     * @return The result of invoking the or_else_invoker with the given Functor and forwarded arguments.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto OrElse(A &&...Args) {
-        return ExtensionMethod<OrElseCallback<Functor>>(std::forward<A>(Args)...);
-    }
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseInvoker{}, OrElse)
 
 } // namespace retro::optionals

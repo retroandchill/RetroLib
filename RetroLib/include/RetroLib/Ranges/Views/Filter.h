@@ -21,22 +21,6 @@
 
 namespace Retro::Ranges::Views {
 
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, std::ranges::views::filter> FilterInvoker;
-
-    /**
-     * Applies a filter transformation on the given arguments using the specified functor.
-     *
-     * @param Args Variadic template arguments representing the elements or ranges to be filtered.
-     *             These will be forwarded to the filter operation.
-     * @return A transformed range or sequence obtained by applying the filter operation
-     *         defined by the Functor to the given arguments.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto Filter(A &&...Args) {
-        return ExtensionMethod<FilterInvoker<Functor>>(std::forward<A>(Args)...);
-    }
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, std::ranges::views::filter, Filter)
 
 } // namespace retro::ranges::views

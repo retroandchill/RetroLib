@@ -8,6 +8,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
@@ -55,30 +56,6 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr FilterInvoker FilterFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, FilterFunction> FilterCallback;
-
-    /**
-     * @brief Filters the input based on the provided functor and arguments, returning a wrapped filtered result.
-     *
-     * This function applies an extension method that uses a specified `filter_invoker` to evaluate whether the input
-     * satisfies a condition defined by the provided functor and accompanying arguments.
-     *
-     * @tparam Functor The type of the predicate or callable object used for filtering.
-     * @tparam A The types of the arguments passed to the invoker.
-     *
-     * @param Args Arguments to be forwarded to the `filter_invoker` along with the functor.
-     *
-     * @return An object resulting from the invocation of the specified filter logic, where the value is conditionally
-     * preserved based on the evaluation of the provided functor.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto Filter(A &&...Args) {
-        return ExtensionMethod<FilterCallback<Functor>>(std::forward<A>(Args)...);
-    }
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FilterInvoker{}, Filter)
 
 } // namespace retro::optionals

@@ -8,6 +8,9 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
+#include "RetroLib/Functional/ExtensionMethods.h"
+#include "RetroLib/Functional/FunctionalClosure.h"
 #include <ranges>
 #endif
 
@@ -31,11 +34,11 @@ namespace Retro::Ranges::Views {
 
     RETROLIB_EXPORT constexpr auto Take = std::ranges::views::take;
 
-    RETROLIB_EXPORT constexpr auto TakeWhile = std::ranges::views::take_while;
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, std::ranges::views::take_while, TakeWhile)
 
     RETROLIB_EXPORT constexpr auto Drop = std::ranges::views::drop;
 
-    RETROLIB_EXPORT constexpr auto DropWhile = std::ranges::views::drop_while;
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, std::ranges::views::drop_while, DropWhile)
 
     RETROLIB_EXPORT constexpr auto Join = std::ranges::views::join;
 

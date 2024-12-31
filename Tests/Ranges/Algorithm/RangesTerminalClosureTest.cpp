@@ -6,18 +6,13 @@
  * https://github.com/retroandchill
  */
 #include <catch2/catch_test_macros.hpp>
-#include <map>
-#include <set>
 
 #if RETROLIB_WITH_MODULES
 import std;
 import RetroLib;
 #else
-#include "RetroLib/Ranges/Algorithm/AllOf.h"
-#include "RetroLib/Ranges/Algorithm/AnyOf.h"
+#include "RetroLib/Ranges/Algorithm/NameAliases.h"
 #include "RetroLib/Ranges/Algorithm/FindFirst.h"
-#include "RetroLib/Ranges/Algorithm/ForEach.h"
-#include "RetroLib/Ranges/Algorithm/NoneOf.h"
 #include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/Filter.h"
@@ -26,6 +21,8 @@ import RetroLib;
 #include <array>
 #include <optional>
 #include <vector>
+#include <map>
+#include <set>
 #endif
 
 TEST_CASE("Ranges can be converted into a collection type", "[ranges]") {

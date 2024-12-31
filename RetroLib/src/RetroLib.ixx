@@ -84,11 +84,8 @@ import std;
 
 #include "RetroLib/Ranges/Compatibility/ForEachRange.h"
 
-#include "RetroLib/Ranges/Algorithm/AllOf.h"
-#include "RetroLib/Ranges/Algorithm/AnyOf.h"
+#include "RetroLib/Ranges/Algorithm/NameAliases.h"
 #include "RetroLib/Ranges/Algorithm/FindFirst.h"
-#include "RetroLib/Ranges/Algorithm/ForEach.h"
-#include "RetroLib/Ranges/Algorithm/NoneOf.h"
 #include "RetroLib/Ranges/Algorithm/Reduce.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 

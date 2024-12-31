@@ -9,6 +9,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/FunctionTraits.h"
 #include "RetroLib/Optionals/Optional.h"
@@ -55,25 +56,5 @@ namespace Retro::Optionals {
         }
     };
 
-    constexpr TransformInvoker TransformFunction;
-
-    template <auto Functor = DynamicFunctor>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr FunctorBindingInvoker<Functor, TransformFunction> TransformCallback;
-
-    /**
-     * Applies a transformation to the given arguments using the specified functor.
-     * It creates an extension method invoker where the transformation takes place.
-     *
-     * @param Args The arguments to be passed to the transformation function.
-     *             These arguments are forwarded to ensure perfect forwarding semantics.
-     * @return The result of invoking the transformation method using the provided functor and arguments.
-     *         The return type depends on the implementation of `ExtensionMethod` and `transform_invoker`.
-     */
-    RETROLIB_EXPORT template <auto Functor = DynamicFunctor, typename... A>
-        requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor))
-    constexpr auto Transform(A &&...Args) {
-        return ExtensionMethod<TransformCallback<Functor>>(std::forward<A>(Args)...);
-    }
-
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, TransformInvoker{}, Transform)
 } // namespace retro::optionals
