@@ -17,17 +17,36 @@
 
 namespace Retro::Ranges::Views {
 
-    RETROLIB_EXPORT template <std::ranges::viewable_range R>
-    using AllType = std::ranges::views::all_t<R>;
+    RETROLIB_EXPORT template <typename T>
+    constexpr auto Empty = std::ranges::views::empty;
 
-    RETROLIB_EXPORT constexpr auto All = std::ranges::views::all;
+    RETROLIB_EXPORT constexpr auto Single = std::ranges::views::single;
 
     RETROLIB_EXPORT constexpr auto Iota = std::ranges::views::iota;
 
-    RETROLIB_EXPORT constexpr auto Join = std::ranges::views::join;
+    RETROLIB_EXPORT template <typename T>
+    constexpr auto IStream = std::ranges::views::istream<T>;
 
-    RETROLIB_EXPORT constexpr auto Reverse = std::ranges::views::reverse;
+    RETROLIB_EXPORT constexpr auto All = std::ranges::views::all;
 
     RETROLIB_EXPORT constexpr auto Take = std::ranges::views::take;
+
+    RETROLIB_EXPORT constexpr auto TakeWhile = std::ranges::views::take_while;
+
+    RETROLIB_EXPORT constexpr auto Drop = std::ranges::views::drop;
+
+    RETROLIB_EXPORT constexpr auto DropWhile = std::ranges::views::drop_while;
+
+    RETROLIB_EXPORT constexpr auto Join = std::ranges::views::join;
+
+    RETROLIB_EXPORT constexpr auto Split = std::ranges::views::split;
+
+    RETROLIB_EXPORT constexpr auto LazySplit = std::ranges::views::lazy_split;
+
+    RETROLIB_EXPORT constexpr auto Counted = std::ranges::views::counted;
+
+    RETROLIB_EXPORT constexpr auto Common = std::ranges::views::common;
+
+    RETROLIB_EXPORT constexpr auto Reverse = std::ranges::views::reverse;
 
 }
