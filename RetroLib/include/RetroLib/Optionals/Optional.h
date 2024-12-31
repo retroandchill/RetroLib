@@ -81,10 +81,13 @@ namespace Retro {
     RETROLIB_EXPORT template <ValidOptionalType T>
     class Optional;
 
+    template <ValidOptionalType T>
+    struct OptionalBase;
+
     RETROLIB_EXPORT struct IntrusiveUnsetStateTag {
 
         template <ValidOptionalType T>
-        friend struct OptionalBase;
+        friend struct ::Retro::OptionalBase;
 
     private:
         IntrusiveUnsetStateTag() = default;
@@ -94,6 +97,15 @@ namespace Retro {
     concept HasIntrusiveUnsetState = (!std::is_lvalue_reference_v<T>) && ValidOptionalType<T> && std::constructible_from<T, IntrusiveUnsetStateTag> && std::movable<T> && requires(const T& Data, IntrusiveUnsetStateTag Tag) {
         { Data == Tag } -> std::same_as<bool>;
         { Data != Tag } -> std::same_as<bool>;
+    };
+
+    RETROLIB_EXPORT template <ValidOptionalType>
+    struct AlternateIntrusiveUnsetState : InvalidType {};
+
+    RETROLIB_EXPORT template <typename T>
+    concept HasAlternateIntrusiveUnsetState = (!HasIntrusiveUnsetState<T>) && (!std::is_lvalue_reference_v<T>) && ValidOptionalType<T> && requires(const T& Value) {
+        { AlternateIntrusiveUnsetState<T>::template Construct() } -> std::same_as<T>;
+        { AlternateIntrusiveUnsetState<T>::template IsUnset(Value) } -> std::same_as<bool>;
     };
 
     /**
@@ -479,7 +491,8 @@ namespace Retro {
 
 
 
-    template <HasIntrusiveUnsetState T>
+    template <ValidOptionalType T>
+        requires HasIntrusiveUnsetState<std::remove_cv_t<T>>
     struct OptionalBase<T> {
         OptionalBase() noexcept = default;
 
@@ -551,6 +564,81 @@ namespace Retro {
 
     private:
         std::remove_cv_t<T> Data = std::remove_cv_t<T>(IntrusiveUnsetStateTag{});
+    };
+
+    template <ValidOptionalType T>
+        requires HasAlternateIntrusiveUnsetState<std::remove_cv_t<T>>
+    struct OptionalBase<T> {
+        OptionalBase() noexcept = default;
+
+        template <typename... A>
+            requires std::constructible_from<T, A...> && (!PackSameAs<OptionalBase, A...>)
+        constexpr explicit OptionalBase(std::in_place_type_t<T>,
+                                           A &&...Args) noexcept(std::is_nothrow_constructible_v<T, A...>)
+            : Data(std::forward<A>(Args)...) {
+        }
+
+        constexpr bool HasValue() const noexcept {
+            return !AlternateIntrusiveUnsetState<std::remove_cv_t<T>>::template IsUnset(Data);
+        }
+
+        constexpr T &operator*() & noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return Data;
+        }
+
+        constexpr const T &operator*() const& noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return Data;
+        }
+
+        constexpr T &&operator*() && noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return std::move(Data);
+        }
+
+        constexpr const T &&operator*() const&& noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return std::move(Data);
+        }
+
+        constexpr T *operator->() noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return &Data;
+        }
+
+        constexpr const T *operator->() const noexcept {
+            RETROLIB_ASSERT(HasValue());
+            return &Data;
+        }
+
+        constexpr void Reset() noexcept {
+            Data = AlternateIntrusiveUnsetState<std::remove_cv_t<T>>::template Construct();
+        }
+
+        constexpr void Swap(OptionalBase &Other) noexcept(std::is_nothrow_swappable_v<T>)
+            requires std::swappable<T>
+        {
+            std::swap(Data, Other.Data);
+        }
+
+    protected:
+        template <typename... A>
+            requires std::constructible_from<T, A...>
+        constexpr T &ConstructFrom(A &&... Args) noexcept {
+            RETROLIB_ASSERT(!HasValue());
+            Data = std::remove_cv_t<T>(std::forward<A>(Args)...);
+            return Data;
+        }
+
+        template <typename U>
+            requires std::assignable_from<T, U>
+        constexpr void AssignFrom(U &&Other) {
+            Data = std::forward<U>(Other);
+        }
+
+    private:
+        std::remove_cv_t<T> Data = AlternateIntrusiveUnsetState<std::remove_cv_t<T>>::template Construct();
     };
 
     /**
