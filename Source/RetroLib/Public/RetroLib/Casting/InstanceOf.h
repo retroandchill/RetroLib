@@ -36,7 +36,7 @@ namespace Retro {
                 // Trivial case, U is derived from T, so we know with certainty that this is valid
                 return true;
             } else {
-#ifndef RTTI_ENABLED
+#if !RTTI_ENABLED
                 static_assert(false, "RTTI is disabled, but the type is not derived from T");
     #endif
                     auto casted = dynamic_cast<const T *>(&Value);

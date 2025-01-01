@@ -5,8 +5,8 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#if RETROLIB_WITH_COROUTINES
-#include "Tests/TestAdapter.h"
+#if WITH_TESTS && RETROLIB_WITH_COROUTINES
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -15,6 +15,13 @@ import RetroLib;
 #include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/Filter.h"
 #include "RetroLib/Ranges/Views/Generator.h"
+
+#ifdef __UNREAL__
+#include "RetroLib/Ranges/Compatibility/Array.h"
+#include "RetroLib/Ranges/Algorithm/To.h"
+#include "RetroLib/Ranges/Views/Generator.h"
+#include "RetroLib/Ranges/Views/NameAliases.h"
+#endif
 
 #include <array>
 #include <vector>
@@ -45,6 +52,13 @@ namespace Retro::Ranges::Testing {
             }
         }
     };
+
+    Generator<int32> GenerateInts(int32 Start) {
+        while (true) {
+            co_yield Start;
+            Start++;
+        }
+    }
 } // namespace retro::ranges::testing
 
 TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
@@ -80,4 +94,16 @@ TEST_CASE("Can create a lazily evaluated generator", "[ranges]") {
         CHECK(Values == std::vector({'A', 'B', 'C', 'D', 'E', 'F', 'G'}));
     }
 }
+
+#ifdef __UNREAL__
+TEST_CASE_NAMED(FGeneratorTest, "RetroLib::Ranges::Views::Generator", "[RetroLib][Ranges]") {
+    using namespace Retro::Ranges::Testing;
+
+    auto Sequence = GenerateInts(1) |
+            Retro::Ranges::Views::Take(10) |
+            Retro::Ranges::To<TArray>();
+    REQUIRE(Sequence.Num() == 10);
+    CHECK(Sequence == TArray({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+}
+#endif
 #endif

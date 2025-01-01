@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -16,7 +16,7 @@ import RetroLib;
 #include <memory>
 #endif
 
-TEST_CASE("Can check if a pointer is valid or invalid", "[utils]") {
+TEST_CASE_NAMED(FValidPtrTest, "RetroLib::Utils::ValidPtr", "[utils]") {
     SECTION("Can work with raw pointers") {
         int Value = 3;
         int *Ptr = nullptr;

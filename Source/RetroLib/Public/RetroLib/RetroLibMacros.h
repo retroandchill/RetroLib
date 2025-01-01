@@ -13,19 +13,27 @@
 
 #if defined(__clang__)
 #if __has_feature(cxx_rtti)
-#define RTTI_ENABLED
+#define RTTI_ENABLED 1
 #endif
 #elif defined(__GNUG__)
 #if defined(__GXX_RTTI)
-#define RTTI_ENABLED
+#define RTTI_ENABLED 1
 #endif
 #elif defined(_MSC_VER)
 #if defined(_CPPRTTI)
-#define RTTI_ENABLED
+#define RTTI_ENABLED 1
 #endif
 #endif
 
+#ifndef RTTI_ENABLED
+#define RTTI_ENABLED 0
+#endif
+
+#ifdef __UNREAL__
+#define RETROLIB_ASSERT(...) check(__VA_ARGS__)
+#else
 #define RETROLIB_ASSERT(...) assert(__VA_ARGS__)
+#endif
 
 #define RETROLIB_FUNCTIONAL_EXTENSION(Exporter, Method, Name) \
   constexpr auto Invoker_##Name##_Method_Variable = Method; \

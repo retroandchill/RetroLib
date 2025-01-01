@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -29,7 +29,7 @@ import RetroLib;
 #include <vector>
 #endif
 
-TEST_CASE("Can use the standard range adapters", "[ranges]") {
+TEST_CASE_NAMED(FRuntimeRangeAdapterTest, "RetroLib::Ranges::Views::Adapters::Runtime", "[ranges]") {
     constexpr std::array Values = {1, 2, 3, 4, 5};
     constexpr auto IsEven = [](int i) { return i % 2 == 0; };
     constexpr auto DoubleValue = [](int i, int j) { return i * j; };
@@ -59,7 +59,7 @@ TEST_CASE("Can use the standard range adapters", "[ranges]") {
     }
 }
 
-TEST_CASE("Can use the constexpr range adapters", "[ranges]") {
+TEST_CASE_NAMED(FConstexprRangeAdapterTest, "RetroLib::Ranges::Views::Adapters::Constexpr", "[ranges]") {
     constexpr std::array Values = {1, 2, 3, 4, 5};
     constexpr auto IsEven = [](int i) { return i % 2 == 0; };
     constexpr auto DoubleValue = [](int i, int j) { return i * j; };
@@ -89,7 +89,7 @@ TEST_CASE("Can use the constexpr range adapters", "[ranges]") {
     }
 }
 
-TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[ranges]") {
+TEST_CASE_NAMED(FConcatViewTest, "RetroLib::Ranges::Views::Concat", "[ranges]") {
     std::array Range1 = {1, 2, 3, 4, 5};
     std::vector Range2 = {6, 7, 8, 9, 10};
 
@@ -194,7 +194,7 @@ TEST_CASE("Can concatenate two unlike ranges into a single unified view", "[rang
     }
 }
 
-TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
+TEST_CASE_NAMED(FCacheLastViewTest, "RetroLib::Ranges::Views::CacheLast", "[ranges]") {
     std::array Values = {1, 2, 3, 4, 5};
     constexpr auto Transformer = [](int Value) {
         std::vector<int> v;
@@ -261,7 +261,7 @@ TEST_CASE("Can cache a temporary for use later on in the pipe", "[ranges]") {
     }
 }
 
-TEST_CASE("Can join a string together using a view", "[ranges]") {
+TEST_CASE_NAMED(FJoinWithViewTest, "RetroLib::Ranges::Views::JoinWith", "[ranges]") {
     SECTION("Can splice a string together with a character") {
         using namespace std::literals;
 
@@ -280,7 +280,7 @@ TEST_CASE("Can join a string together using a view", "[ranges]") {
     }
 }
 
-TEST_CASE("Can get the elements of a tupled collection", "[ranges]") {
+TEST_CASE_NAMED(FElementsTest, "RetroLib::Ranges::Views::Elements", "[ranges]") {
     SECTION("Can get the value of any tuple based collection") {
         std::array<std::tuple<int, int, int>, 3> Tuples = {
             {std::make_tuple(1, 2, 3), std::make_tuple(4, 5, 6), std::make_tuple(7, 8, 9)}};
@@ -327,7 +327,7 @@ TEST_CASE("Can get the elements of a tupled collection", "[ranges]") {
     }
 }
 
-TEST_CASE("Can enumerate over a collection with its index", "[ranges]") {
+TEST_CASE_NAMED(FEnumerateViewTest, "RetroLib::Ranges::Views::Enumerate", "[ranges]") {
     std::array Input = {'A', 'B', 'C', 'D'};
 
     SECTION("Can enumerate using a function call") {
@@ -356,7 +356,7 @@ TEST_CASE("Can enumerate over a collection with its index", "[ranges]") {
     }
 }
 
-TEST_CASE("Can enumerate in reverse mapping indices to elements", "[ranges]") {
+TEST_CASE_NAMED(FReverseEnumerateTest, "RetroLib::Ranges::Views::ReverseEnumerate", "[ranges]") {
     constexpr static std::array Input = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'};
 
     SECTION("Can reverse enumerate using some generated indices") {

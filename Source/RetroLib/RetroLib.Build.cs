@@ -50,6 +50,13 @@ public class RetroLib : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+		PublicDefinitions.Add(Target.bEnableCppModules ? "RETROLIB_WITH_MODULES=1" : "RETROLIB_WITH_MODULES=0");
+		PublicDefinitions.Add(Target.bEnableCppCoroutinesForEvaluation ? "RETROLIB_WITH_COROUTINES=1" : "RETROLIB_WITH_COROUTINES=0");
+
+		if (Target.Configuration != UnrealTargetConfiguration.Shipping) {
+			PrivateIncludePaths.Add("RetroLib/Tests");
+		}
 		
 		
 	}

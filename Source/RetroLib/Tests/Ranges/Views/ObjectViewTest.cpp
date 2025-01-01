@@ -1,9 +1,10 @@
 ﻿#if WITH_TESTS
+
 #include <RetroLib/Ranges/Views/Filter.h>
 #include <RetroLib/Ranges/Algorithm/To.h>
 #include "RetroLib/Ranges/Views/ObjectView.h"
 #include "RetroLib/Ranges/Compatibility/Array.h"
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 #include "RetroLib/Ranges/Views/ClassView.h"
 #include "Slate/SlateTextureAtlasInterface.h"
 

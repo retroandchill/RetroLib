@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "K2Node.h"
-#include "RetroLib/RetroLibUnrealMacros.h"
+#include "RetroLib/RetroLibMacros.h"
 #include <RetroLib/Utils/Unreachable.h>
 
 #include "K2Node_VariantOperationBase.generated.h"

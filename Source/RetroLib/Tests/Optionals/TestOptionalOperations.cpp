@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -14,7 +14,7 @@ import RetroLib;
 #include "RetroLib/Optionals/OptionalOperations.h"
 #endif
 
-TEST_CASE("Can perform basic operations on optional values", "[optionals]") {
+TEST_CASE_NAMED(FTestOptionalOperations, "RetroLib::Optionals::Operations", "[optionals]") {
     SECTION("Can get the values out of an optional correctly") {
         std::optional<int> Optional1;
         std::optional Optional2 = 1;

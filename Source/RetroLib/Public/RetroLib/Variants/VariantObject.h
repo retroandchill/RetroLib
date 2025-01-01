@@ -8,11 +8,6 @@
 #include "RetroLib/Optionals/Optional.h"
 #include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
 
-#include "VariantObject.generated.h"
-
-UENUM()
-enum class EVariantFindResult : uint8 { CastSucceeded UMETA(DisplayName = "then"), CastFailed };
-
 namespace Retro {
 
     template <typename... T>

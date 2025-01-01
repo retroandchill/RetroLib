@@ -387,7 +387,7 @@ namespace Retro::Ranges {
         }
 
         bool Equal(const AnyViewIteratorInterface<T> &other) const override {
-#ifdef RTTI_ENABLED
+#if RTTI_ENABLED
             RETROLIB_ASSERT(typeid(*this) == typeid(other));
 #endif
             return Iter == static_cast<const AnyViewIteratorImpl<I, T> &>(other).Iter;

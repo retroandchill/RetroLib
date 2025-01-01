@@ -7,7 +7,7 @@
 #include <RetroLib/Optionals/PtrOrNull.h>
 
 #include "RetroLib/Utils/Unreachable.h"
-#include "RetroLib/RetroLibUnrealMacros.h"
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Blueprints/BlueprintRuntimeUtils.h"
 #include "RetroLib/Blueprints/Properties.h"
 #include "RetroLib/Exceptions/ConvertException.h"

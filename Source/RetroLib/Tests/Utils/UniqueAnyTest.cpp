@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -17,7 +17,7 @@ import RetroLib;
 #include <memory>
 #endif
 
-TEST_CASE("Can create a move-only unique any type", "[utils]") {
+TEST_CASE_NAMED(FUniqueAnyTest, "RetroLib::Utils::UniqueAny", "[utils]") {
     SECTION("Can move a value from one location to another") {
         auto SharedPointer = std::make_shared<int>(3);
         std::weak_ptr WeakPointer = SharedPointer;

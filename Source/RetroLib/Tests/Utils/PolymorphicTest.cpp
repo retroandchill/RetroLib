@@ -5,12 +5,13 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
 import RetroLib;
 #else
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Utils/Polymorphic.h"
 
 #include <array>
@@ -72,7 +73,7 @@ class Derived3 : public Base {
 constexpr std::array ValueArray1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 constexpr std::array ValueArray2 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
 
-TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
+TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "[utils]") {
     // We want to test that we can assign different polymorphic values into each other
     Retro::Polymorphic<Base> Polymorphic1 = Derived1(42);
     CHECK(Polymorphic1->GetValue() == 42);
@@ -138,17 +139,19 @@ TEST_CASE("Polymorphic types can be instantiated and copied", "[utils]") {
     CHECK(Dereferenced3.GetValue() == 120);
 }
 
-TEST_CASE("Polymorphic has an intrusive unset optional state", "[utils]") {
+TEST_CASE_NAMED(FPolymorphicOptionalState, "RetroLib::Utils::Polymorphic::IntrusiveOptional", "[utils]") {
     static_assert(Retro::HasIntrusiveUnsetState<Retro::Polymorphic<Base>>);
     static_assert(sizeof(Retro::Polymorphic<Base>) == sizeof(Retro::Optional<Retro::Polymorphic<Base>>));
     Retro::Optional<Retro::Polymorphic<Base>> Optional1;
     CHECK_FALSE(Optional1.HasValue());
     Optional1.Emplace(std::in_place_type<Derived1>, 12);
     REQUIRE(Optional1.HasValue());
+#if RTTI_ENABLED
     auto ObtainedValue1 = Optional1->Get();
     CHECK(dynamic_cast<Derived1 *>(ObtainedValue1) != nullptr);
     auto ObtainedValue2 = std::as_const(Optional1)->Get();
     CHECK(dynamic_cast<const Derived1 *>(ObtainedValue2) != nullptr);
+#endif
 
     auto ObtainedValue3 = *Optional1;
     CHECK(ObtainedValue3->GetValue() == 12);

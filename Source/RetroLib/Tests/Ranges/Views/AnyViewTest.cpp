@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -16,7 +16,7 @@ import RetroLib;
 #include <vector>
 #endif
 
-TEST_CASE("Any view can take in a view of any type and iterate over it", "[views]") {
+TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
     SECTION("Iterating over a default initialized view is empty") {
         Retro::Ranges::AnyView<int> View;
         int Count = 0;

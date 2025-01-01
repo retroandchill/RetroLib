@@ -133,7 +133,7 @@ namespace Retro::Ranges {
         if constexpr (std::ranges::sized_range<R> && ReservableContainer<C>) {
             // We want to guarantee that we won't have any weird overflow issues when inserting into a container with
             // a mismatch between signed and unsigned sizes.
-            RETROLIB_ASSERT(std::ranges::size(Range) <= ContainerMaxSize(Result));
+            RETROLIB_ASSERT(std::ranges::size(Range) <= static_cast<std::ranges::range_size_t<R>>(ContainerMaxSize(Result)));
             ContainerReserve(Result, std::ranges::size(Range));
         }
 

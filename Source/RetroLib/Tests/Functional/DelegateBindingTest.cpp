@@ -4,7 +4,7 @@
 #include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Compatibility/UnrealContainers.h"
 #include "RetroLib/Ranges/Views/Filter.h"
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #include <array>
 

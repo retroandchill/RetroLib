@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -18,7 +18,7 @@ import RetroLib;
 #include <ranges>
 #endif
 
-TEST_CASE("Verify that we can iterate over optionals", "[optionals]") {
+TEST_CASE_NAMED(FOptionalIteratorTest, "RetroLib::Optionals::Iterator", "[optionals]") {
     SECTION("Can use a ranged for loop") {
         Retro::Optional Value = 3;
 

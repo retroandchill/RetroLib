@@ -25,7 +25,7 @@ target_link_libraries(RetroLibTests
 
 target_include_directories(RetroLibTests
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/..)
+        ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 include(CTest)

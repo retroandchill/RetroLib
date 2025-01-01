@@ -5,12 +5,13 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
 import RetroLib;
 #else
+#include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Casting/ByteCast.h"
 #include "RetroLib/Casting/DynamicCast.h"
 #include "RetroLib/Casting/StaticCast.h"
@@ -43,7 +44,7 @@ namespace InstanceofTest {
 
 using namespace InstanceofTest;
 
-TEST_CASE("Check to see if we can convert between types statically", "[utils]") {
+TEST_CASE_NAMED(FStaticCastTest, "RetroLib::Casting::StaticCast", "[utils]") {
     SECTION("Can convert between numberic types") {
         CHECK(Retro::StaticCast<double>(4) == 4.0);
         CHECK(Retro::StaticCast<int>(4.0) == 4);
@@ -66,7 +67,8 @@ TEST_CASE("Check to see if we can convert between types statically", "[utils]") 
     }
 }
 
-TEST_CASE("Can check if a polymorphic type is an instance of another type", "[utils]") {
+#if RTTI_ENABLED
+TEST_CASE_NAMED(FInstanceOfTest, "RetroLib::Casting::InstanceOf", "[utils]") {
     SECTION("Can work with raw pointers") {
         Derived1 Value1;
         Derived2 Value2;
@@ -124,7 +126,7 @@ TEST_CASE("Can check if a polymorphic type is an instance of another type", "[ut
     }
 }
 
-TEST_CASE("Can check if a we can cast between types", "[utils]") {
+TEST_CASE_NAMED(FDynamicCastTest, "RetroLib::Casting::DynamicCast", "[utils]") {
     SECTION("Can work with raw pointers") {
         Derived1 Value1;
         Derived2 Value2;
@@ -181,3 +183,4 @@ TEST_CASE("Can check if a we can cast between types", "[utils]") {
         CHECK(Retro::InstanceOf<Derived2>(ValidPtr2));
     }
 }
+#endif

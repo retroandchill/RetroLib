@@ -2,7 +2,6 @@
 
 #pragma once
 
-#ifdef __UNREAL__
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "VariantObjectUtilities.generated.h"
 
@@ -67,4 +66,3 @@ class RETROLIB_API UVariantObjectUtilities : public UBlueprintFunctionLibrary {
     static bool LoadSynchronous(const uint8 &SoftVariant, uint8 &Variant);
     DECLARE_FUNCTION(execLoadSynchronous);
 };
-#endif

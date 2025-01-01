@@ -5,7 +5,7 @@
 #include "RetroLib/Ranges/Views/Enumerate.h"
 #include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #include <array>
 

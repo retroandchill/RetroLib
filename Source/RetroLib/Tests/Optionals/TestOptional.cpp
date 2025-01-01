@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include "Tests/TestAdapter.h"
+#include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;
@@ -16,7 +16,7 @@ import RetroLib;
 #include <string>
 #endif
 
-TEST_CASE("Can use the new optional type", "[optionals]") {
+TEST_CASE_NAMED(FCreateOptionalTest, "RetroLib::Optionals::Creation", "[optionals]") {
     SECTION("Can create and assign optionals") {
         Retro::Optional<int> Optional1;
         CHECK_FALSE(Optional1.HasValue());
@@ -27,7 +27,7 @@ TEST_CASE("Can use the new optional type", "[optionals]") {
         CHECK(Optional1 >= std::nullopt);
         CHECK(std::nullopt >= Optional1);
         CHECK_THROWS_AS(Optional1.Value(), std::bad_optional_access);
-        CHECK_THROWS_AS(std::as_const(Optional1.Value()), std::bad_optional_access);
+        CHECK_THROWS_AS(std::as_const(Optional1).Value(), std::bad_optional_access);
         CHECK_THROWS_AS(std::move(Optional1).Value(), std::bad_optional_access);
 
         Retro::Optional Optional2 = 3;
