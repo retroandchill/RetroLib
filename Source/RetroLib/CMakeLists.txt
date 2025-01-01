@@ -5,7 +5,7 @@ if (RETROLIB_WITH_MODULES)
         PUBLIC
             FILE_SET retrolib_modules TYPE CXX_MODULES
             FILES
-                src/RetroLib.ixx)
+            Public/RetroLib/RetroLib.ixx)
     target_compile_definitions(RetroLib
         PUBLIC
             RETROLIB_WITH_MODULES=1
@@ -13,13 +13,13 @@ if (RETROLIB_WITH_MODULES)
 
     target_include_directories(RetroLib
             PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/include)
+            Public)
 else()
     add_library(RetroLib INTERFACE)
 
     target_include_directories(RetroLib
             INTERFACE
-            ${CMAKE_CURRENT_SOURCE_DIR}/include)
+            Public)
     target_compile_definitions(RetroLib
             INTERFACE
             RETROLIB_WITH_MODULES=0
