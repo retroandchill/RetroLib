@@ -25,6 +25,10 @@ class Base {
     virtual int GetValue() const {
         return 0;
     }
+
+    virtual const std::type_info &GetType() const {
+        return typeid(Base);
+    }
 };
 
 class Derived1 : public Base {
@@ -34,6 +38,10 @@ class Derived1 : public Base {
 
     int GetValue() const override {
         return Value;
+    }
+
+    const std::type_info &GetType() const override {
+        return typeid(Derived1);
     }
 
   private:
@@ -53,6 +61,10 @@ class Derived2 : public Base {
         return Value;
     }
 
+    const std::type_info &GetType() const override {
+        return typeid(Derived2);
+    }
+
   private:
     std::array<int, 15> Values;
 };
@@ -64,6 +76,10 @@ class Derived3 : public Base {
 
     int GetValue() const override {
         return *Value;
+    }
+
+    const std::type_info &GetType() const override {
+        return typeid(Derived3);
     }
 
   private:
@@ -139,34 +155,33 @@ TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "
     CHECK(Dereferenced3.GetValue() == 120);
 }
 
+#ifdef __UNREAL__
 TEST_CASE_NAMED(FPolymorphicOptionalState, "RetroLib::Utils::Polymorphic::IntrusiveOptional", "[utils]") {
-    static_assert(Retro::HasIntrusiveUnsetState<Retro::Polymorphic<Base>>);
-    static_assert(sizeof(Retro::Polymorphic<Base>) == sizeof(Retro::Optional<Retro::Polymorphic<Base>>));
-    Retro::Optional<Retro::Polymorphic<Base>> Optional1;
-    CHECK_FALSE(Optional1.HasValue());
+    static_assert(sizeof(Retro::Polymorphic<Base>) == sizeof(TOptional<Retro::Polymorphic<Base>>));
+    TOptional<Retro::Polymorphic<Base>> Optional1;
+    CHECK_FALSE(Optional1.IsSet());
     Optional1.Emplace(std::in_place_type<Derived1>, 12);
-    REQUIRE(Optional1.HasValue());
-#if RTTI_ENABLED
+    REQUIRE(Optional1.IsSet());
     auto ObtainedValue1 = Optional1->Get();
-    CHECK(dynamic_cast<Derived1 *>(ObtainedValue1) != nullptr);
+    CHECK(ObtainedValue1->GetType() == typeid(Derived1));
     auto ObtainedValue2 = std::as_const(Optional1)->Get();
-    CHECK(dynamic_cast<const Derived1 *>(ObtainedValue2) != nullptr);
-#endif
+    CHECK(ObtainedValue2->GetType() == typeid(Derived1));
 
     auto ObtainedValue3 = *Optional1;
     CHECK(ObtainedValue3->GetValue() == 12);
     auto ObtainedValue4 = *std::as_const(Optional1);
     CHECK(ObtainedValue4->GetValue() == 12);
 
-    auto ObtainedValue5 = *Retro::Optional(Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 24));
+    auto ObtainedValue5 = *TOptional(Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 24));
     CHECK(ObtainedValue5->GetValue() == 24);
 
     auto Optional2 = Optional1;
     Optional1.Reset();
-    CHECK(Optional2.HasValue());
-    CHECK_FALSE(Optional1.HasValue());
+    CHECK(Optional2.IsSet());
+    CHECK_FALSE(Optional1.IsSet());
 
-    swap(Optional1, Optional2);
-    CHECK_FALSE(Optional2.HasValue());
-    CHECK(Optional1.HasValue());
+    std::swap(Optional1, Optional2);
+    CHECK_FALSE(Optional2.IsSet());
+    CHECK(Optional1.IsSet());
 }
+#endif

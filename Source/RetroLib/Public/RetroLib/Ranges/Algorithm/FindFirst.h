@@ -10,7 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Utils/ForwardLike.h"
 
@@ -44,7 +44,7 @@ namespace Retro::Ranges {
      * @param Range The range object to inspect or process.
      * @return An object of type deduced from the range and conditions applied.
      */
-    RETROLIB_EXPORT template <template <typename...> typename O = Optional, std::ranges::input_range R>
+    RETROLIB_EXPORT template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE, std::ranges::input_range R>
         requires Optionals::OptionalType<O<std::ranges::range_value_t<R>>>
     constexpr auto FindFirst(R &&Range) {
         if constexpr (std::is_lvalue_reference_v<RangeCommonReference<R>>) {
@@ -119,7 +119,7 @@ namespace Retro::Ranges {
      *          with constexpr, allowing evaluations at compile time if the provided
      *          arguments are compile-time constant.
      */
-    template <template <typename...> typename O = Optional>
+    template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE>
     struct FindFirstTemplateInvoker {
         template <std::ranges::input_range R>
             requires Optionals::OptionalType<O<std::ranges::range_value_t<R>>>
@@ -137,7 +137,7 @@ namespace Retro::Ranges {
      *
      * @tparam O A template parameter representing the type or configuration used in the invocation process.
      */
-    template <template <typename...> typename O = Optional>
+    template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE>
     constexpr FindFirstTemplateInvoker<O> FindFirstTemplateFunction;
 
     /**
@@ -163,7 +163,7 @@ namespace Retro::Ranges {
      *
      * @return The result of the find-first operation as determined by the template invoker.
      */
-    RETROLIB_EXPORT template <template <typename...> typename O = Optional>
+    RETROLIB_EXPORT template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE>
     constexpr auto FindFirst() {
         return ExtensionMethod<FindFirstTemplateFunction<O>>();
     }

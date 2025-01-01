@@ -1,7 +1,7 @@
 ﻿#if WITH_TESTS
 
 #include "TestAdapter.h"
-#include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Optionals/Transform.h"
 #include "RetroLib/Optionals/Value.h"
 #include "RetroLib/Optionals/To.h"
@@ -25,17 +25,7 @@ TEST_CASE_NAMED(FOptionalPipesTest, "RetroLib::Optionals::Pipes", "[RetroLib][Op
 		CHECK(Result == 12);
 	}
 
-	SECTION("Can pipe a retro::Optional and std::optional into TOptional") {
-		Retro::Optional Value1 = 3;
-		auto AsUeOptional1 = Value1 |
-			Retro::Optionals::To<TOptional>();
-		CHECK(AsUeOptional1.GetValue() == 3);
-
-		auto Value2 = Retro::Optionals::MakeOptionalReference(Value1);
-		auto AsUeOptional2 = Value2 |
-			Retro::Optionals::To<TOptional>();
-		CHECK(AsUeOptional2.GetValue() == 3);
-
+	SECTION("Can pipe an std::optional into TOptional") {
 		std::optional Value3 = 5;
 		auto AsUeOptional3 = Value3 |
 			Retro::Optionals::To<TOptional>();

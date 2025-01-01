@@ -9,7 +9,7 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #endif
 
 #ifndef RETROLIB_EXPORT
@@ -27,7 +27,7 @@ namespace Retro {
      * @tparam T The type of the value stored in the cache.
      */
     template <typename T, typename U = void, bool Enable = true>
-    class NonPropagatingCache : public Optional<T> {
+    class NonPropagatingCache : public std::optional<T> {
       public:
         /**
          * @brief Constructs a NonPropagatingCache object with default initialization.
@@ -60,7 +60,7 @@ namespace Retro {
          * @param other The NonPropagatingCache instance to copy from.
          * @return A copy of the provided NonPropagatingCache instance.
          */
-        constexpr NonPropagatingCache(const NonPropagatingCache &) noexcept : Optional<T>() {
+        constexpr NonPropagatingCache(const NonPropagatingCache &) noexcept : std::optional<T>() {
         }
 
         /**
@@ -72,7 +72,7 @@ namespace Retro {
          * @param other The rvalue NonPropagatingCache instance to be moved.
          * @return A new NonPropagatingCache instance initialized from the given rvalue.
          */
-        constexpr NonPropagatingCache(NonPropagatingCache &&) noexcept : Optional<T>() {
+        constexpr NonPropagatingCache(NonPropagatingCache &&) noexcept : std::optional<T>() {
         }
 
         /**
@@ -93,7 +93,7 @@ namespace Retro {
          * @return A reference to the current NonPropagatingCache instance after assignment.
          */
         constexpr NonPropagatingCache &operator=(const NonPropagatingCache &) noexcept {
-            Optional<T>::reset();
+            std::optional<T>::reset();
             return *this;
         }
 
@@ -108,12 +108,12 @@ namespace Retro {
          * @return A reference to the current NonPropagatingCache object after the move.
          */
         constexpr NonPropagatingCache &operator=(NonPropagatingCache &&Other) noexcept {
-            Other.Optional<T>::Reset();
-            Optional<T>::Reset();
+            Other.std::optional<T>::reset();
+            std::optional<T>::reset();
             return *this;
         }
 
-        using Optional<T>::operator=;
+        using std::optional<T>::operator=;
 
         /**
          * @brief Inserts a new value by dereferencing the given iterator and returns a reference to the emplaced value.
@@ -126,7 +126,7 @@ namespace Retro {
          */
         template <typename I>
         constexpr T &EmplaceDeref(const I &i) {
-            return Optional<T>::emplace(*i);
+            return std::optional<T>::emplace(*i);
         }
     };
 

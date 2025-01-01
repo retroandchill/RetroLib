@@ -93,10 +93,10 @@ TEST_CASE_NAMED(FRangeFindFirstTest, "Retro::Ranges::Algorithm::FindFirst", "[ra
     constexpr auto IsMultipleOf = [](int i, int j) { return i % j == 0; };
     SECTION("Can reduce using an inferred optional value") {
         auto ValidResult = Values | Retro::Ranges::Views::Filter<IsMultipleOf>(3) | Retro::Ranges::FindFirst();
-        CHECK(ValidResult == 3);
+        CHECK(Retro::Optionals::Get(ValidResult) == 3);
 
         auto InvalidResult = Values | Retro::Ranges::Views::Filter<IsMultipleOf>(10) | Retro::Ranges::FindFirst();
-        CHECK_FALSE(InvalidResult.HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(ValidResult) );
     }
 
     SECTION("Can reduce using an inferred template parameter") {
@@ -112,7 +112,7 @@ TEST_CASE_NAMED(FRangeFindFirstTest, "Retro::Ranges::Algorithm::FindFirst", "[ra
 
     SECTION("Can reduce using an explicit template parameter") {
         auto ValidResult = Values | Retro::Ranges::Views::Filter<IsMultipleOf>(3) |
-                            Retro::Ranges::FindFirst<Retro::Optional<int>>();
+                            Retro::Ranges::FindFirst<std::optional<int>>();
         CHECK(ValidResult == 3);
 
         auto InvalidResult =

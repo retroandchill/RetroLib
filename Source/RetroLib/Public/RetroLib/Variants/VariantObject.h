@@ -5,8 +5,7 @@
 #include "RetroLib/Casting/UClassCasts.h"
 #include "RetroLib/Concepts/Interfaces.h"
 #include "RetroLib/Concepts/Structs.h"
-#include "RetroLib/Optionals/Optional.h"
-#include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 namespace Retro {
 

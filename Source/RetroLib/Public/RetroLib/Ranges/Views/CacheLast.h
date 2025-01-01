@@ -187,8 +187,8 @@ namespace Retro::Ranges {
         constexpr void Update(std::ranges::range_reference_t<R> &&value)
             requires std::assignable_from<std::ranges::range_value_t<R> &, std::ranges::range_value_t<R>>
         {
-            if (!Cache.HasValue()) {
-                Cache.Emplace(static_cast<std::ranges::range_reference_t<R> &&>(value));
+            if (!Cache.has_value()) {
+                Cache.emplace(static_cast<std::ranges::range_reference_t<R> &&>(value));
             } else {
                 *Cache = static_cast<std::ranges::range_reference_t<R> &&>(value);
             }
@@ -197,7 +197,7 @@ namespace Retro::Ranges {
         constexpr auto Update(std::ranges::range_reference_t<R> &&value)
             requires(!std::assignable_from<std::ranges::range_value_t<R> &, std::ranges::range_value_t<R>>)
         {
-            Cache.Emplace(static_cast<std::ranges::range_reference_t<R> &&>(value));
+            Cache.emplace(static_cast<std::ranges::range_reference_t<R> &&>(value));
         }
 
         R Range;

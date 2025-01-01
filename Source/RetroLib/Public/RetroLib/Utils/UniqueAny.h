@@ -10,7 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 #include <any>
 #include <array>
@@ -38,6 +38,16 @@ namespace Retro {
     RETROLIB_EXPORT class UniqueAny final {
         template <typename T>
         static constexpr bool FitsInSmallBuffer = sizeof(T) <= DEFAULT_SMALL_STORAGE_SIZE;
+
+#ifdef __UNREAL__
+        template <typename T>
+        using TOptionalType = TOptional<T>;
+#else
+        template <typename T>
+        using TOptionalType = std::conditional_t<std::is_reference_v<T>,
+            std::optional<std::reference_wrapper<std::remove_reference_t<T>>>,
+            std::optional<T>>;
+#endif
 
       public:
         /**
@@ -198,9 +208,9 @@ namespace Retro {
          * TOptional.
          */
         template <typename T>
-        Optional<T &> TryGet() {
+        TOptionalType<T &> TryGet() {
             if (GetType() != typeid(T)) {
-                return std::nullopt;
+                return TOptionalType<T &>();
             }
 
             return GetUnchecked<T>();
@@ -217,9 +227,9 @@ namespace Retro {
          * TOptional.
          */
         template <typename T>
-        Optional<const T &> TryGet() const {
+        TOptionalType<const T &> TryGet() const {
             if (GetType() != typeid(T)) {
-                return Optional<const T &>();
+                return TOptionalType<const T &>();
             }
 
             return GetUnchecked<T>();

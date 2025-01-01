@@ -10,7 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/FunctionTraits.h"
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 #include <ranges>
 #endif

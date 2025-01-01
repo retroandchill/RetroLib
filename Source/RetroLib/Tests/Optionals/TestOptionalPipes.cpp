@@ -115,14 +115,14 @@ TEST_CASE_NAMED(FTransformOptionalTest, "RetroLib::Optionals::Transform", "[opti
 
             return static_cast<int *>(nullptr);
         };
-        Retro::Optional Index = 2;
+        std::optional Index = 2;
         auto Transformed = Index | Retro::Optionals::Transform(Transformer);
-        CHECK(Transformed.HasValue());
-        CHECK(Transformed.Value() == 3);
+        CHECK(Transformed.has_value());
+        CHECK(Transformed.value() == 3);
 
         Index = 6;
         auto SecondPass = Index | Retro::Optionals::Transform(Transformer);
-        CHECK_FALSE(SecondPass.HasValue());
+        CHECK_FALSE(SecondPass.has_value());
     }
 }
 
@@ -150,21 +150,21 @@ TEST_CASE_NAMED(FAndThenOptionalTest, "RetroLib::Optionals::AndThen", "[optional
     SECTION("Can return an optional of a different type") {
         constexpr auto Mapper = [](int x) {
             if (x > 0) {
-                return Retro::Optional(x * 2);
+                return std::optional(x * 2);
             }
 
-            return Retro::Optional<int>();
+            return std::optional<int>();
         };
 
         auto Mapped1 = std::optional(4) | Retro::Optionals::AndThen<Mapper>();
-        CHECK(Mapped1.HasValue());
-        CHECK(Mapped1.Value() == 8);
+        CHECK(Mapped1.has_value());
+        CHECK(Mapped1.value() == 8);
 
         auto Mapped2 = std::optional(-3) | Retro::Optionals::AndThen<Mapper>();
-        CHECK_FALSE(Mapped2.HasValue());
+        CHECK_FALSE(Mapped2.has_value());
 
         auto Mapped3 = std::optional<int>() | Retro::Optionals::AndThen<Mapper>();
-        CHECK_FALSE(Mapped3.HasValue());
+        CHECK_FALSE(Mapped3.has_value());
     }
 }
 
@@ -211,53 +211,55 @@ TEST_CASE_NAMED(FOptionalIsSetTest, "RetroLib::Optionals::IsSet", "[optionals]")
     CHECK_FALSE(Value2 | Retro::Optionals::IsSet);
 }
 
+#ifdef __UNREAL__
 TEST_CASE_NAMED(FOptionalToTest, "RetroLib::Optionals::To", "[optionals]") {
     SECTION("Can convert between two optionals holding the same parameter") {
         std::optional Value1 = 34;
-        auto Value2 = Value1 | Retro::Optionals::To<Retro::Optional>();
-        CHECK(Value2.HasValue());
-        CHECK(Value2.Value() == 34);
+        auto Value2 = Value1 | Retro::Optionals::To<TOptional>();
+        CHECK(Value2.IsSet());
+        CHECK(Value2.GetValue() == 34);
 
         std::optional<int> Value3 = std::nullopt;
-        auto Value4 = Value3 | Retro::Optionals::To<Retro::Optional>();
-        CHECK_FALSE(Value4.HasValue());
+        auto Value4 = Value3 | Retro::Optionals::To<TOptional>();
+        CHECK_FALSE(Value4.IsSet());
     }
 
     SECTION("Can convert between two unlike optional types") {
         std::optional Value1 = 34;
-        auto Value2 = Value1 | Retro::Optionals::To<Retro::Optional<double>>();
-        CHECK(Value2.HasValue());
-        CHECK(Value2.Value() == 34.0);
+        auto Value2 = Value1 | Retro::Optionals::To<TOptional<double>>();
+        CHECK(Value2.IsSet());
+        CHECK(Value2.GetValue() == 34.0);
 
         std::optional<int> Value3 = std::nullopt;
-        auto Value4 = Value3 | Retro::Optionals::To<Retro::Optional<double>>();
-        CHECK_FALSE(Value4.HasValue());
+        auto Value4 = Value3 | Retro::Optionals::To<TOptional<double>>();
+        CHECK_FALSE(Value4.IsSet());
     }
 
     SECTION("Can convert from a reference-wrapped optional to a raw reference optional") {
         int RefValue = 34;
         std::optional Value1 = std::ref(RefValue);
-        auto Value2 = Value1 | Retro::Optionals::To<Retro::Optional>();
-        CHECK(Value2.HasValue());
-        CHECK(Value2.Value() == 34);
+        auto Value2 = Value1 | Retro::Optionals::To<TOptional>();
+        CHECK(Value2.IsSet());
+        CHECK(Value2.GetValue() == 34);
 
         std::optional<std::reference_wrapper<int>> Value3 = std::nullopt;
-        auto Value4 = Value3 | Retro::Optionals::To<Retro::Optional>();
-        CHECK_FALSE(Value4.HasValue());
+        auto Value4 = Value3 | Retro::Optionals::To<TOptional>();
+        CHECK_FALSE(Value4.IsSet());
     }
 
     SECTION("Can convert from a raw reference optional to a reference-wrapped optional") {
         int RefValue = 34;
-        Retro::Optional<int &> Value1 = RefValue;
+        TOptional<int &> Value1 = RefValue;
         auto Value2 = Value1 | Retro::Optionals::To<std::optional>();
         CHECK(Value2.has_value());
         CHECK(Value2.value() == 34);
 
-        std::optional<std::reference_wrapper<int>> Value3 = std::nullopt;
+        TOptional<int&> Value3;
         auto Value4 = Value3 | Retro::Optionals::To<std::optional>();
         CHECK_FALSE(Value4.has_value());
     }
 }
+#endif
 
 TEST_CASE_NAMED(FOptionalOrElseValueTest, "RetroLib::Optionals::OrElseValue", "[optionals]") {
     SECTION("Can get the value of a value type out") {
@@ -273,22 +275,22 @@ TEST_CASE_NAMED(FOptionalOrElseValueTest, "RetroLib::Optionals::OrElseValue", "[
     SECTION("Can get the value of a reference type out") {
         int RefValue = 34;
         int AltValue = 45;
-        Retro::Optional<int &> Value1 = RefValue;
+        std::optional<std::reference_wrapper<int>> Value1 = RefValue;
         decltype(auto) Value2 = Value1 | Retro::Optionals::OrElseGet([&AltValue]() -> int & { return AltValue; });
         CHECK(Value2 == 34);
 
-        Retro::Optional<int &> Value3 = std::nullopt;
+        std::optional<std::reference_wrapper<int>> Value3 = std::nullopt;
         decltype(auto) Value4 = Value3 | Retro::Optionals::OrElseGet([&AltValue]() -> int & { return AltValue; });
         CHECK(Value4 == 45);
     }
 
     SECTION("Can collapse two different types") {
         int RefValue = 34;
-        Retro::Optional<int &> Value1 = RefValue;
+        std::optional<std::reference_wrapper<int>> Value1 = RefValue;
         decltype(auto) Value2 = Value1 | Retro::Optionals::OrElseGet([] { return 50.0; });
         CHECK(Value2 == 34);
 
-        Retro::Optional<int &> Value3 = std::nullopt;
+        std::optional<std::reference_wrapper<int>> Value3 = std::nullopt;
         decltype(auto) Value4 = Value3 | Retro::Optionals::OrElseGet([] { return 50.0; });
         CHECK(Value4 == 50.0);
     }
@@ -320,11 +322,11 @@ TEST_CASE_NAMED(FOptionalOrElseTest, "RetroLib::Optionals::OrElse", "[optionals]
     SECTION("Can get references out") {
         int RefValue = 34;
         int AltValue = 45;
-        Retro::Optional<int &> Value1 = RefValue;
+        std::optional<std::reference_wrapper<int>> Value1 = RefValue;
         decltype(auto) Value2 = Value1 | Retro::Optionals::OrElseValue(std::ref(AltValue));
         CHECK(Value2 == 34);
 
-        Retro::Optional<int &> Value3 = std::nullopt;
+        std::optional<std::reference_wrapper<int>> Value3 = std::nullopt;
         decltype(auto) Value4 = Value3 | Retro::Optionals::OrElseValue(std::ref(AltValue));
         CHECK(Value4 == AltValue);
     }
@@ -354,20 +356,20 @@ TEST_CASE_NAMED(FOptionalMemberReferenceTest, "RetroLib::Optionals::MemberRefere
     using namespace Retro::Testing::Optionals;
 
     SECTION("Can use the member as a runtime pointer") {
-        Retro::Optional Value = DataStruct{3};
+       std::optional Value = DataStruct{3};
 
         auto Result = Value |
             Retro::Optionals::Transform(&DataStruct::Member);
-        CHECK(Result.HasValue());
-        CHECK(Result.Value() == 3);
+        CHECK(Result.has_value());
+        CHECK(Result.value() == 3);
     }
 
     SECTION("Can use the member as a compile time pointer") {
-        Retro::Optional Value = DataStruct{3};
+        std::optional Value = DataStruct{3};
 
         auto Result = Value |
             Retro::Optionals::Transform<&DataStruct::Member>();
-        CHECK(Result.HasValue());
-        CHECK(Result.Value() == 3);
+        CHECK(Result.has_value());
+        CHECK(Result.value() == 3);
     }
 }

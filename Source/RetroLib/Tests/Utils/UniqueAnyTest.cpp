@@ -45,18 +45,18 @@ TEST_CASE_NAMED(FUniqueAnyTest, "RetroLib::Utils::UniqueAny", "[utils]") {
         Any.Emplace<std::string>("Hello world");
 
         auto StringValue = Any.TryGet<std::string>();
-        CHECK(StringValue.HasValue());
-        CHECK(StringValue.Value() == "Hello world");
+        CHECK(Retro::Optionals::HasValue(StringValue));
+        CHECK(Retro::Optionals::Get(StringValue) == "Hello world");
 
         auto StringViewValue = Any.TryGet<std::string_view>();
-        CHECK_FALSE(StringViewValue.HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(StringViewValue));
 
         auto ConstStringValue = std::as_const(Any).TryGet<std::string>();
-        CHECK(ConstStringValue.HasValue());
-        CHECK(ConstStringValue.Value() == "Hello world");
+        CHECK(Retro::Optionals::HasValue(ConstStringValue));
+        CHECK(Retro::Optionals::Get(ConstStringValue) == "Hello world");
 
         auto ConstStringViewValue = std::as_const(Any).TryGet<std::string_view>();
-        CHECK_FALSE(ConstStringViewValue.HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(ConstStringViewValue));
 
         Any.Emplace<std::array<std::string, 10>>();
         CHECK(Any.HasValue());

@@ -10,6 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Iterators.h"
 #include "RetroLib/Ranges/Concepts/Concatable.h"
+#include "RetroLib/Concepts/ParameterPacks.h"
 #include "RetroLib/Ranges/RangeBasics.h"
 #include "RetroLib/Utils/Unreachable.h"
 #include "RetroLib/Utils/Variant.h"
@@ -64,17 +65,17 @@ namespace Retro::Ranges {
             template <typename T>
             using ConstifyIf = std::conditional_t<IsConst, std::add_const_t<T>, T>;
             using ConcatViewType = ConstifyIf<ConcatView>;
-            std::ranges::sentinel_t<ConstifyIf<LastInPack<R...>>> end_element;
+            std::ranges::sentinel_t<ConstifyIf<LastInPack<R...>>> EndElement;
 
           public:
             constexpr Sentinel() = default;
             explicit constexpr Sentinel(ConcatViewType &View, EndTag)
-                : end_element(std::ranges::end(std::get<RangesSize - 1>(View.ranges))) {
+                : EndElement(std::ranges::end(std::get<RangesSize - 1>(View.ranges))) {
             }
 
             template <bool Other>
                 requires IsConst && (!Other)
-            explicit constexpr Sentinel(Sentinel<Other> Sen) : end_element(std::move(Sen.end_element)) {
+            explicit constexpr Sentinel(Sentinel<Other> Sen) : EndElement(std::move(Sen.EndElement)) {
             }
         };
 
@@ -261,7 +262,7 @@ namespace Retro::Ranges {
             }
 
             constexpr bool operator==(const Sentinel<IsConst> &Post) const {
-                return It.index() == RangesSize - 1 && std::get<RangesSize - 1>(View->it) == Post.end_element;
+                return It.index() == RangesSize - 1 && std::get<RangesSize - 1>(View->it) == Post.EndElement;
             }
 
             constexpr std::partial_ordering operator<=>(const Iterator &Other) const

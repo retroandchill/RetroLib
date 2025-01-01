@@ -10,7 +10,7 @@
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 #include <array>
 #include <bit>
@@ -40,6 +40,11 @@ namespace Retro {
         static constexpr bool FitsSmallStorage = sizeof(U) <= SmallStorageSize;
 
       public:
+#ifdef __UNREAL__
+        constexpr static bool bHasIntrusiveUnsetOptionalState = true;
+        using IntrusiveUnsetOptionalStateType = Polymorphic;
+#endif
+        
         /**
          * Default constructor for the Polymorphic class.
          *
@@ -112,7 +117,9 @@ namespace Retro {
             Storage.template Emplace<U>(std::forward<A>(Args)...);
         }
 
-        explicit constexpr Polymorphic(IntrusiveUnsetStateTag) noexcept : Vtable(nullptr) {}
+#ifdef __UNREAL__
+        explicit constexpr Polymorphic(FIntrusiveUnsetOptionalState) noexcept : Vtable(nullptr) {}
+#endif
 
         /**
          * @brief Copy constructor for the Polymorphic class.
@@ -262,10 +269,12 @@ namespace Retro {
             Emplace<std::decay_t<U>>(std::forward<U>(Value));
             return *this;
         }
-
-        constexpr bool operator==(IntrusiveUnsetStateTag) const noexcept {
+        
+#ifdef __UNREAL__
+        constexpr bool operator==(FIntrusiveUnsetOptionalState) const noexcept {
             return Vtable == nullptr;
         }
+#endif
 
         /**
          * Retrieves a pointer to the stored value.

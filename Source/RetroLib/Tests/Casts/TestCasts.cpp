@@ -52,7 +52,7 @@ TEST_CASE_NAMED(FStaticCastTest, "RetroLib::Casting::StaticCast", "[utils]") {
 
     SECTION("Can perform implicit conversions that call constructors") {
         CHECK(Retro::StaticCast<std::string>("Hello world") == "Hello world");
-        CHECK(Retro::StaticCast<Retro::Optional<int>>(4) == 4);
+        CHECK(Retro::StaticCast<std::optional<int>>(4) == 4);
     }
 
     SECTION("Can convert to pointers") {

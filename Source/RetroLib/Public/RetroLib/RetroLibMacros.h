@@ -47,6 +47,12 @@
     }
 
 #ifdef __UNREAL__
+#define RETROLIB_DEFAULT_OPTIONAL_TYPE TOptional
+#else
+#define RETROLIB_DEFAULT_OPTIONAL_TYPE std::optional
+#endif
+
+#ifdef __UNREAL__
 /**
  * Declare a new variant object struct with the given name
  * @param StructName The name of the struct in question

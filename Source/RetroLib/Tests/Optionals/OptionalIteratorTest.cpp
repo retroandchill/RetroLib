@@ -11,16 +11,17 @@
 import std;
 import RetroLib;
 #else
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Ranges/Views/Concat.h"
 #include "RetroLib/Ranges/Views/NameAliases.h"
 
 #include <ranges>
 #endif
 
+#ifdef __UNREAL__
 TEST_CASE_NAMED(FOptionalIteratorTest, "RetroLib::Optionals::Iterator", "[optionals]") {
     SECTION("Can use a ranged for loop") {
-        Retro::Optional Value = 3;
+        TOptional Value = 3;
 
         int Sum = 0;
         for (auto i : Value) {
@@ -30,17 +31,17 @@ TEST_CASE_NAMED(FOptionalIteratorTest, "RetroLib::Optionals::Iterator", "[option
     }
 
     SECTION("Can use an iterator based for loop") {
-        const Retro::Optional Value = 3;
+        const TOptional Value = 3;
 
         int Sum = 0;
-        for (auto It = Value.begin(); It != Value.end(); It++) {
+        for (auto It = begin(Value); It != end(Value); It++) {
             Sum += *It;
         }
         CHECK(Sum == 3);
     }
 
     SECTION("Can use as part of a range pipe") {
-        std::vector<Retro::Optional<int>> Values = {1, std::nullopt, 2, 3, std::nullopt, std::nullopt, std::nullopt};
+        std::vector<TOptional<int>> Values = {1, {}, 2, 3, {}, {}, {}};
         auto View = Values | Retro::Ranges::Views::Join;
 
         int Sum = 0;
@@ -51,8 +52,9 @@ TEST_CASE_NAMED(FOptionalIteratorTest, "RetroLib::Optionals::Iterator", "[option
     }
 
     SECTION("Can be used to determine size") {
-        auto View = Retro::Ranges::Views::Concat(Retro::Optional(1), Retro::Optional<int>(), Retro::Optional(2),
-                                                 Retro::Optional<int>(), Retro::Optional<int>(), Retro::Optional(3));
+        auto View = Retro::Ranges::Views::Concat(TOptional(1), TOptional<int>(), TOptional(2),
+                                                 TOptional<int>(), TOptional<int>(), TOptional(3));
         CHECK(View.size() == 3);
     }
 }
+#endif

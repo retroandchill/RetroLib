@@ -8,7 +8,7 @@
 #include "RetroLib/Exceptions/VariantException.h"
 #include "RetroLib/Ranges/Views/Transform.h"
 #include "RetroLib/Ranges/Views/Elements.h"
-#include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Ranges/Compatibility/UnrealContainers.h"
 #include "RetroLib/Utils/SoftObjectRef.h"
 

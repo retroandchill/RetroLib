@@ -5,7 +5,7 @@
 
 #include <RetroLib/Optionals/OrElseValue.h>
 #include <RetroLib/Optionals/Transform.h>
-#include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 
 
 UObject *Retro::GetObjectFromProperty(const FProperty *Property, const uint8 *Data) {

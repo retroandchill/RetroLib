@@ -9,7 +9,7 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
-#include "RetroLib/Optionals/Optional.h"
+#include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Utils/Polymorphic.h"
 #include "RetroLib/Utils/ValidPtr.h"
 
@@ -21,6 +21,16 @@
 #endif
 
 namespace Retro {
+
+#ifdef __UNREAL__
+    template <typename T>
+    using TDynamicCastOptionalType = TOptional<T>;
+#else
+    template <typename T>
+    using TDynamicCastOptionalType = std::conditional_t<std::is_reference_v<T>,
+        std::optional<std::reference_wrapper<std::remove_reference_t<T>>>,
+        std::optional<T>>;
+#endif
 
     /**
      * Attempts to dynamically cast a reference of type U to a reference of type T.
@@ -47,7 +57,7 @@ namespace Retro {
                 RETROLIB_ASSERT(valid_ptr(Ptr));
                 return dynamic_cast<T &>(Value);
             } else {
-                return Ptr != nullptr ? Optional<T &>(*Ptr) : Optional<T &>();
+                return Ptr != nullptr ? TDynamicCastOptionalType<T &>(*Ptr) : TDynamicCastOptionalType<T &>();
             }
         }
     }
@@ -97,10 +107,10 @@ namespace Retro {
                 RETROLIB_ASSERT(valid_ptr(std::forward<U>(Value)));
                 return DynCastRef<T, std::remove_pointer_t<U>, Checked>(*std::forward<U>(Value));
             } else if constexpr (std::derived_from<std::decay_t<DereferencedType<U>>, std::decay_t<T>>) {
-                return ValidPtr(std::forward<U>(Value)) ? Optional<T &>(*std::forward<U>(Value)) : Optional<T &>();
+                return ValidPtr(std::forward<U>(Value)) ? TDynamicCastOptionalType<T &>(*std::forward<U>(Value)) : TDynamicCastOptionalType<T &>();
             } else {
                 if (!ValidPtr(std::forward<U>(Value))) {
-                    return Optional<T &>();
+                    return TDynamicCastOptionalType<T &>();
                 }
 
                 return DynCastRef<T, std::decay_t<DereferencedType<U>>, Checked>(*std::forward<U>(Value));
@@ -137,10 +147,10 @@ namespace Retro {
             return (*this)(*Value);
         }
 
-        constexpr Optional<T &> operator()(std::nullptr_t) const
+        constexpr TDynamicCastOptionalType<T &> operator()(std::nullptr_t) const
             requires(!Checked)
         {
-            return Optional<T &>();
+            return TDynamicCastOptionalType<T &>();
         }
     };
 
