@@ -99,4 +99,33 @@ import std;
 #include "RetroLib/Ranges/Views/Generator.h"
 #include "RetroLib/Ranges/Views/JoinWith.h"
 #include "RetroLib/Ranges/Views/Transform.h"
+
+#ifdef __UNREAL__
+#include "RetroLib/Concepts/Delegates.h"
+#include "RetroLib/Concepts/Interfaces.h"
+#include "RetroLib/Concepts/Structs.h"
+
+#include "RetroLib/Exceptions/BlueprintException.h"
+#include "RetroLib/Exceptions/TypeException.h"
+#include "RetroLib/Exceptions/InvalidArgumentException.h"
+#include "RetroLib/Exceptions/VariantException.h"
+#include "RetroLib/Exceptions/ConvertException.h"
+
+#include "RetroLib/Functional/Delegates.h"
+#include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
+#include "RetroLib/Ranges/Compatibility/UnrealContainers.h"
+#include "RetroLib/Ranges/Compatibility/Array.h"
+#include "RetroLib/Utils/SoftObjectRef.h"
+
+#include "RetroLib/Assets/AsyncLoadHandle.h"
+
+#include "RetroLib/Variants/VariantObject.h"
+#include "RetroLib/Variants/SoftVariantObject.h"
+#include "RetroLib/Variants/VariantObjectStruct.h"
+#include "RetroLib/Variants/VariantObjectUtilities.h"
+
+#include "RetroLib/Casting/UClassCasts.h"
+#include "RetroLib/Blueprints/BlueprintRuntimeUtils.h"
+#include "RetroLib/Blueprints/Properties.h"
+#endif
 // clang-format on
