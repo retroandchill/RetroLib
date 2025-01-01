@@ -1,5 +1,5 @@
 ﻿#if WITH_TESTS
-#include "Tests/TestHarnessAdapter.h"
+#include "Tests/TestAdapter.h"
 #include "RetroLib/Optionals/Compatiblity/UnrealOptional.h"
 
 TEST_CASE_NAMED(FOptionalUnsetTest, "RetroLib::Optionals::Unset", "[RetroLib][Optionals]") {

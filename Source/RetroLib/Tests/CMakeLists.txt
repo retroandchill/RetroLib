@@ -23,6 +23,10 @@ target_link_libraries(RetroLibTests
         RetroLib
         Catch2::Catch2WithMain)
 
+target_include_directories(RetroLibTests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
 
 include(CTest)
 include(Catch)

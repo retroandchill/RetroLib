@@ -6,7 +6,7 @@
  * https://github.com/retroandchill
  */
 #if RETROLIB_WITH_COROUTINES
-#include <catch2/catch_test_macros.hpp>
+#include "Tests/TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;

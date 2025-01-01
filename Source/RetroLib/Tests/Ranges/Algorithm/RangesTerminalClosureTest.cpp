@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#include <catch2/catch_test_macros.hpp>
+#include "Tests/TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
 import std;

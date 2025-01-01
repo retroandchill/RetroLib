@@ -1,6 +1,6 @@
 ﻿#if WITH_TESTS && RETROLIB_WITH_COROUTINES
 
-#include "Tests/TestHarnessAdapter.h"
+#include "Tests/TestAdapter.h"
 #include "RetroLib/Ranges/Compatibility/Array.h"
 #include "RetroLib/Ranges/Algorithm/To.h"
 #include "RetroLib/Ranges/Views/Generator.h"
