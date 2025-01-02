@@ -17,10 +17,10 @@
 
 namespace Retro::Ranges {
 
-    RETROLIB_EXPORT enum class Cardinality : std::ptrdiff_t { Infinite = -3, Unknown = -2, Finite = -1 };
+    RETROLIB_EXPORT enum class ECardinality : std::ptrdiff_t { Infinite = -3, Unknown = -2, Finite = -1 };
 
-    struct BeginTag {};
-    struct EndTag {};
+    struct FBeginTag {};
+    struct FEndTag {};
 
     RETROLIB_EXPORT template <typename R>
     concept SimpleView = std::same_as<std::ranges::iterator_t<R>, std::ranges::iterator_t<const R>> &&

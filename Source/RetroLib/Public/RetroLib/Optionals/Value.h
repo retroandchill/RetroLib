@@ -18,7 +18,7 @@
 
 namespace Retro::Optionals {
 
-    struct ValueInvoker {
+    struct FValueInvoker {
 
         template <OptionalType O>
         constexpr decltype(auto) operator()(O &&Optional) const {
@@ -30,6 +30,6 @@ namespace Retro::Optionals {
     /**
      * Get the value of passed/piped optional.
      */
-    RETROLIB_EXPORT constexpr auto Value = ExtensionMethod<ValueInvoker{}>();
+    RETROLIB_EXPORT constexpr auto Value = ExtensionMethod<FValueInvoker{}>();
 
 } // namespace retro::optionals

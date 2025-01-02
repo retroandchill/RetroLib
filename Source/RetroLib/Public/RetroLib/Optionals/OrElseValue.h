@@ -18,7 +18,7 @@
 #endif
 
 namespace Retro::Optionals {
-    struct OrElseValueInvoker {
+    struct FOrElseValueInvoker {
 
         /**
          * Functional call operator that returns the value of the provided optional object
@@ -29,8 +29,8 @@ namespace Retro::Optionals {
          * @return The value contained in the optional object if it has one; otherwise, the provided fallback value.
          */
         template <OptionalType O, typename T>
-            requires std::convertible_to<CommonReference<O>, T> &&
-                     (!std::is_lvalue_reference_v<CommonReference<O>> ||
+            requires std::convertible_to<TCommonReference<O>, T> &&
+                     (!std::is_lvalue_reference_v<TCommonReference<O>> ||
                       !SpecializationOf<std::decay_t<T>, std::reference_wrapper>)
         constexpr decltype(auto) operator()(O &&Optional, T &&Value) const {
             if (HasValue(Optional)) {
@@ -52,7 +52,7 @@ namespace Retro::Optionals {
          *         otherwise, the fallback value from the provided reference wrapper.
          */
         template <OptionalType O, typename T>
-            requires std::convertible_to<CommonReference<O>, T> && std::is_lvalue_reference_v<CommonReference<O>>
+            requires std::convertible_to<TCommonReference<O>, T> && std::is_lvalue_reference_v<TCommonReference<O>>
         constexpr T &operator()(O &&Optional, const std::reference_wrapper<T> &Value) const {
             if (HasValue(Optional)) {
                 return Get(std::forward<O>(Optional));
@@ -62,13 +62,13 @@ namespace Retro::Optionals {
         }
 
         template <OptionalType O>
-            requires std::is_pointer_v<ValueType<O>>
+            requires std::is_pointer_v<TValueType<O>>
         constexpr auto operator()(O &&Optional, std::nullptr_t) const {
             if (HasValue(Optional)) {
                 return Get(std::forward<O>(Optional));
             }
 
-            return static_cast<ValueType<O>>(nullptr);
+            return static_cast<TValueType<O>>(nullptr);
         }
     };
 
@@ -78,5 +78,5 @@ namespace Retro::Optionals {
      *
      * Intended for use where inline handling of optional values with a default fallback is required.
      */
-    RETROLIB_EXPORT constexpr auto OrElseValue = ExtensionMethod<OrElseValueInvoker{}>;
+    RETROLIB_EXPORT constexpr auto OrElseValue = ExtensionMethod<FOrElseValueInvoker{}>;
 } // namespace retro::optionals

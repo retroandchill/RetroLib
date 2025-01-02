@@ -18,7 +18,7 @@
 #endif
 
 namespace Retro::Optionals {
-    struct IfPresentOrElseInvoker {
+    struct FIfPresentOrElseInvoker {
         /**
          * Provides a callable operator to conditionally invoke functions based on the presence or absence of a value.
          *
@@ -30,7 +30,7 @@ namespace Retro::Optionals {
          * arguments.
          */
         template <OptionalType O, typename F, typename G>
-            requires std::invocable<F, CommonReference<O>> && std::invocable<G>
+            requires std::invocable<F, TCommonReference<O>> && std::invocable<G>
         constexpr void operator()(O &&Optional, F &&Present, G &&Absent) const {
             if (HasValue(std::forward<O>(Optional))) {
                 std::invoke(std::forward<F>(Present), Get(std::forward<O>(Optional)));
@@ -52,5 +52,5 @@ namespace Retro::Optionals {
      * simplify and streamline decision-making logic for `std::optional` values within
      * functional code entities.
      */
-    RETROLIB_EXPORT constexpr auto IfPresentOrElse = ExtensionMethod<IfPresentOrElseInvoker{}>;
+    RETROLIB_EXPORT constexpr auto IfPresentOrElse = ExtensionMethod<FIfPresentOrElseInvoker{}>;
 } // namespace retro::optionals

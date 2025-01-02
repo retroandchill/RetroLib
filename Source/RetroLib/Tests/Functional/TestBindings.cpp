@@ -257,7 +257,7 @@ TEST_CASE_NAMED(FConstexprCreateBindingTest, "RetroLib::Functional::CreateBindin
 
     SECTION("Can bind a method using the this tag, or bind back without it") {
         auto Object = std::make_shared<TestClass>();
-        auto Binding = Retro::CreateBinding<&TestClass::Method>(Retro::This(Object), 5, 6);
+        auto Binding = Retro::CreateBinding<&TestClass::Method>(Retro::TThis(Object), 5, 6);
         CHECK(Binding(4) == 15);
         CHECK(std::as_const(Binding)(5) == 16);
         CHECK(Retro::CreateBinding<&TestClass::Method>(10, 12)(Object, 5) == 27);

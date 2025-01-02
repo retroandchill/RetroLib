@@ -39,7 +39,7 @@
   constexpr auto Invoker_##Name##_Method_Variable = Method; \
   template <auto Functor = DynamicFunctor> \
         requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor)) \
-  constexpr FunctorBindingInvoker<Functor, Invoker_##Name##_Method_Variable> FunctorExtension_##Name##_Callback; \
+  constexpr TFunctorBindingInvoker<Functor, Invoker_##Name##_Method_Variable> FunctorExtension_##Name##_Callback; \
   Exporter template <auto Functor = DynamicFunctor, typename... A> \
         requires (DynamicFunctorBinding<Functor> || IsValidFunctorObject(Functor)) \
     constexpr auto Name(A &&...Args) { \

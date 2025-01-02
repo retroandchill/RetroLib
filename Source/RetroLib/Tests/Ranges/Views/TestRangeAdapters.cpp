@@ -360,7 +360,7 @@ TEST_CASE_NAMED(FReverseEnumerateTest, "RetroLib::Ranges::Views::ReverseEnumerat
     constexpr static std::array Input = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'};
 
     SECTION("Can reverse enumerate using some generated indices") {
-        auto Pairs = std::ranges::views::iota(static_cast<size_t>(6), Input.size()) |
+        auto Pairs = std::ranges::views::iota(6, 12) |
                      Retro::Ranges::Views::ReverseEnumerate(Input);
 
         int Count = 0;

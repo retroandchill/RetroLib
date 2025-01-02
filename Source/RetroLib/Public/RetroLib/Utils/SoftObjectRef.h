@@ -126,7 +126,7 @@ private:
 namespace Retro::Optionals {
 	template <typename T>
 		requires std::derived_from<T, UObject>
-	struct NullableOptionalParam<TSoftObjectPtr<T>> : ValidType {
+	struct TNullableOptionalParam<TSoftObjectPtr<T>> : FValidType {
 		using RawType = TSoftObjectPtr<T>;
 		using ReferenceType = TSoftObjectRef<T>;
 
@@ -145,6 +145,6 @@ namespace Retro::Optionals {
 
 	template <typename T>
 		requires SpecializationOf<std::decay_t<T>, TSoftObjectPtr> && (!std::same_as<std::decay_t<T>, T>)
-	struct NullableOptionalParam<T> : NullableOptionalParam<std::decay_t<T>> {};
+	struct TNullableOptionalParam<T> : TNullableOptionalParam<std::decay_t<T>> {};
 } // namespace UE::Optionals
 #endif

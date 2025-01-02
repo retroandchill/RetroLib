@@ -35,15 +35,15 @@ namespace Retro::Ranges {
      * and provides constructors for initializing the storage.
      */
     template <typename I>
-    struct IteratorStorage {
-        I adapted;
+    struct TIteratorStorage {
+        I Adapted;
 
         /**
          * @brief Default constructor for the IteratorStorage class.
          *
          * This constructor initializes an IteratorStorage object to its default state.
          */
-        constexpr IteratorStorage() = default;
+        constexpr TIteratorStorage() = default;
 
         /**
          * @brief Constructs an IteratorStorage object with a provided adapted object.
@@ -55,8 +55,8 @@ namespace Retro::Ranges {
          * @param adapted The object to be stored within the IteratorStorage.
          */
         template <typename T>
-            requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, IteratorStorage>)
-        constexpr explicit IteratorStorage(T &&adapted) : adapted(std::forward<T>(adapted)) {
+            requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, TIteratorStorage>)
+        constexpr explicit TIteratorStorage(T &&adapted) : Adapted(std::forward<T>(adapted)) {
         }
     };
 
@@ -70,7 +70,7 @@ namespace Retro::Ranges {
      */
     template <typename I>
         requires(!std::is_default_constructible_v<I>)
-    struct IteratorStorage<I> {
+    struct TIteratorStorage<I> {
         union {
             std::monostate Empty;
             I Adapted;
@@ -83,7 +83,7 @@ namespace Retro::Ranges {
          *
          * @return A constexpr IteratorStorage instance in an empty state.
          */
-        constexpr IteratorStorage() : Empty() {
+        constexpr TIteratorStorage() : Empty() {
         }
 
         /**
@@ -94,8 +94,8 @@ namespace Retro::Ranges {
          * @param Adapted The object to adapt, passed as an rvalue reference.
          */
         template <typename T>
-            requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, IteratorStorage>)
-        constexpr explicit IteratorStorage(T &&Adapted) : Adapted(std::forward<T>(Adapted)) {
+            requires std::constructible_from<I, T> && (!std::same_as<std::decay_t<T>, TIteratorStorage>)
+        constexpr explicit TIteratorStorage(T &&Adapted) : Adapted(std::forward<T>(Adapted)) {
         }
     };
 
@@ -107,13 +107,13 @@ namespace Retro::Ranges {
      * class to include explicit copy and move assignment operators.
      */
     template <BridgableIterator I>
-    struct IteratorAssignAdapter : IteratorStorage<I> {
+    struct TIteratorAssignAdapter : TIteratorStorage<I> {
         /**
          * @brief Default constructor for the IteratorAssignAdapter class.
          *
          * This constructor initializes an IteratorAssignAdapter object with its default state.
          */
-        constexpr IteratorAssignAdapter() = default;
+        constexpr TIteratorAssignAdapter() = default;
 
         /**
          * @brief Copy constructor for the IteratorAssignAdapter class.
@@ -123,7 +123,7 @@ namespace Retro::Ranges {
          *
          * @param other The IteratorAssignAdapter instance to copy.
          */
-        constexpr IteratorAssignAdapter(const IteratorAssignAdapter &) noexcept(
+        constexpr TIteratorAssignAdapter(const TIteratorAssignAdapter &) noexcept(
             std::is_nothrow_copy_constructible_v<I>) = default;
 
         /**
@@ -135,7 +135,7 @@ namespace Retro::Ranges {
          * @param other The IteratorAssignAdapter instance to be moved.
          * @return A new IteratorAssignAdapter object with resources moved from the input instance.
          */
-        constexpr IteratorAssignAdapter(IteratorAssignAdapter &&) noexcept(std::is_nothrow_move_constructible_v<I>) =
+        constexpr TIteratorAssignAdapter(TIteratorAssignAdapter &&) noexcept(std::is_nothrow_move_constructible_v<I>) =
             default;
 
         /**
@@ -143,11 +143,11 @@ namespace Retro::Ranges {
          *
          * This destructor allows proper cleanup of an IteratorAssignAdapter object and its associated resources.
          */
-        ~IteratorAssignAdapter() = default;
+        ~TIteratorAssignAdapter() = default;
 
-        using IteratorStorage<I>::IteratorStorage;
+        using TIteratorStorage<I>::TIteratorStorage;
 
-        using IteratorStorage<I>::Adapted;
+        using TIteratorStorage<I>::Adapted;
 
         /**
          * @brief Copy assignment operator for the IteratorAssignAdapter class.
@@ -157,8 +157,8 @@ namespace Retro::Ranges {
          * @param Other The IteratorAssignAdapter instance whose state is to be assigned.
          * @return A reference to the current instance with the updated state.
          */
-        constexpr IteratorAssignAdapter &
-        operator=(const IteratorAssignAdapter &Other) noexcept(std::is_nothrow_copy_constructible_v<I>) {
+        constexpr TIteratorAssignAdapter &
+        operator=(const TIteratorAssignAdapter &Other) noexcept(std::is_nothrow_copy_constructible_v<I>) {
             new (&Adapted) I(Other.Adapted);
             return *this;
         }
@@ -172,18 +172,18 @@ namespace Retro::Ranges {
          * @param Other The IteratorAssignAdapter object to move from.
          * @return A reference to the current IteratorAssignAdapter object.
          */
-        constexpr IteratorAssignAdapter &
-        operator=(IteratorAssignAdapter &&Other) noexcept(std::is_nothrow_move_constructible_v<I>) {
+        constexpr TIteratorAssignAdapter &
+        operator=(TIteratorAssignAdapter &&Other) noexcept(std::is_nothrow_move_constructible_v<I>) {
             new (&Adapted) I(std::move(Other.Adapted));
             return *this;
         }
     };
 
     template <typename I>
-    using IteratorAssignLayer = std::conditional_t<std::movable<I>, IteratorStorage<I>, IteratorAssignAdapter<I>>;
+    using TIteratorAssignLayer = std::conditional_t<std::movable<I>, TIteratorStorage<I>, TIteratorAssignAdapter<I>>;
 
     RETROLIB_EXPORT template <Iterator I, Sentinel<I> S>
-    class AdapterIterator;
+    class TAdapterIterator;
 
     /**
      * @brief The SentinelAdapter class is a private adapter wrapper for handling sentinel functionality.
@@ -192,8 +192,8 @@ namespace Retro::Ranges {
      * with a specific focus on adapting sentinels.
      */
     RETROLIB_EXPORT template <Iterator I, Sentinel<I> S>
-    class SentinelAdapter : private IteratorAssignLayer<S> {
-        using Base = IteratorAssignLayer<S>;
+    class TSentinelAdapter : private TIteratorAssignLayer<S> {
+        using Base = TIteratorAssignLayer<S>;
 
       public:
         /**
@@ -202,18 +202,18 @@ namespace Retro::Ranges {
          * This constructor initializes a SentinelAdapter object with its default settings.
          * It leverages the default constructor from its base class.
          */
-        constexpr SentinelAdapter() = default;
+        constexpr TSentinelAdapter() = default;
 
         using Base::Base;
 
       private:
         using Base::Adapted;
 
-        friend class AdapterIterator<I, S>;
+        friend class TAdapterIterator<I, S>;
     };
 
     /**
-     * @class AdapterIterator
+     * @class TAdapterIterator
      * @brief Provides an adapter iterator that transforms input iterators into a new form
      * while maintaining iterator semantics.
      *
@@ -236,8 +236,8 @@ namespace Retro::Ranges {
      *   `SentinelAdapter<I, S>` rather than another `AdapterIterator`.
      */
     template <Iterator I, Sentinel<I> S>
-    class AdapterIterator : private IteratorAssignLayer<I> {
-        using Base = IteratorAssignLayer<I>;
+    class TAdapterIterator : private TIteratorAssignLayer<I> {
+        using Base = TIteratorAssignLayer<I>;
 
       public:
         /**
@@ -248,7 +248,7 @@ namespace Retro::Ranges {
         /**
          * The type of value yielded by dereferencing the iterator.
          */
-        using value_type = std::remove_reference_t<DereferencedType<I>>;
+        using value_type = std::remove_reference_t<TDereferencedType<I>>;
 
         /**
          * The type used to represent distances between iterators.
@@ -271,7 +271,7 @@ namespace Retro::Ranges {
          *
          * @return A default-constructed AdapterIterator object.
          */
-        constexpr AdapterIterator() = default;
+        constexpr TAdapterIterator() = default;
 
         using Base::Base;
 
@@ -284,7 +284,7 @@ namespace Retro::Ranges {
          * @param Sentinel The SentinelAdapter to compare with the current object.
          * @return True if the adapted members are equal, otherwise false.
          */
-        constexpr bool operator==(const SentinelAdapter<I, S> &Sentinel) const {
+        constexpr bool operator==(const TSentinelAdapter<I, S> &Sentinel) const {
             return !(Adapted != Sentinel.Adapted);
         }
 
@@ -306,7 +306,7 @@ namespace Retro::Ranges {
          *
          * @return A reference to the incremented AdapterIterator object.
          */
-        constexpr AdapterIterator &operator++() {
+        constexpr TAdapterIterator &operator++() {
             ++Adapted;
             return *this;
         }
@@ -330,5 +330,5 @@ namespace Retro::Ranges {
      * Concept to check if an iterable container can be bridged into a range.
      */
     RETROLIB_EXPORT template <typename I>
-    concept CanBridgeToRange = Iterable<I> && BridgableIterator<IteratorType<I>>;
+    concept CanBridgeToRange = Iterable<I> && BridgableIterator<TIteratorType<I>>;
 } // namespace retro::ranges

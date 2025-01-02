@@ -18,7 +18,7 @@
 
 namespace Retro::Optionals {
 
-    struct IsSetInvoker {
+    struct FIsSetInvoker {
         template <OptionalType O>
         constexpr bool operator()(O &&Optional) const {
             return HasValue(std::forward<O>(Optional));
@@ -38,6 +38,6 @@ namespace Retro::Optionals {
      * with extension methods in environments where enhanced or dynamic behaviors are needed
      * based on compile-time extensions.
      */
-    RETROLIB_EXPORT constexpr auto IsSet = ExtensionMethod<IsSetInvoker{}>();
+    RETROLIB_EXPORT constexpr auto IsSet = ExtensionMethod<FIsSetInvoker{}>();
 
 } // namespace retro::optionals

@@ -25,7 +25,7 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <size_t N, typename... T>
         requires(N < sizeof...(T))
-    using PackType = std::tuple_element_t<N, std::tuple<std::decay_t<T>...>>;
+    using TPackType = std::tuple_element_t<N, std::tuple<std::decay_t<T>...>>;
 
     /**
      * @brief Concept to verify if a parameter pack contains exactly one type that is the same as a specified type.
@@ -38,11 +38,11 @@ namespace Retro {
      * @tparam A The parameter pack to be checked.
      */
     RETROLIB_EXPORT template <typename T, typename... A>
-    concept PackSameAs = (sizeof...(A) == 1) && std::same_as<PackType<0, A...>, T>;
+    concept PackSameAs = (sizeof...(A) == 1) && std::same_as<TPackType<0, A...>, T>;
 
     RETROLIB_EXPORT template <typename... T>
-    using LastInPack = std::tuple_element_t<sizeof...(T) - 1, std::tuple<T...>>;
+    using TLastInPack = std::tuple_element_t<sizeof...(T) - 1, std::tuple<T...>>;
 
     template <typename T, typename... A>
-    concept ConvertibleFromPack = (sizeof...(A) == 1) && std::convertible_to<PackType<0, A...>, T>;
+    concept ConvertibleFromPack = (sizeof...(A) == 1) && std::convertible_to<TPackType<0, A...>, T>;
 } // namespace retro

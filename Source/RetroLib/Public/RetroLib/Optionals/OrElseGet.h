@@ -20,7 +20,7 @@
 
 namespace Retro::Optionals {
 
-    struct OrElseGetInvoker {
+    struct FOrElseGetInvoker {
         /**
          * Invokes the provided functor or returns the value from the optional object.
          *
@@ -31,7 +31,7 @@ namespace Retro::Optionals {
          *         invoking the functor.
          */
         template <OptionalType O, typename F>
-            requires std::invocable<F> && std::convertible_to<CommonReference<O>, std::invoke_result_t<F>>
+            requires std::invocable<F> && std::convertible_to<TCommonReference<O>, std::invoke_result_t<F>>
         constexpr decltype(auto) operator()(O &&Optional, F &&Functor) const {
             if (HasValue(std::forward<O>(Optional))) {
                 return static_cast<std::invoke_result_t<F>>(Get(std::forward<O>(Optional)));
@@ -41,5 +41,5 @@ namespace Retro::Optionals {
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseGetInvoker{}, OrElseGet)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FOrElseGetInvoker{}, OrElseGet)
 } // namespace retro::optionals

@@ -91,11 +91,11 @@ constexpr std::array ValueArray2 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 
 
 TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "[utils]") {
     // We want to test that we can assign different polymorphic values into each other
-    Retro::Polymorphic<Base> Polymorphic1 = Derived1(42);
+    Retro::TPolymorphic<Base> Polymorphic1 = Derived1(42);
     CHECK(Polymorphic1->GetValue() == 42);
     CHECK(Polymorphic1.GetSize() == sizeof(Derived1));
 
-    Retro::Polymorphic<Base> Polymorphic2(std::in_place_type<Derived2>, ValueArray1);
+    Retro::TPolymorphic<Base> Polymorphic2(std::in_place_type<Derived2>, ValueArray1);
     CHECK(Polymorphic2->GetValue() == 120);
     CHECK(Polymorphic2.GetSize() == sizeof(Derived2));
 
@@ -106,7 +106,7 @@ TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "
     Polymorphic1 = Polymorphic2;
     CHECK(Polymorphic1->GetValue() == 40);
 
-    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray2);
+    Polymorphic1 = Retro::TPolymorphic<Base>(std::in_place_type<Derived2>, ValueArray2);
     CHECK(Polymorphic1->GetValue() == 240);
 
     // Here we want to check that during reassignment the destructor for a different type gets invoked
@@ -115,7 +115,7 @@ TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "
     Polymorphic1 = Derived3(std::move(Value));
     CHECK(Polymorphic1->GetValue() == 4);
 
-    Polymorphic1 = Retro::Polymorphic<Base>();
+    Polymorphic1 = Retro::TPolymorphic<Base>();
     CHECK(Polymorphic1->GetValue() == 0);
     CHECK(WeakValue.expired());
 
@@ -127,7 +127,7 @@ TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "
 
     Polymorphic1 = Polymorphic2;
     CHECK(Polymorphic1->GetValue() == 64);
-    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 100);
+    Polymorphic1 = Retro::TPolymorphic<Base>(std::in_place_type<Derived1>, 100);
     CHECK(Polymorphic1->GetValue() == 100);
 
     // Here we're going to do the same thing with large storage
@@ -138,27 +138,27 @@ TEST_CASE_NAMED(FPolymorphicCopyTest, "RetroLib::Utils::Polymorphic::Copying", "
 
     Polymorphic1 = Polymorphic2;
     CHECK(Polymorphic1->GetValue() == 240);
-    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
+    Polymorphic1 = Retro::TPolymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
     CHECK(Polymorphic1->GetValue() == 120);
 
     // Check that dereferencing works correctly
     auto &Dereferenced1 = *Polymorphic1;
     CHECK(Dereferenced1.GetValue() == 120);
 
-    const auto Polymorphic3 = Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 150);
+    const auto Polymorphic3 = Retro::TPolymorphic<Base>(std::in_place_type<Derived1>, 150);
     auto &Dereferenced2 = *Polymorphic3;
     CHECK(Dereferenced2.GetValue() == 150);
 
-    Polymorphic1 = Retro::Polymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
-    const Retro::Polymorphic<Base> Polymorphic4 = Polymorphic1;
+    Polymorphic1 = Retro::TPolymorphic<Base>(std::in_place_type<Derived2>, ValueArray1);
+    const Retro::TPolymorphic<Base> Polymorphic4 = Polymorphic1;
     auto &Dereferenced3 = *Polymorphic4;
     CHECK(Dereferenced3.GetValue() == 120);
 }
 
 #ifdef __UNREAL__
 TEST_CASE_NAMED(FPolymorphicOptionalState, "RetroLib::Utils::Polymorphic::IntrusiveOptional", "[utils]") {
-    static_assert(sizeof(Retro::Polymorphic<Base>) == sizeof(TOptional<Retro::Polymorphic<Base>>));
-    TOptional<Retro::Polymorphic<Base>> Optional1;
+    static_assert(sizeof(Retro::TPolymorphic<Base>) == sizeof(TOptional<Retro::TPolymorphic<Base>>));
+    TOptional<Retro::TPolymorphic<Base>> Optional1;
     CHECK_FALSE(Optional1.IsSet());
     Optional1.Emplace(std::in_place_type<Derived1>, 12);
     REQUIRE(Optional1.IsSet());
@@ -172,7 +172,7 @@ TEST_CASE_NAMED(FPolymorphicOptionalState, "RetroLib::Utils::Polymorphic::Intrus
     auto ObtainedValue4 = *std::as_const(Optional1);
     CHECK(ObtainedValue4->GetValue() == 12);
 
-    auto ObtainedValue5 = *TOptional(Retro::Polymorphic<Base>(std::in_place_type<Derived1>, 24));
+    auto ObtainedValue5 = *TOptional(Retro::TPolymorphic<Base>(std::in_place_type<Derived1>, 24));
     CHECK(ObtainedValue5->GetValue() == 24);
 
     auto Optional2 = Optional1;

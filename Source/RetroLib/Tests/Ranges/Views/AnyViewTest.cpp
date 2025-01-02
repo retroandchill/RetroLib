@@ -18,7 +18,7 @@ import RetroLib;
 
 TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
     SECTION("Iterating over a default initialized view is empty") {
-        Retro::Ranges::AnyView<int> View;
+        Retro::Ranges::TAnyView<int> View;
         int Count = 0;
         for (auto _ : View) {
             Count++;
@@ -27,7 +27,7 @@ TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
     }
 
     SECTION("We can iterate over multiple different containers that has range semantics") {
-        Retro::Ranges::AnyView<int> View(std::vector<int>({1, 2, 3, 4}));
+        Retro::Ranges::TAnyView<int> View(std::vector<int>({1, 2, 3, 4}));
         int Count = 0;
         for (auto Value : View) {
             Count += Value;
@@ -45,7 +45,7 @@ TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
 
     SECTION("Can iterate over a range pipe") {
         std::array Values = {1, 2, 3, 4, 5};
-        Retro::Ranges::AnyView<int> view = Values | std::ranges::views::transform([](int Value) { return Value * 2; });
+        Retro::Ranges::TAnyView<int> view = Values | std::ranges::views::transform([](int Value) { return Value * 2; });
         int Count = 0;
         for (auto Value : view) {
             Count += Value;
@@ -54,7 +54,7 @@ TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
     }
 
     SECTION("Can compare iterators between view instances") {
-        Retro::Ranges::AnyView<int> view(std::vector<int>({1, 2, 3, 4}));
+        Retro::Ranges::TAnyView<int> view(std::vector<int>({1, 2, 3, 4}));
         auto Iterator1 = view.begin();
         auto Iterator2 = view.begin();
         Iterator1++;
@@ -63,7 +63,7 @@ TEST_CASE_NAMED(FAnyViewTest, "RetroLib::Ranges::Views::AnyView", "[views]") {
     }
 
     SECTION("Can use any view with a range pipe") {
-        auto View = Retro::Ranges::AnyView<int>(std::vector<int>({1, 2, 3, 4})) |
+        auto View = Retro::Ranges::TAnyView<int>(std::vector<int>({1, 2, 3, 4})) |
                     std::ranges::views::filter([](const int value) { return value % 2 == 0; });
         int Count = 0;
         for (auto Value : View) {

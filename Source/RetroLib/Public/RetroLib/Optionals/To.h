@@ -36,7 +36,7 @@ namespace Retro::Optionals {
      *       if present.
      */
     RETROLIB_EXPORT template <OptionalType T, OptionalType F>
-        requires std::convertible_to<TypeParam<F>, TypeParam<T>>
+        requires std::convertible_to<TTypeParam<F>, TTypeParam<T>>
     constexpr T To(F &&Optional) {
         if (HasValue(Optional)) {
             return T(Get(std::forward<F>(Optional)));
@@ -59,28 +59,28 @@ namespace Retro::Optionals {
      */
     RETROLIB_EXPORT template <template <typename...> typename T, OptionalType F>
     constexpr auto To(F &&Optional) {
-        if constexpr (std::is_lvalue_reference_v<TypeParam<F>> &&
-                      !RawReferenceOptionalValid<T, std::remove_reference_t<TypeParam<F>>>) {
-            return To<T<std::reference_wrapper<std::remove_reference_t<TypeParam<F>>>>>(std::forward<F>(Optional));
+        if constexpr (std::is_lvalue_reference_v<TTypeParam<F>> &&
+                      !RawReferenceOptionalValid<T, std::remove_reference_t<TTypeParam<F>>>) {
+            return To<T<std::reference_wrapper<std::remove_reference_t<TTypeParam<F>>>>>(std::forward<F>(Optional));
         } else {
-            return To<T<TypeParam<F>>>(std::forward<F>(Optional));
+            return To<T<TTypeParam<F>>>(std::forward<F>(Optional));
         }
     }
 
     template <OptionalType T>
-    struct ToInvoker {
+    struct TOInvoker {
         template <OptionalType F>
-            requires std::convertible_to<ValueType<T>, ValueType<F>>
+            requires std::convertible_to<TValueType<T>, TValueType<F>>
         constexpr auto operator()(F &&Optional) const {
             return To<T>(std::forward<F>(Optional));
         }
     };
 
     template <OptionalType T>
-    constexpr ToInvoker<T> ToFunction;
+    constexpr TOInvoker<T> ToFunction;
 
     template <template <typename...> typename T>
-    struct TemplatedToInvoker {
+    struct TTemplatedToInvoker {
         template <OptionalType F>
         constexpr auto operator()(F &&Optional) const {
             return To<T>(std::forward<F>(Optional));
@@ -88,7 +88,7 @@ namespace Retro::Optionals {
     };
 
     template <template <typename...> typename T>
-    constexpr TemplatedToInvoker<T> TemplatedToFunction;
+    constexpr TTemplatedToInvoker<T> TemplatedToFunction;
 
     /**
      * @brief Provides an extension method for transforming an object into a specific target type.

@@ -34,7 +34,7 @@ namespace Retro {
      * - typename: The type to be checked for a single function call operator.
      */
     template <typename>
-    struct HasOneFunctionCallOperator : std::false_type {};
+    struct THasOneFunctionCallOperator : std::false_type {};
 
     /**
      * @brief Determines if a class has exactly one function call operator.
@@ -52,10 +52,10 @@ namespace Retro {
      */
     template <typename T>
         requires std::is_object_v<T> && std::is_member_function_pointer_v<decltype(&T::operator())>
-    struct HasOneFunctionCallOperator<T> : std::true_type {};
+    struct THasOneFunctionCallOperator<T> : std::true_type {};
 
     /**
-     * @class WithOp
+     * @class FWithOp
      *
      * @brief Represents a callable object that can be executed using the function call operator.
      *
@@ -63,12 +63,12 @@ namespace Retro {
      * of this struct to be used as callable objects. This is used for utility checking to see if a type has
      * a valid function call operator or not.
      */
-    struct WithOp {
+    struct FWithOp {
         void operator()() const;
     };
 
     /**
-     * @class Mixin
+     * @class TMixin
      *
      * @brief A template structure that combines the functionality of two types.
      *
@@ -85,7 +85,7 @@ namespace Retro {
      */
     template <typename T>
         requires std::is_class_v<T>
-    struct Mixin : T, WithOp {};
+    struct TMixin : T, FWithOp {};
 
     /**
      * @brief Concept to determine if a type does not have a single function call operator.
@@ -98,7 +98,7 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <typename T>
     concept HasFunctionCallOperator =
-        std::is_pointer_v<T> || std::is_member_pointer_v<T> || !HasOneFunctionCallOperator<Mixin<T>>::value;
+        std::is_pointer_v<T> || std::is_member_pointer_v<T> || !THasOneFunctionCallOperator<TMixin<T>>::value;
 
     /**
      * @brief Checks if a given object is a valid functor.
@@ -134,7 +134,7 @@ namespace Retro {
      * This structure derives from ValidType to indicate it represents a valid function type.
      */
     template <typename R, bool Free, bool NoExcept, typename... A>
-    struct FunctionTraitsBase : ValidType {
+    struct TFunctionTraitsBase : FValidType {
         /**
          * Indicates if this is a free function.
          */
@@ -167,7 +167,7 @@ namespace Retro {
     };
 
     /**
-     * @enum RefQualifier
+     * @enum ERefQualifier
      * @brief Represents the reference qualifiers in C++ for distinguishing between
      *        lvalue references, rvalue references, and no reference.
      *
@@ -176,7 +176,7 @@ namespace Retro {
      * metaprogramming and function overloading where distinguishing between
      * reference types is necessary.
      */
-    enum class RefQualifier {
+    enum class ERefQualifier {
         /**
          * Indicates no reference qualifier.
          */
@@ -208,8 +208,8 @@ namespace Retro {
      * @tparam NoExcept A boolean value representing whether the member function is noexcept.
      * @tparam A The argument types taken by the member function.
      */
-    template <typename C, typename R, bool Const, RefQualifier Ref, bool NoExcept, typename... A>
-    struct MethodTraitsBase : FunctionTraitsBase<R, false, NoExcept, A...> {
+    template <typename C, typename R, bool Const, ERefQualifier Ref, bool NoExcept, typename... A>
+    struct TMethodTraitsBase : TFunctionTraitsBase<R, false, NoExcept, A...> {
         /**
          * The class type to which the member function belongs.
          */
@@ -223,7 +223,7 @@ namespace Retro {
         /**
          * The reference qualifier (lvalue, rvalue, or none) of the member function.
          */
-        static constexpr RefQualifier Qualifier = Ref;
+        static constexpr ERefQualifier Qualifier = Ref;
     };
 
     /**
@@ -242,7 +242,7 @@ namespace Retro {
      * @tparam Unspecified type for which function traits are to be determined.
      */
     template <typename>
-    struct FunctionTraits : InvalidType {};
+    struct TFunctionTraits : FInvalidType {};
 
     /**
      * FunctionTraits is a template structure that specializes the FunctionTraitsBase
@@ -257,7 +257,7 @@ namespace Retro {
      * like return type and the number of arguments from a function pointer type.
      */
     template <typename R, typename... A>
-    struct FunctionTraits<R (*)(A...)> : FunctionTraitsBase<R, true, false, A...> {};
+    struct TFunctionTraits<R (*)(A...)> : TFunctionTraitsBase<R, true, false, A...> {};
 
     /**
      * FunctionTraits is a template specialization of FunctionTraitsBase used to
@@ -272,7 +272,7 @@ namespace Retro {
      * @tparam A The types of the arguments accepted by the function.
      */
     template <typename R, typename... A>
-    struct FunctionTraits<R (*)(A...) noexcept> : FunctionTraitsBase<R, true, true, A...> {};
+    struct TFunctionTraits<R (*)(A...) noexcept> : TFunctionTraitsBase<R, true, true, A...> {};
 
     /**
      * @brief FunctionTraits provides type traits for non-const member functions.
@@ -286,7 +286,7 @@ namespace Retro {
      * @tparam A The types of arguments the member function takes.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...)> : MethodTraitsBase<C, R, false, RefQualifier::None, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...)> : TMethodTraitsBase<C, R, false, ERefQualifier::None, false, A...> {};
 
     /**
      * @brief FunctionTraits specialization for const-qualified member function pointers.
@@ -301,7 +301,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const> : MethodTraitsBase<C, R, true, RefQualifier::None, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const> : TMethodTraitsBase<C, R, true, ERefQualifier::None, false, A...> {};
 
     /**
      * @brief Provides type traits for member functions with lvalue reference qualifier.
@@ -317,7 +317,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) &> : MethodTraitsBase<C, R, false, RefQualifier::LValue, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) &> : TMethodTraitsBase<C, R, false, ERefQualifier::LValue, false, A...> {};
 
     /**
      * @brief Provides function traits for const-qualified member functions with lvalue reference qualifier.
@@ -332,7 +332,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const &> : MethodTraitsBase<C, R, true, RefQualifier::LValue, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const &> : TMethodTraitsBase<C, R, true, ERefQualifier::LValue, false, A...> {};
 
     /**
      * @brief Provides type traits for rvalue reference qualified member functions.
@@ -348,7 +348,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) &&> : MethodTraitsBase<C, R, false, RefQualifier::RValue, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) &&> : TMethodTraitsBase<C, R, false, ERefQualifier::RValue, false, A...> {};
 
     /**
      * @brief FunctionTraits specialization for rvalue reference qualified const member functions.
@@ -363,7 +363,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const &&> : MethodTraitsBase<C, R, true, RefQualifier::RValue, false, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const &&> : TMethodTraitsBase<C, R, true, ERefQualifier::RValue, false, A...> {};
 
     /**
      * @brief Provides type traits for noexcept member functions.
@@ -379,7 +379,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) noexcept> : MethodTraitsBase<C, R, false, RefQualifier::None, true, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) noexcept> : TMethodTraitsBase<C, R, false, ERefQualifier::None, true, A...> {};
 
     /**
      * @brief Provides type traits for const noexcept member functions.
@@ -393,8 +393,8 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const noexcept>
-        : MethodTraitsBase<C, R, true, RefQualifier::None, true, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const noexcept>
+        : TMethodTraitsBase<C, R, true, ERefQualifier::None, true, A...> {};
 
     /**
      * @brief FunctionTraits specialization for noexcept member functions with lvalue reference qualifier.
@@ -409,7 +409,7 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) & noexcept> : MethodTraitsBase<C, R, false, RefQualifier::LValue, true, A...> {
+    struct TFunctionTraits<R (C::*)(A...) & noexcept> : TMethodTraitsBase<C, R, false, ERefQualifier::LValue, true, A...> {
     };
 
     /**
@@ -426,8 +426,8 @@ namespace Retro {
      * @tparam A The types of the arguments that the member function takes.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const & noexcept>
-        : MethodTraitsBase<C, R, true, RefQualifier::LValue, true, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const & noexcept>
+        : TMethodTraitsBase<C, R, true, ERefQualifier::LValue, true, A...> {};
 
     /**
      * @brief FunctionTraits provides type traits for a specific category of member functions.
@@ -442,8 +442,8 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) && noexcept>
-        : MethodTraitsBase<C, R, false, RefQualifier::RValue, true, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) && noexcept>
+        : TMethodTraitsBase<C, R, false, ERefQualifier::RValue, true, A...> {};
 
     /**
      * @brief Specialization of FunctionTraits for rvalue reference, const, noexcept member functions.
@@ -457,8 +457,8 @@ namespace Retro {
      * @tparam A The argument types taken by the member function.
      */
     template <typename C, typename R, typename... A>
-    struct FunctionTraits<R (C::*)(A...) const && noexcept>
-        : MethodTraitsBase<C, R, true, RefQualifier::RValue, true, A...> {};
+    struct TFunctionTraits<R (C::*)(A...) const && noexcept>
+        : TMethodTraitsBase<C, R, true, ERefQualifier::RValue, true, A...> {};
 
     /**
      * Specialization of the FunctionTraits structure for types with a single
@@ -473,13 +473,13 @@ namespace Retro {
      * @tparam T A type that must have a single function call operator.
      */
     template <typename T>
-        requires HasOneFunctionCallOperator<T>::value
-    struct FunctionTraits<T> : FunctionTraits<decltype(&T::operator())> {
+        requires THasOneFunctionCallOperator<T>::value
+    struct TFunctionTraits<T> : TFunctionTraits<decltype(&T::operator())> {
         static constexpr bool is_free = true;
     };
 
     /**
-     * @class MemberTraits
+     * @class TMemberTraits
      *
      * @brief A struct used to derive type traits indicating the presence or absence of specific member features.
      *
@@ -487,10 +487,10 @@ namespace Retro {
      * It is typically used in template metaprogramming to determine and enforce type characteristics and constraints.
      */
     template <typename>
-    struct MemberTraits : InvalidType {};
+    struct TMemberTraits : FInvalidType {};
 
     /**
-     * @struct MemberTraits
+     * @struct TMemberTraits
      *
      * @brief Provides type information about member pointers.
      *
@@ -505,7 +505,7 @@ namespace Retro {
      * @tparam C Type of the class containing the member.
      */
     template <typename C, typename M>
-    struct MemberTraits<M C::*> : ValidType {
+    struct TMemberTraits<M C::*> : FValidType {
         using ClassType = C;
         using MemberType = M;
     };
@@ -526,7 +526,7 @@ namespace Retro {
      * @tparam T The type to be checked against the functional-type criteria.
      */
     RETROLIB_EXPORT template <typename T>
-    concept FunctionalType = FunctionTraits<T>::IsValid;
+    concept FunctionalType = TFunctionTraits<T>::IsValid;
 
     /**
      * @brief Concept to determine if a type T is a free function.
@@ -541,7 +541,7 @@ namespace Retro {
      * @tparam T The type to be evaluated as a free function.
      */
     RETROLIB_EXPORT template <typename T>
-    concept FreeFunction = FunctionalType<T> && FunctionTraits<T>::IsFree;
+    concept FreeFunction = FunctionalType<T> && TFunctionTraits<T>::IsFree;
 
     /**
      * @brief Concept to determine if a type is a method.
@@ -554,7 +554,7 @@ namespace Retro {
      * @tparam T The type to check against the concept.
      */
     RETROLIB_EXPORT template <typename T>
-    concept Method = FunctionalType<T> && (!FunctionTraits<T>::IsFree);
+    concept Method = FunctionalType<T> && (!TFunctionTraits<T>::IsFree);
 
     /**
      * The return type of the given functional type.
@@ -562,7 +562,7 @@ namespace Retro {
      * @tparam T The functional type
      */
     RETROLIB_EXPORT template <FunctionalType T>
-    using ReturnType = typename FunctionTraits<T>::ReturnType;
+    using ReturnType = typename TFunctionTraits<T>::ReturnType;
 
     /**
      * The argument count of the given functional type.
@@ -570,7 +570,7 @@ namespace Retro {
      * @tparam T The functional type
      */
     RETROLIB_EXPORT template <FunctionalType T>
-    constexpr size_t ArgumentCount = FunctionTraits<T>::ArgCount;
+    constexpr size_t ArgumentCount = TFunctionTraits<T>::ArgCount;
 
     /**
      * The N-th argument count of the given functional type.
@@ -580,7 +580,7 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <FunctionalType T, size_t N>
         requires(N < ArgumentCount<T>)
-    using Argument = typename FunctionTraits<T>::template Arg<N>;
+    using TArgument = typename TFunctionTraits<T>::template Arg<N>;
 
     /**
      * Concept for checking if a type is a class member.
@@ -588,7 +588,7 @@ namespace Retro {
      * @tparam T The type to check
      */
     RETROLIB_EXPORT template <typename T>
-    concept Member = MemberTraits<T>::IsValid || Method<T>;
+    concept Member = TMemberTraits<T>::IsValid || Method<T>;
 
     /**
      * The owning class of the given method.
@@ -596,7 +596,7 @@ namespace Retro {
      * @tparam T The method type
      */
     RETROLIB_EXPORT template <Method T>
-    using FunctionClassType = typename FunctionTraits<T>::ClassType;
+    using TFunctionClassType = typename TFunctionTraits<T>::ClassType;
 
     /**
      * The owning class of the given data members.
@@ -604,7 +604,7 @@ namespace Retro {
      * @tparam T The method type
      */
     RETROLIB_EXPORT template <Member T>
-    using MemberClassType = typename MemberTraits<T>::ClassType;
+    using TMemberClassType = typename TMemberTraits<T>::ClassType;
 
     /**
      * @brief Concept to check for const-qualified types.
@@ -619,7 +619,7 @@ namespace Retro {
      * @tparam T The type to be checked for const qualification and conformity to Method<T>.
      */
     RETROLIB_EXPORT template <typename T>
-    concept ConstQualified = Method<T> && FunctionTraits<T>::IsConst;
+    concept ConstQualified = Method<T> && TFunctionTraits<T>::IsConst;
 
     /**
      * @brief Concept to check if a type T has a method and is lvalue-qualified.
@@ -632,7 +632,7 @@ namespace Retro {
      * @tparam T The type to be checked against the concept requirements.
      */
     RETROLIB_EXPORT template <typename T>
-    concept LValueQualified = Method<T> && (FunctionTraits<T>::Qualifier == RefQualifier::LValue);
+    concept LValueQualified = Method<T> && (TFunctionTraits<T>::Qualifier == ERefQualifier::LValue);
 
     /**
      * Concept to determine if a given type `T` is qualified with an rvalue reference.
@@ -645,7 +645,7 @@ namespace Retro {
      * @tparam T The type to be checked against the concept.
      */
     RETROLIB_EXPORT template <typename T>
-    concept RValueQualified = Method<T> && (FunctionTraits<T>::Qualifier == RefQualifier::RValue);
+    concept RValueQualified = Method<T> && (TFunctionTraits<T>::Qualifier == ERefQualifier::RValue);
 
     /**
      * Get the type of the owning class of a method, adding const to the type, if the method is const-qualified.
@@ -653,8 +653,8 @@ namespace Retro {
      * @tparam T The method type in question
      */
     RETROLIB_EXPORT template <Method T>
-    using ConstQualifiedClassType =
-        std::conditional_t<ConstQualified<T>, const FunctionClassType<T>, FunctionClassType<T>>;
+    using TConstQualifiedClassType =
+        std::conditional_t<ConstQualified<T>, const TFunctionClassType<T>, TFunctionClassType<T>>;
 
     /**
      * Get the reference type of the owning class of a method, adding const to the type, if the method is
@@ -663,8 +663,8 @@ namespace Retro {
      * @tparam T The method type in question
      */
     RETROLIB_EXPORT template <Method T>
-    using RefQualifiedClassType =
-        std::conditional_t<RValueQualified<T>, ConstQualifiedClassType<T> &&, ConstQualifiedClassType<T> &>;
+    using TRefQualifiedClassType =
+        std::conditional_t<RValueQualified<T>, TConstQualifiedClassType<T> &&, TConstQualifiedClassType<T> &>;
 
     /**
      * A concept that checks if a given type T satisfies two conditions:
@@ -680,6 +680,6 @@ namespace Retro {
      * - T: The type to check against the NoExcept concept.
      */
     RETROLIB_EXPORT template <typename T>
-    concept NoExcept = Method<T> && FunctionTraits<T>::IsNoexcept;
+    concept NoExcept = Method<T> && TFunctionTraits<T>::IsNoexcept;
 
 } // namespace retro

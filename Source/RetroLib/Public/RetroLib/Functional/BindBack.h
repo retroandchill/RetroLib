@@ -33,7 +33,7 @@ namespace Retro {
      * @tparam A Types of the arguments to be pre-bound to the callable.
      */
     template <HasFunctionCallOperator F, typename... A>
-    struct BindBackInvoker {
+    struct TBindBackInvoker {
         using ArgsTuple = std::tuple<A...>;
 
         /**
@@ -45,8 +45,8 @@ namespace Retro {
          */
         template <typename G, typename... T>
             requires std::constructible_from<F, G> && std::constructible_from<ArgsTuple, T...> &&
-                         (!std::same_as<BindBackInvoker, std::decay_t<G>>)
-        constexpr explicit BindBackInvoker(G &&Functor, T &&...Args)
+                         (!std::same_as<TBindBackInvoker, std::decay_t<G>>)
+        constexpr explicit TBindBackInvoker(G &&Functor, T &&...Args)
             : Functor(std::forward<G>(Functor)), Args(std::forward<T>(Args)...) {
         }
 
@@ -149,7 +149,7 @@ namespace Retro {
      * @tparam A The type of the argument to be bound to the functor's last parameter.
      */
     template <HasFunctionCallOperator F, typename A>
-    struct BindBackInvoker<F, A> {
+    struct TBindBackInvoker<F, A> {
 
         /**
          * @brief Constructs a BindBackInvoker object with a specified functor and argument.
@@ -165,7 +165,7 @@ namespace Retro {
          */
         template <typename G, typename T>
             requires std::constructible_from<F, G> && std::convertible_to<T, A>
-        constexpr BindBackInvoker(G &&Functor, T &&Arg) : Functor(std::forward<G>(Functor)), Arg(std::forward<T>(Arg)) {
+        constexpr TBindBackInvoker(G &&Functor, T &&Arg) : Functor(std::forward<G>(Functor)), Arg(std::forward<T>(Arg)) {
         }
 
         /**
@@ -253,7 +253,7 @@ namespace Retro {
      * @tparam B The type of the second pre-bound argument.
      */
     template <HasFunctionCallOperator F, typename A, typename B>
-    struct BindBackInvoker<F, A, B> {
+    struct TBindBackInvoker<F, A, B> {
         /**
          * @brief Constructs a BindBackInvoker instance with the provided functor and arguments.
          *
@@ -264,7 +264,7 @@ namespace Retro {
          */
         template <typename G, typename T, typename U>
             requires std::constructible_from<F, G> && std::convertible_to<T, A> && std::convertible_to<U, B>
-        constexpr BindBackInvoker(G &&Functor, T &&Arg1, U &&Arg2)
+        constexpr TBindBackInvoker(G &&Functor, T &&Arg1, U &&Arg2)
             : Functor(std::forward<G>(Functor)), Arg1(std::forward<T>(Arg1)), Arg2(std::forward<U>(Arg2)) {
         }
 
@@ -363,7 +363,7 @@ namespace Retro {
      */
     template <auto Functor, typename... A>
         requires(IsValidFunctorObject(Functor))
-    struct BindBackConstInvoker {
+    struct TBindBackConstInvoker {
         using F = decltype(Functor);
         using ArgsTuple = std::tuple<A...>;
 
@@ -383,8 +383,8 @@ namespace Retro {
          *          recursive template instantiation issues.
          */
         template <typename... T>
-            requires std::constructible_from<ArgsTuple, T...> && (!PackSameAs<BindBackConstInvoker, T...>)
-        constexpr explicit BindBackConstInvoker(T &&...Args) : Args(std::forward<T>(Args)...) {
+            requires std::constructible_from<ArgsTuple, T...> && (!PackSameAs<TBindBackConstInvoker, T...>)
+        constexpr explicit TBindBackConstInvoker(T &&...Args) : Args(std::forward<T>(Args)...) {
         }
 
         /**
@@ -471,7 +471,7 @@ namespace Retro {
     };
 
     /**
-     * @class BindBackConstInvoker
+     * @class TBindBackConstInvoker
      *
      * @brief A template structure that enables partial application of a functor by
      *        binding one of its arguments, allowing subsequent invocations with
@@ -490,7 +490,7 @@ namespace Retro {
      */
     template <auto Functor, typename A>
         requires(IsValidFunctorObject(Functor))
-    struct BindBackConstInvoker<Functor, A> {
+    struct TBindBackConstInvoker<Functor, A> {
         using F = decltype(Functor);
 
         /**
@@ -509,8 +509,8 @@ namespace Retro {
          * to the same type as A to prevent ambiguity in binding.
          */
         template <typename T>
-            requires std::convertible_to<T, A> && (!std::same_as<std::decay_t<T>, BindBackConstInvoker>)
-        constexpr explicit BindBackConstInvoker(T &&Arg) : arg(std::forward<T>(Arg)) {
+            requires std::convertible_to<T, A> && (!std::same_as<std::decay_t<T>, TBindBackConstInvoker>)
+        constexpr explicit TBindBackConstInvoker(T &&Arg) : arg(std::forward<T>(Arg)) {
         }
 
         /**
@@ -601,7 +601,7 @@ namespace Retro {
      */
     template <auto Functor, typename A, typename B>
         requires(IsValidFunctorObject(Functor))
-    struct BindBackConstInvoker<Functor, A, B> {
+    struct TBindBackConstInvoker<Functor, A, B> {
         using F = decltype(Functor);
 
         /**
@@ -619,7 +619,7 @@ namespace Retro {
          */
         template <typename T, typename U>
             requires std::convertible_to<T, A> && std::convertible_to<U, B>
-        constexpr BindBackConstInvoker(T &&Arg1, U &&Arg2) : Arg1(std::forward<T>(Arg1)), Arg2(std::forward<U>(Arg2)) {
+        constexpr TBindBackConstInvoker(T &&Arg1, U &&Arg2) : Arg1(std::forward<T>(Arg1)), Arg2(std::forward<U>(Arg2)) {
         }
 
         /**
@@ -708,7 +708,7 @@ namespace Retro {
     RETROLIB_EXPORT template <typename F, typename... A>
         requires HasFunctionCallOperator<std::decay_t<F>>
     constexpr auto BindBack(F &&Functor, A &&...Args) {
-        return BindBackInvoker<std::decay_t<F>, std::decay_t<A>...>(std::forward<F>(Functor), std::forward<A>(Args)...);
+        return TBindBackInvoker<std::decay_t<F>, std::decay_t<A>...>(std::forward<F>(Functor), std::forward<A>(Args)...);
     }
 
     /**
@@ -732,7 +732,7 @@ namespace Retro {
     RETROLIB_EXPORT template <auto Functor, typename... A>
         requires(IsValidFunctorObject(Functor))
     constexpr auto BindBack(A &&...Args) {
-        return BindBackConstInvoker<Functor, std::decay_t<A>...>(std::forward<A>(Args)...);
+        return TBindBackConstInvoker<Functor, std::decay_t<A>...>(std::forward<A>(Args)...);
     }
 
 } // namespace retro

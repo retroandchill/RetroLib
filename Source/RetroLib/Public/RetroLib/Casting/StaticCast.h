@@ -31,7 +31,7 @@ namespace Retro {
     };
 
     /**
-     * @class StaticCastFunction
+     * @class TStaticCastFunction
      *
      * @brief A generic conversion functor for types convertible to a specified type T.
      *
@@ -45,7 +45,7 @@ namespace Retro {
      *       to be implicitly convertible.
      */
     template <typename T>
-    struct StaticCastFunction {
+    struct TStaticCastFunction {
         /**
          * @brief Invokes the conversion of the provided argument to the specified type T.
          *
@@ -82,5 +82,5 @@ namespace Retro {
      * @tparam T The type to which the functor converts arguments.
      */
     RETROLIB_EXPORT template <typename T>
-    constexpr StaticCastFunction<T> StaticCast;
+    constexpr TStaticCastFunction<T> StaticCast;
 } // namespace retro

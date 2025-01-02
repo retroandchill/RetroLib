@@ -31,7 +31,7 @@ namespace Retro::Ranges {
      *         or a default-constructed instance of O if the range is empty.
      */
     RETROLIB_EXPORT template <Optionals::OptionalType O, std::ranges::input_range R>
-        requires std::constructible_from<O, RangeCommonReference<R>>
+        requires std::constructible_from<O, TRangeCommonReference<R>>
     constexpr O FindFirst(R &&Range) {
         auto Result = std::ranges::begin(Range);
         return Result != std::ranges::end(Range) ? O(*ForwardLike<R>(Result)) : O();
@@ -47,11 +47,11 @@ namespace Retro::Ranges {
     RETROLIB_EXPORT template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE, std::ranges::input_range R>
         requires Optionals::OptionalType<O<std::ranges::range_value_t<R>>>
     constexpr auto FindFirst(R &&Range) {
-        if constexpr (std::is_lvalue_reference_v<RangeCommonReference<R>>) {
+        if constexpr (std::is_lvalue_reference_v<TRangeCommonReference<R>>) {
             if constexpr (Optionals::RawReferenceOptionalValid<O, std::ranges::range_value_t<R>>) {
-                return FindFirst<O<RangeCommonReference<R>>>(std::forward<R>(Range));
+                return FindFirst<O<TRangeCommonReference<R>>>(std::forward<R>(Range));
             } else {
-                return FindFirst<O<std::reference_wrapper<std::remove_reference_t<RangeCommonReference<R>>>>>(
+                return FindFirst<O<std::reference_wrapper<std::remove_reference_t<TRangeCommonReference<R>>>>>(
                     std::forward<R>(Range));
             }
         } else {
@@ -60,7 +60,7 @@ namespace Retro::Ranges {
     }
 
     /**
-     * @struct FindFirstInvoker
+     * @struct TFindFirstInvoker
      *
      * @brief A function object for finding the first occurrence of elements.
      *
@@ -80,9 +80,9 @@ namespace Retro::Ranges {
      * @return O The result of invoking `find_first` on the given range.
      */
     template <Optionals::OptionalType O>
-    struct FindFirstInvoker {
+    struct TFindFirstInvoker {
         template <std::ranges::input_range R>
-            requires std::constructible_from<O, RangeCommonReference<R>>
+            requires std::constructible_from<O, TRangeCommonReference<R>>
         constexpr O operator()(R &&Range) const {
             return FindFirst<O>(std::forward<R>(Range));
         }
@@ -100,7 +100,7 @@ namespace Retro::Ranges {
      * logic for which the invoker is defined.
      */
     template <Optionals::OptionalType O>
-    constexpr FindFirstInvoker<O> FindFirstFunction;
+    constexpr TFindFirstInvoker<O> FindFirstFunction;
 
     /**
      * @brief A callable structure that invokes the find_first function on a given range.
@@ -120,7 +120,7 @@ namespace Retro::Ranges {
      *          arguments are compile-time constant.
      */
     template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE>
-    struct FindFirstTemplateInvoker {
+    struct TFindFirstTemplateInvoker {
         template <std::ranges::input_range R>
             requires Optionals::OptionalType<O<std::ranges::range_value_t<R>>>
         constexpr auto operator()(R &&Range) const {
@@ -138,7 +138,7 @@ namespace Retro::Ranges {
      * @tparam O A template parameter representing the type or configuration used in the invocation process.
      */
     template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE>
-    constexpr FindFirstTemplateInvoker<O> FindFirstTemplateFunction;
+    constexpr TFindFirstTemplateInvoker<O> FindFirstTemplateFunction;
 
     /**
      * Finds the first occurrence of an element in a collection or sequence.

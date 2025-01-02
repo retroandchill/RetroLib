@@ -45,7 +45,7 @@ namespace Retro {
      * @tparam T The container type.
      */
     template <typename T>
-    using IteratorType = std::decay_t<decltype(std::declval<T>().begin())>;
+    using TIteratorType = std::decay_t<decltype(std::declval<T>().begin())>;
 
     /**
      * The sentinel type from a container.
@@ -53,7 +53,7 @@ namespace Retro {
      * @tparam T The container type.
      */
     template <typename T>
-    using SentinelType = std::decay_t<decltype(std::declval<T>().end())>;
+    using TSentinelType = std::decay_t<decltype(std::declval<T>().end())>;
 
     /**
      * The concept for checking if container has iterator support.
@@ -63,6 +63,6 @@ namespace Retro {
     template <typename T>
     concept Iterable = requires(T &&Range) {
         { std::forward<T>(Range).begin() } -> Iterator;
-        { std::forward<T>(Range).end() } -> Sentinel<IteratorType<T>>;
+        { std::forward<T>(Range).end() } -> Sentinel<TIteratorType<T>>;
     };
 } // namespace retro

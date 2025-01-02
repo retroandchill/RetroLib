@@ -22,7 +22,7 @@ namespace Retro::Ranges {
      * @tparam R The source range types
      */
     template <typename... R>
-    using ConcatReference = std::common_reference_t<std::ranges::range_reference_t<R>...>;
+    using TConcatReference = std::common_reference_t<std::ranges::range_reference_t<R>...>;
 
     /**
      * The value type for the value type of multiple ranges.
@@ -30,7 +30,7 @@ namespace Retro::Ranges {
      * @tparam R The source range types
      */
     template <typename... R>
-    using ConcatValue = std::common_type_t<std::ranges::range_value_t<R>...>;
+    using TConcatValue = std::common_type_t<std::ranges::range_value_t<R>...>;
 
     /**
      * The r-value reference type for the r-value reference type of multiple ranges.
@@ -38,7 +38,7 @@ namespace Retro::Ranges {
      * @tparam R The source range types
      */
     template <typename... R>
-    using ConcatRValueReference = std::common_reference_t<std::ranges::range_rvalue_reference_t<R>...>;
+    using TConcatRValueReference = std::common_reference_t<std::ranges::range_rvalue_reference_t<R>...>;
 
     /**
      * Implementation to check if a concatenation is indirectly readable.
@@ -60,10 +60,10 @@ namespace Retro::Ranges {
      */
     template <typename... R>
     concept ConcatIndirectlyReadable =
-        std::common_reference_with<ConcatReference<R...> &&, ConcatValue<R...> &> &&
-        std::common_reference_with<ConcatReference<R...> &&, ConcatRValueReference<R...> &&> &&
-        std::common_reference_with<ConcatRValueReference<R...> &&, ConcatValue<R...> const &> &&
-        (ConcatIndirectlyReadableImpl<ConcatReference<R...>, ConcatRValueReference<R...>, std::ranges::iterator_t<R>> &&
+        std::common_reference_with<TConcatReference<R...> &&, TConcatValue<R...> &> &&
+        std::common_reference_with<TConcatReference<R...> &&, TConcatRValueReference<R...> &&> &&
+        std::common_reference_with<TConcatRValueReference<R...> &&, TConcatValue<R...> const &> &&
+        (ConcatIndirectlyReadableImpl<TConcatReference<R...>, TConcatRValueReference<R...>, std::ranges::iterator_t<R>> &&
          ...);
 
     /**
@@ -73,8 +73,8 @@ namespace Retro::Ranges {
      */
     template <typename... R>
     concept Concatable = requires {
-        typename ConcatReference<R...>;
-        typename ConcatValue<R...>;
-        typename ConcatRValueReference<R...>;
+        typename TConcatReference<R...>;
+        typename TConcatValue<R...>;
+        typename TConcatRValueReference<R...>;
     } && ConcatIndirectlyReadable<R...>;
 } // namespace retro::ranges

@@ -165,7 +165,7 @@ namespace Retro {
     }
 	
 	template <std::derived_from<UObject> T>
-	struct InstanceChecker<T> {
+	struct TInstanceChecker<T> {
 		/**
 		 * Checks if the given instance of type U is a valid instance of the desired base type T.
 		 *
@@ -196,7 +196,7 @@ namespace Retro {
 	};
 
 	template <UnrealInterface T>
-	struct InstanceChecker<T> {
+	struct TInstanceChecker<T> {
 		/**
 		 * Checks if the given instance of type U is a valid instance of the desired base type T.
 		 *

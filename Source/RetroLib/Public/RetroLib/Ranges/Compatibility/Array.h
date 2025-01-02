@@ -147,6 +147,22 @@ constexpr auto end(const TArray<T, A> &Array) {
     return Retro::Ranges::TArrayIterator<const TArray<T, A>, const T>(Array.GetData() + Array.Num(), Array);
 }
 
+template <typename T, typename A>
+constexpr T* data(TArray<T, A> &Array) {
+    return Array.GetData();
+}
+
+template <typename T, typename A>
+constexpr const T* data(const TArray<T, A> &Array) {
+    return Array.GetData();
+}
+
+template <typename T, typename A>
+constexpr T* data(TArray<T, A> &&Array) {
+    return Array.GetData();
+}
+
+
 constexpr auto begin(FString &String) {
     if constexpr (std::contiguous_iterator<decltype(String.begin())>) {
         return String.begin();

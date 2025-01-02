@@ -18,10 +18,10 @@
 namespace Retro {
 
     /**
-     * @class EqualsFunction
+     * @class FEqualsFunction
      * @brief A class to compare two  values for equality.
      */
-    struct EqualsFunction {
+    struct FEqualsFunction {
         /**
          * Perform the equality comparison on the target values.
          *
@@ -41,13 +41,13 @@ namespace Retro {
     /**
      * @brief An instance of the `Equals` struct used for comparing values for equality.
      */
-    RETROLIB_EXPORT constexpr EqualsFunction Equals;
+    RETROLIB_EXPORT constexpr FEqualsFunction Equals;
 
     /**
-     * @class NotEqualFunction
+     * @class FNotEqualFunction
      * @brief A class to compare two values for inequality.
      */
-    struct NotEqualFunction {
+    struct FNotEqualFunction {
         /**
          * Perform the inequality comparison on the target values.
          *
@@ -67,13 +67,13 @@ namespace Retro {
     /**
      * @brief An instance of the `NotEqual` struct used for comparing values for inequality.
      */
-    RETROLIB_EXPORT constexpr NotEqualFunction NotEqual;
+    RETROLIB_EXPORT constexpr FNotEqualFunction NotEqual;
 
     /**
-     * @class LessThanFunction
+     * @class FLessThanFunction
      * @brief A class to compare if one value is less than another.
      */
-    struct LessThanFunction {
+    struct FLessThanFunction {
         /**
          * Perform the less than comparison on the target values.
          *
@@ -93,13 +93,13 @@ namespace Retro {
     /**
      * @brief An instance of the `LessThan` struct used for comparing if one value is less than another.
      */
-    RETROLIB_EXPORT constexpr LessThanFunction LessThan;
+    RETROLIB_EXPORT constexpr FLessThanFunction LessThan;
 
     /**
-     * @class LessThanOrEqualFunction
+     * @class FLessThanOrEqualFunction
      * @brief A class to compare two values and check if one is less than or equal to the other.
      */
-    struct LessThanOrEqualFunction {
+    struct FLessThanOrEqualFunction {
         /**
          * Perform the less than or equal comparison on the target values.
          *
@@ -120,13 +120,13 @@ namespace Retro {
      * @brief An instance of the `LessThanOrEqual` struct used for comparing values to check if one is less than or
      * equal to the other.
      */
-    RETROLIB_EXPORT constexpr LessThanOrEqualFunction LessThanOrEqual;
+    RETROLIB_EXPORT constexpr FLessThanOrEqualFunction LessThanOrEqual;
 
     /**
-     * @class GreaterThanFunction
+     * @class FGreaterThanFunction
      * @brief A class to compare if one value is greater than another value.
      */
-    struct GreaterThanFunction {
+    struct FGreaterThanFunction {
         /**
          * Perform the greater than comparison on the target values.
          *
@@ -146,13 +146,13 @@ namespace Retro {
     /**
      * @brief An instance of the `GreaterThan` struct used for comparing if one value is greater than another.
      */
-    RETROLIB_EXPORT constexpr GreaterThanFunction GreaterThan;
+    RETROLIB_EXPORT constexpr FGreaterThanFunction GreaterThan;
 
     /**
-     * @class GreaterThanOrEqualFunction
+     * @class FGreaterThanOrEqualFunction
      * @brief A class to evaluate if a value is greater than or equal to another value.
      */
-    struct GreaterThanOrEqualFunction {
+    struct FGreaterThanOrEqualFunction {
         /**
          * Perform the greater than or equal comparison on the target values.
          *
@@ -173,17 +173,17 @@ namespace Retro {
      * @brief An instance of the `GreaterThanOrEqual` struct used for comparing if one value is greater than or equal
      * to another.
      */
-    RETROLIB_EXPORT constexpr GreaterThanOrEqualFunction GreaterThanOrEqual;
+    RETROLIB_EXPORT constexpr FGreaterThanOrEqualFunction GreaterThanOrEqual;
 
     /**
-     * @struct ThreeWayCompareFunction
+     * @struct FThreeWayCompareFunction
      * @brief A functor for performing a three-way comparison between two values.
      *
      * Utilizes the spaceship operator (<=>) to compare two values of potentially different types
      * that satisfy the ThreeWayComparable concept, resulting in a value that indicates whether
      * the first value is less than, equal to, or greater than the second value.
      */
-    struct ThreeWayCompareFunction {
+    struct FThreeWayCompareFunction {
         /**
          * @brief Compares two values using the three-way comparison operator.
          *
@@ -207,14 +207,14 @@ namespace Retro {
      *
      * This constexpr variable is used to perform a three-way comparison between two values.
      */
-    RETROLIB_EXPORT constexpr ThreeWayCompareFunction ThreeWayCompare;
+    RETROLIB_EXPORT constexpr FThreeWayCompareFunction ThreeWayCompare;
 
     /**
      * @brief Represents an addition operation class.
      *
      * This class provides functionality to perform an addition operation on two input values.
      */
-    struct AddFunction {
+    struct FAddFunction {
         /**
          * Perform the addition operation on the target values.
          *
@@ -236,14 +236,14 @@ namespace Retro {
      *
      * This variable provides a convenient way to use the FAdd class for addition of two values.
      */
-    RETROLIB_EXPORT constexpr AddFunction Add;
+    RETROLIB_EXPORT constexpr FAddFunction Add;
 
     /**
      * @brief Represents a subtraction operation class.
      *
      * This class provides functionality to perform a subtraction operation on two input values.
      */
-    struct SubtractFunction {
+    struct FSubtractFunction {
         /**
          * Perform the subtraction operation on the target values.
          *
@@ -265,14 +265,14 @@ namespace Retro {
      *
      * This variable provides a convenient way to use the FSubtract class for subtraction of two values.
      */
-    RETROLIB_EXPORT constexpr SubtractFunction Subtract;
+    RETROLIB_EXPORT constexpr FSubtractFunction Subtract;
 
     /**
      * @brief Represents a multiplication operation class.
      *
      * This class provides functionality to perform a multiplication operation on two input values.
      */
-    struct MultiplyFunction {
+    struct FMultiplyFunction {
         /**
          * Perform the multiplication operation on the target values.
          *
@@ -294,14 +294,14 @@ namespace Retro {
      *
      * This variable provides a convenient way to use the FMultiply class for multiplication of two values.
      */
-    RETROLIB_EXPORT constexpr MultiplyFunction Multiply;
+    RETROLIB_EXPORT constexpr FMultiplyFunction Multiply;
 
     /**
      * @brief Represents a division operation class.
      *
      * This class provides functionality to perform a division operation on two input values.
      */
-    struct DivideFunction {
+    struct FDivideFunction {
         /**
          * Perform the division operation on the target values.
          *
@@ -323,14 +323,14 @@ namespace Retro {
      *
      * This variable provides a convenient way to use the FDivide class for division of two values.
      */
-    RETROLIB_EXPORT constexpr DivideFunction Divide;
+    RETROLIB_EXPORT constexpr FDivideFunction Divide;
 
     /**
      * @brief Represents a modulo operation class.
      *
      * This class provides functionality to perform a modulo operation on two input values.
      */
-    struct ModuloFunction {
+    struct FModuloFunction {
         /**
          * Perform the modulo operation on the target values.
          *
@@ -352,5 +352,5 @@ namespace Retro {
      *
      * This variable provides a convenient way to use the FModulo class for the modulo operation of two values.
      */
-    RETROLIB_EXPORT constexpr ModuloFunction Modulo;
+    RETROLIB_EXPORT constexpr FModuloFunction Modulo;
 } // namespace retro

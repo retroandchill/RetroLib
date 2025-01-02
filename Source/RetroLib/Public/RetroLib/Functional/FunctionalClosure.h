@@ -20,7 +20,7 @@
 namespace Retro {
 
     /**
-     * @class FunctorBindingInvoker
+     * @class TFunctorBindingInvoker
      * @brief A utility class that handles the invocation of functor-based bindings.
      *
      * This class is designed to wrap and invoke callable objects (functors) that are
@@ -54,7 +54,7 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <auto BoundFunctor, auto BaseFunctor>
         requires((DynamicFunctorBinding<BoundFunctor> || IsValidFunctorObject(BoundFunctor)) && IsValidFunctorObject(BaseFunctor))
-    struct FunctorBindingInvoker {
+    struct TFunctorBindingInvoker {
         using BoundFunctorType = decltype(BoundFunctor);
         using BaseFunctorType = decltype(BaseFunctor);
 
@@ -71,7 +71,7 @@ namespace Retro {
          *         The return type depends on the functor's return type.
          */
         template <typename T, typename F>
-            requires std::invocable<BaseFunctorType, T, BindingType<F>> &&
+            requires std::invocable<BaseFunctorType, T, TBindingType<F>> &&
                      DynamicFunctorBinding<BoundFunctor>
         constexpr decltype(auto) operator()(T &&Operand, F &&Functor) const {
             return std::invoke(BaseFunctor, std::forward<T>(Operand), CreateBinding(std::forward<F>(Functor)));
@@ -88,7 +88,7 @@ namespace Retro {
          * @return The result of invoking BaseFunctor with the operand and the created binding.
          */
         template <typename T, typename... A>
-            requires(sizeof...(A) > 1) && std::invocable<BaseFunctorType, T, BindingType<A...>> &&
+            requires(sizeof...(A) > 1) && std::invocable<BaseFunctorType, T, TBindingType<A...>> &&
                     DynamicFunctorBinding<BoundFunctor>
         constexpr decltype(auto) operator()(T &&Operand, A &&...Args) const {
             return std::invoke(BaseFunctor, std::forward<T>(Operand), CreateBinding(std::forward<A>(Args)...));
@@ -119,7 +119,7 @@ namespace Retro {
          * @return The result of invoking the BaseFunctor with the given operand and bound arguments.
          */
         template <typename T, typename... A>
-            requires(sizeof...(A) >= 1) && (!DynamicFunctorBinding<BoundFunctor>) && std::invocable<BaseFunctorType, T, ConstBindingType<BoundFunctor, A...>>
+            requires(sizeof...(A) >= 1) && (!DynamicFunctorBinding<BoundFunctor>) && std::invocable<BaseFunctorType, T, TConstBindingType<BoundFunctor, A...>>
         constexpr decltype(auto) operator()(T &&Operand, A &&...Args) const {
             return std::invoke(BaseFunctor, std::forward<T>(Operand),
                                CreateBinding<BoundFunctor>(std::forward<A>(Args)...));

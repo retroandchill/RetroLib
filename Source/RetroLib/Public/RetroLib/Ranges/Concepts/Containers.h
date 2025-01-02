@@ -33,7 +33,7 @@ namespace Retro::Ranges {
     };
 
     /**
-     * @class ReservableContainerType
+     * @class TReservableContainerType
      * @brief Represents a type of container that can be reserved for particular usage.
      *
      * Inherits from InvalidType to provide specialized behavior for reservable
@@ -42,7 +42,7 @@ namespace Retro::Ranges {
      * non-reservable types.
      */
     RETROLIB_EXPORT template <typename>
-    struct ReservableContainerType : InvalidType {};
+    struct TReservableContainerType : FInvalidType {};
 
     /**
      * @brief A utility struct that operates on types with reservable storage.
@@ -55,7 +55,7 @@ namespace Retro::Ranges {
      * @tparam T The type of the container or range this utility operates on.
      */
     RETROLIB_EXPORT template <StlReservable T>
-    struct ReservableContainerType<T> : ValidType {
+    struct TReservableContainerType<T> : FValidType {
         /**
          * Reserves storage in the given range to accommodate at least the specified number of elements.
          *
@@ -102,14 +102,14 @@ namespace Retro::Ranges {
      * @tparam T The type to check
      */
     RETROLIB_EXPORT template <typename T>
-    concept ReservableContainer = std::ranges::sized_range<T> && ReservableContainerType<std::decay_t<T>>::IsValid &&
+    concept ReservableContainer = std::ranges::sized_range<T> && TReservableContainerType<std::decay_t<T>>::IsValid &&
                                   requires(T &Container, std::ranges::range_size_t<T> Size) {
-                                      ReservableContainerType<std::decay_t<T>>::Reserve(Container, Size);
+                                      TReservableContainerType<std::decay_t<T>>::Reserve(Container, Size);
                                       {
-                                          ReservableContainerType<std::decay_t<T>>::Capacity(Container)
+                                          TReservableContainerType<std::decay_t<T>>::Capacity(Container)
                                       } -> std::convertible_to<std::ranges::range_size_t<T>>;
                                       {
-                                          ReservableContainerType<std::decay_t<T>>::MaxSize(Container)
+                                          TReservableContainerType<std::decay_t<T>>::MaxSize(Container)
                                       } -> std::convertible_to<std::ranges::range_size_t<T>>;
                                   };
 
@@ -122,7 +122,7 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <ReservableContainer T>
     constexpr void ContainerReserve(T &Range, std::ranges::range_size_t<T> Size) {
-        ReservableContainerType<std::decay_t<T>>::Reserve(Range, Size);
+        TReservableContainerType<std::decay_t<T>>::Reserve(Range, Size);
     }
 
     /**
@@ -138,7 +138,7 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <ReservableContainer T>
     constexpr std::ranges::range_size_t<T> ContainerCapacity(const T &Range) {
-        return ReservableContainerType<std::decay_t<T>>::Capacity(Range);
+        return TReservableContainerType<std::decay_t<T>>::Capacity(Range);
     }
 
     /**
@@ -155,7 +155,7 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <ReservableContainer T>
     constexpr std::ranges::range_size_t<T> ContainerMaxSize(const T &Range) {
-        return ReservableContainerType<std::decay_t<T>>::MaxSize(Range);
+        return TReservableContainerType<std::decay_t<T>>::MaxSize(Range);
     }
 
     /**
@@ -209,7 +209,7 @@ namespace Retro::Ranges {
      * a type that can facilitate appending functionality.
      */
     RETROLIB_EXPORT template <typename>
-    struct AppendableContainerType : InvalidType {};
+    struct AppendableContainerType : FInvalidType {};
 
     /**
      * Provides a type trait capable of adding elements to a container by leveraging
@@ -227,7 +227,7 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <typename C>
         requires std::ranges::range<C> && StlAppendable<C, std::ranges::range_value_t<C>>
-    struct AppendableContainerType<C> : ValidType {
+    struct AppendableContainerType<C> : FValidType {
         /**
          * Appends a value to the given container using the most appropriate method
          * available, such as emplace_back, push_back, emplace, or insert.
@@ -305,5 +305,5 @@ namespace Retro::Ranges {
      * @tparam T the type of element to add
      */
     template <typename R, typename T>
-    concept ContainerCompatibleRange = std::ranges::input_range<R> && std::convertible_to<RangeCommonReference<R>, T>;
+    concept ContainerCompatibleRange = std::ranges::input_range<R> && std::convertible_to<TRangeCommonReference<R>, T>;
 } // namespace retro::ranges

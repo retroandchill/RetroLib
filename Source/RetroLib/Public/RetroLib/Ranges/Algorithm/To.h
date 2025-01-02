@@ -23,7 +23,7 @@
 
 namespace Retro::Ranges {
     /**
-     * @struct IsMap
+     * @struct TIsMap
      * @brief A type trait structure that indicates whether a given type is a map.
      *
      * This struct is a specialization of `std::false_type` and represents a compile-time
@@ -34,7 +34,7 @@ namespace Retro::Ranges {
      * in template metaprogramming scenarios.
      */
     RETROLIB_EXPORT template <template <typename...> typename>
-    struct IsMap : std::false_type {};
+    struct TIsMap : std::false_type {};
 
     /**
      * @brief Trait to identify the std::map type.
@@ -51,7 +51,7 @@ namespace Retro::Ranges {
      * map-like container.
      */
     RETROLIB_EXPORT template <>
-    struct IsMap<std::map> : std::true_type {};
+    struct TIsMap<std::map> : std::true_type {};
 
     /**
      * @brief A utility struct that defines a template alias to create a type
@@ -67,7 +67,7 @@ namespace Retro::Ranges {
      *        accessible via `std::ranges::range_value_t`.
      */
     RETROLIB_EXPORT template <template <typename...> typename C>
-    struct FromRange {
+    struct TFromRange {
         template <typename R>
         using Invoke = C<std::ranges::range_value_t<R>>;
     };
@@ -89,8 +89,8 @@ namespace Retro::Ranges {
      * - `Invoke`: Alias for `C` instantiated with the first and second tuple element types, respectively.
      */
     RETROLIB_EXPORT template <template <typename...> typename C>
-        requires IsMap<C>::value
-    struct FromRange<C> {
+        requires TIsMap<C>::value
+    struct TFromRange<C> {
         template <typename R>
             requires TupleLike<std::ranges::range_value_t<R>> && (std::tuple_size_v<std::ranges::range_value_t<R>> == 2)
         using Invoke = C<std::tuple_element_t<0, std::ranges::range_value_t<R>>,
@@ -108,7 +108,7 @@ namespace Retro::Ranges {
     template <typename C, typename R, typename... A>
     concept CompatibleContainerTypeForArgs =
         std::ranges::input_range<R> && AppendableContainer<C, std::ranges::range_value_t<R>> &&
-        ContainerCompatibleRange<R, RangeCommonReference<R>> && std::constructible_from<C, A...>;
+        ContainerCompatibleRange<R, TRangeCommonReference<R>> && std::constructible_from<C, A...>;
 
     /**
      * Transforms the given range into a container of type C using provided arguments for construction.
@@ -137,7 +137,7 @@ namespace Retro::Ranges {
             ContainerReserve(Result, std::ranges::size(Range));
         }
 
-        using RangeType = RangeCommonReference<R>;
+        using RangeType = TRangeCommonReference<R>;
         for (auto &&x : Range) {
             AppendContainer(Result, std::forward<RangeType>(x));
         }
@@ -161,11 +161,11 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <template <typename...> typename C, std::ranges::input_range R, typename... A>
     constexpr auto To(R &&Range, A &&...Args) {
-        return To<typename FromRange<C>::template Invoke<R>>(std::forward<R>(Range), std::forward<A>(Args)...);
+        return To<typename TFromRange<C>::template Invoke<R>>(std::forward<R>(Range), std::forward<A>(Args)...);
     }
 
     /**
-     * @struct ToInvoker
+     * @struct TToInvoker
      *
      * A functor-like structure that facilitates the invocation of the `to` function template.
      *
@@ -177,7 +177,7 @@ namespace Retro::Ranges {
      */
     template <typename C>
         requires(!std::ranges::view<C>)
-    struct ToInvoker {
+    struct TToInvoker {
         /**
          * @brief Functor operator that converts a given range to a specified container type.
          *
@@ -206,7 +206,7 @@ namespace Retro::Ranges {
      */
     template <typename C>
         requires(!std::ranges::view<C>)
-    constexpr ToInvoker<C> ToCallback;
+    constexpr TToInvoker<C> ToCallback;
 
     /**
      * A struct providing a function call operator that invokes the `to` function template.
@@ -218,7 +218,7 @@ namespace Retro::Ranges {
      * @tparam C The type to which the input range and additional arguments will be converted.
      */
     template <template <typename...> typename C>
-    struct TemplatedToInvoker {
+    struct TTemplatedToInvoker {
         /**
          * Functor operator that applies a transformation to a given range.
          *
@@ -254,7 +254,7 @@ namespace Retro::Ranges {
      * @tparam C The type for which the invoker is specialized.
      */
     template <template <typename...> typename C>
-    constexpr TemplatedToInvoker<C> TemplateToCallback;
+    constexpr TTemplatedToInvoker<C> TemplateToCallback;
 
     /**
      * Transforms the input arguments by applying the 'to' extension method with a specified invoker.

@@ -37,7 +37,7 @@ namespace Retro {
      */
     template <auto Functor, typename... A>
         requires(IsValidFunctorObject(Functor))
-    struct BindFrontConstInvoker {
+    struct TBindFrontConstInvoker {
         using F = decltype(Functor);
         using ArgsTuple = std::tuple<A...>;
 
@@ -56,8 +56,8 @@ namespace Retro {
          *             an ArgsTuple for storage.
          */
         template <typename... T>
-            requires std::constructible_from<ArgsTuple, T...> && (!PackSameAs<BindFrontConstInvoker, T...>)
-        constexpr explicit BindFrontConstInvoker(T &&...Args) : args(std::forward<T>(Args)...) {
+            requires std::constructible_from<ArgsTuple, T...> && (!PackSameAs<TBindFrontConstInvoker, T...>)
+        constexpr explicit TBindFrontConstInvoker(T &&...Args) : args(std::forward<T>(Args)...) {
         }
 
         /**
@@ -144,7 +144,7 @@ namespace Retro {
     };
 
     /**
-     * @class BindFrontConstInvoker
+     * @class TBindFrontConstInvoker
      * @brief A utility class to bind an argument to the front of a callable object or functor.
      *
      * The BindFrontConstInvoker template class is used to create objects that bind a specified
@@ -161,7 +161,7 @@ namespace Retro {
      */
     template <auto Functor, typename A>
         requires(IsValidFunctorObject(Functor))
-    struct BindFrontConstInvoker<Functor, A> {
+    struct TBindFrontConstInvoker<Functor, A> {
         using F = decltype(Functor);
 
         /**
@@ -182,8 +182,8 @@ namespace Retro {
          *            subsequent invocations of the associated functor.
          */
         template <typename T>
-            requires std::convertible_to<T, A> && (!std::same_as<std::decay_t<T>, BindFrontConstInvoker>)
-        constexpr explicit BindFrontConstInvoker(T &&Arg) : Arg(std::forward<T>(Arg)) {
+            requires std::convertible_to<T, A> && (!std::same_as<std::decay_t<T>, TBindFrontConstInvoker>)
+        constexpr explicit TBindFrontConstInvoker(T &&Arg) : Arg(std::forward<T>(Arg)) {
         }
 
         /**
@@ -281,7 +281,7 @@ namespace Retro {
      */
     template <auto Functor, typename A, typename B>
         requires(IsValidFunctorObject(Functor))
-    struct BindFrontConstInvoker<Functor, A, B> {
+    struct TBindFrontConstInvoker<Functor, A, B> {
         using F = decltype(Functor);
 
         /**
@@ -302,7 +302,7 @@ namespace Retro {
          */
         template <typename T, typename U>
             requires std::convertible_to<T, A> && std::convertible_to<U, B>
-        constexpr BindFrontConstInvoker(T &&Arg1, U &&Arg2) : Arg1(std::forward<T>(Arg1)), Arg2(std::forward<U>(Arg2)) {
+        constexpr TBindFrontConstInvoker(T &&Arg1, U &&Arg2) : Arg1(std::forward<T>(Arg1)), Arg2(std::forward<U>(Arg2)) {
         }
 
         /**
@@ -398,6 +398,6 @@ namespace Retro {
     RETROLIB_EXPORT template <auto Functor, typename... A>
         requires(IsValidFunctorObject(Functor))
     constexpr auto BindFront(A &&...Args) {
-        return BindFrontConstInvoker<Functor, std::decay_t<A>...>(std::forward<A>(Args)...);
+        return TBindFrontConstInvoker<Functor, std::decay_t<A>...>(std::forward<A>(Args)...);
     }
 } // namespace retro

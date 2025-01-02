@@ -21,8 +21,8 @@
 
 namespace Retro::Ranges {
     template <typename I>
-    struct StoreInner {
-        NonPropagatingCache<std::remove_cv_t<I>> Inner;
+    struct TStoreInner {
+        TNonPropagatingCache<std::remove_cv_t<I>> Inner;
 
         template <typename O>
         constexpr auto &&UpdateInner(O &&It) {
@@ -34,7 +34,7 @@ namespace Retro::Ranges {
         }
     };
 
-    struct PassThroughInner {
+    struct FPassThroughInner {
         template <typename O>
         static constexpr auto &&UpdateInner(O &&It) noexcept(noexcept(*std::forward<O>(It))) {
             return *std::forward<O>(It);
@@ -47,8 +47,8 @@ namespace Retro::Ranges {
     };
 
     template <std::ranges::input_range R>
-    using JoinViewInner = std::conditional_t<!std::is_reference_v<std::ranges::range_reference_t<R>>,
-                                             StoreInner<std::ranges::range_reference_t<R>>, PassThroughInner>;
+    using TJoinViewInner = std::conditional_t<!std::is_reference_v<std::ranges::range_reference_t<R>>,
+                                             TStoreInner<std::ranges::range_reference_t<R>>, FPassThroughInner>;
 
     /**
      * @brief A view that flattens a range of ranges, inserting a separator element between the inner ranges.
@@ -66,12 +66,12 @@ namespace Retro::Ranges {
     RETROLIB_EXPORT template <std::ranges::input_range R, std::ranges::forward_range P>
         requires std::ranges::view<R> && std::ranges::input_range<std::ranges::range_reference_t<R>> &&
                      std::ranges::view<P> && Concatable<std::ranges::range_reference_t<R>, P>
-    class JoinWithView : public std::ranges::view_interface<JoinWithView<R, P>>, private JoinViewInner<R> {
+    class TJoinWithView : public std::ranges::view_interface<TJoinWithView<R, P>>, private TJoinViewInner<R> {
         using OuterType = std::ranges::views::all_t<R>;
         using InnerType = std::ranges::views::all_t<std::ranges::range_reference_t<R>>;
         using SizeType = std::common_type_t<std::ranges::range_difference_t<InnerType>, std::ranges::range_difference_t<P>>;
 
-        class Iterator {
+        class FIterator {
           public:
             using value_type = std::common_type_t<std::ranges::range_value_t<InnerType>, std::ranges::range_value_t<P>>;
             using reference =
@@ -81,9 +81,9 @@ namespace Retro::Ranges {
             using single_pass = std::true_type;
             using difference_type = SizeType;
 
-            constexpr Iterator() = default;
+            constexpr FIterator() = default;
 
-            constexpr explicit Iterator(JoinWithView &Range)
+            constexpr explicit FIterator(TJoinWithView &Range)
                 : Range(&Range), OuterIt(std::ranges::begin(Range.Outer)) {
                 if (OuterIt != std::ranges::end(Range.Outer)) {
                     auto &&Inner = Range.UpdateInner(OuterIt);
@@ -96,7 +96,7 @@ namespace Retro::Ranges {
                 return OuterIt == std::ranges::end(Range->Outer);
             }
 
-            constexpr Iterator &operator++() {
+            constexpr FIterator &operator++() {
                 if (Current.index() == 0) {
                     auto &It = std::get<0>(Current);
                     RETROLIB_ASSERT(It != std::ranges::end(Range->Contraction));
@@ -158,7 +158,7 @@ namespace Retro::Ranges {
                 }
             }
 
-            JoinWithView *Range = nullptr;
+            TJoinWithView *Range = nullptr;
             std::ranges::iterator_t<R> OuterIt;
             std::variant<std::ranges::iterator_t<P>, std::ranges::iterator_t<InnerType>> Current;
         };
@@ -171,7 +171,7 @@ namespace Retro::Ranges {
          *
          * @return A default-constructed instance of JoinWithView.
          */
-        constexpr JoinWithView() = default;
+        constexpr TJoinWithView() = default;
 
         /**
          * @brief Constructs a JoinWithView instance with specified outer range and contraction functor.
@@ -184,7 +184,7 @@ namespace Retro::Ranges {
          *
          * @return A constructed instance of JoinWithView with the specified values.
          */
-        constexpr JoinWithView(R Outer, P Contraction) : Outer(std::move(Outer)), Contraction(std::move(Contraction)) {
+        constexpr TJoinWithView(R Outer, P Contraction) : Outer(std::move(Outer)), Contraction(std::move(Contraction)) {
         }
 
         /**
@@ -225,8 +225,8 @@ namespace Retro::Ranges {
          *
          * @return An iterator positioned at the beginning of the container.
          */
-        constexpr Iterator begin() {
-            return Iterator(*this);
+        constexpr FIterator begin() {
+            return FIterator(*this);
         }
 
         /**
@@ -279,10 +279,10 @@ namespace Retro::Ranges {
      *         with the specified pattern.
      */
     template <std::ranges::input_range R, std::ranges::forward_range P>
-    JoinWithView(R &&, P &&) -> JoinWithView<std::ranges::views::all_t<R>, std::ranges::views::all_t<P>>;
+    TJoinWithView(R &&, P &&) -> TJoinWithView<std::ranges::views::all_t<R>, std::ranges::views::all_t<P>>;
 
     namespace Views {
-        struct JoinWithInvoker {
+        struct FJoinWithInvoker {
             /**
              * @brief Creates a JoinWithView by joining a range with a contraction element.
              *
@@ -299,7 +299,7 @@ namespace Retro::Ranges {
                          std::ranges::input_range<std::ranges::range_reference_t<R>> &&
                          std::ranges::viewable_range<P> && Concatable<std::ranges::range_reference_t<R>, P>
             constexpr auto operator()(R &&Range, P &&Contraction) const {
-                return JoinWithView(std::ranges::views::all(std::forward<R>(Range)),
+                return TJoinWithView(std::ranges::views::all(std::forward<R>(Range)),
                                     std::ranges::views::all(std::forward<P>(Contraction)));
             }
 
@@ -332,7 +332,7 @@ namespace Retro::Ranges {
             }
         };
 
-        constexpr JoinWithInvoker JoinWithFunction;
+        constexpr FJoinWithInvoker JoinWithFunction;
 
         /**
          * @brief Combines elements of a range with a specified separator.

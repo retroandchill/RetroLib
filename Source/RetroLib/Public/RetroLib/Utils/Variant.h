@@ -19,7 +19,7 @@
 namespace Retro {
 
     /**
-     * @struct IndexedElement
+     * @struct TIndexedElement
      * @brief A wrapper structure that holds a pointer to an element of type T.
      *
      * This structure is used for managing and accessing a referenced object of type T
@@ -29,7 +29,7 @@ namespace Retro {
      * @tparam T The type of the element being referenced.
      */
     RETROLIB_EXPORT template <typename T, size_t I>
-    struct IndexedElement {
+    struct TIndexedElement {
       private:
         std::add_pointer_t<T> Ptr;
 
@@ -42,7 +42,7 @@ namespace Retro {
          *
          * @param Ptr A reference to the object to be indexed.
          */
-        constexpr explicit IndexedElement(T &Ptr) : Ptr(std::addressof(Ptr)) {
+        constexpr explicit TIndexedElement(T &Ptr) : Ptr(std::addressof(Ptr)) {
         }
 
         /**
@@ -68,7 +68,7 @@ namespace Retro {
      * @tparam I The type associated with the index.
      */
     RETROLIB_EXPORT template <typename T, size_t I>
-    struct IndexedElement<T &&, I> {
+    struct TIndexedElement<T &&, I> {
       private:
         T *Ptr;
 
@@ -82,7 +82,7 @@ namespace Retro {
          *
          * @param Ptr An rvalue reference to the object to be indexed.
          */
-        constexpr explicit IndexedElement(T &&Ptr) : Ptr(std::addressof(Ptr)) {
+        constexpr explicit TIndexedElement(T &&Ptr) : Ptr(std::addressof(Ptr)) {
         }
 
         /**
@@ -108,7 +108,7 @@ namespace Retro {
      * @tparam I The type of the index associated with the void element.
      */
     RETROLIB_EXPORT template <size_t I>
-    struct IndexedElement<void, I> {
+    struct TIndexedElement<void, I> {
         /**
          * @brief Retrieves a value or performs an operation.
          *
@@ -134,7 +134,7 @@ namespace Retro {
     template <size_t I, typename F, typename V>
     constexpr decltype(auto) VisitIndexHelper(F &&Visitor, V &&Variant) {
         return std::invoke(std::forward<F>(Visitor),
-                           IndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>(
+                           TIndexedElement<std::variant_alternative_t<I, std::remove_reference_t<V>>, I>(
                                std::get<I>(std::forward<V>(Variant))));
     }
 

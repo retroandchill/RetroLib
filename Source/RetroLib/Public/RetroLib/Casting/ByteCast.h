@@ -27,7 +27,7 @@ namespace Retro {
         std::same_as<T, std::byte> || std::same_as<T, uint8_t> || std::same_as<T, int8_t> || std::same_as<T, void>;
 
     /**
-     * @class ByteCastFunction
+     * @class TByteCastFunction
      * @brief A utility class for casting various data types to byte representations.
      *
      * TByteCast provides functionality to cast different data types such as integers,
@@ -42,7 +42,7 @@ namespace Retro {
      * - Utility methods to handle casting of custom objects, if needed.
      */
     template <typename T>
-    struct ByteCastFunction {
+    struct TByteCastFunction {
         /**
          * @brief Casts a byte pointer to a specified data type.
          *
@@ -75,5 +75,5 @@ namespace Retro {
      * - Provides additional functionality for custom object conversions if necessary.
      */
     RETROLIB_EXPORT template <typename T>
-    constexpr ByteCastFunction<T> ByteCast;
+    constexpr TByteCastFunction<T> ByteCast;
 } // namespace retro

@@ -21,16 +21,16 @@ TEST_CASE_NAMED(FUniqueAnyTest, "RetroLib::Utils::UniqueAny", "[utils]") {
     SECTION("Can move a value from one location to another") {
         auto SharedPointer = std::make_shared<int>(3);
         std::weak_ptr WeakPointer = SharedPointer;
-        Retro::UniqueAny Any1 = std::move(SharedPointer);
+        Retro::FUniqueAny Any1 = std::move(SharedPointer);
 
-        Retro::UniqueAny Any2 = std::move(Any1);
+        Retro::FUniqueAny Any2 = std::move(Any1);
         Any2.Reset();
 
         CHECK(WeakPointer.expired());
     }
 
     SECTION("Can hold any type and change type as needed") {
-        Retro::UniqueAny Any;
+        Retro::FUniqueAny Any;
         CHECK_FALSE(Any.HasValue());
 
         std::any Value3 = 5;
@@ -63,9 +63,9 @@ TEST_CASE_NAMED(FUniqueAnyTest, "RetroLib::Utils::UniqueAny", "[utils]") {
     }
 
     SECTION("Moving by assignment invalidates as well") {
-        Retro::UniqueAny Any1(std::in_place_type<std::array<int, 20>>);
+        Retro::FUniqueAny Any1(std::in_place_type<std::array<int, 20>>);
 
-        Retro::UniqueAny Any2;
+        Retro::FUniqueAny Any2;
         Any2 = std::move(Any1);
         CHECK(Any2.HasValue());
         CHECK_FALSE(Any1.HasValue());

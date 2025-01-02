@@ -52,7 +52,7 @@ namespace Retro::Ranges {
         };
 
     template <>
-    struct IsMap<TMap> : std::true_type {};
+    struct TIsMap<TMap> : std::true_type {};
 } // namespace Retro::Ranges
 
 template <Retro::Ranges::UnrealSizedContainer R>
@@ -67,18 +67,18 @@ constexpr auto size(const R &Range) {
 
 template <Retro::Ranges::CanBridgeToRange I>
 constexpr auto begin(I &Range) {
-    return Retro::Ranges::AdapterIterator<Retro::IteratorType<I>, Retro::SentinelType<I>>(Range.begin());
+    return Retro::Ranges::TAdapterIterator<Retro::TIteratorType<I>, Retro::TSentinelType<I>>(Range.begin());
 }
 
 template <Retro::Ranges::CanBridgeToRange I>
 constexpr auto end(I &Range) {
-    return Retro::Ranges::SentinelAdapter<Retro::IteratorType<I>, Retro::SentinelType<I>>(Range.end());
+    return Retro::Ranges::TSentinelAdapter<Retro::TIteratorType<I>, Retro::TSentinelType<I>>(Range.end());
 }
 
 namespace Retro::Ranges {
     template <typename C>
         requires UnrealAppendable<C, std::ranges::range_value_t<C>>
-    struct AppendableContainerType<C> : ValidType {
+    struct AppendableContainerType<C> : FValidType {
         template <typename T>
             requires Retro::Ranges::UnrealAppendable<C, T>
         static constexpr decltype(auto) Append(C &Container, T &&Value) {
@@ -95,7 +95,7 @@ namespace Retro::Ranges {
     };
 
     template <typename K, typename V, typename A, typename F>
-    struct AppendableContainerType<TMap<K, V, A, F>> : ValidType {
+    struct AppendableContainerType<TMap<K, V, A, F>> : FValidType {
         template <typename T>
             requires Retro::Ranges::UnrealAppendable<TMap<K, V, A, F>, T> && TupleLike<std::decay_t<T>> &&
                      (std::tuple_size_v<std::decay_t<T>> == 2)
@@ -105,7 +105,7 @@ namespace Retro::Ranges {
     };
 
     template <UnrealReservable T>
-    struct ReservableContainerType<T> : ValidType {
+    struct TReservableContainerType<T> : FValidType {
         static constexpr void Reserve(T &Container, int32 Size) {
             Container.Reserve(Size);
         }
@@ -121,7 +121,7 @@ namespace Retro::Ranges {
 
     template <UnrealStringReservable T>
         requires(!UnrealReservable<T>)
-    struct ReservableContainerType<T> : ValidType {
+    struct TReservableContainerType<T> : FValidType {
         static constexpr void Reserve(T &Container, int32 Size) {
             Container.Reserve(Size);
         }

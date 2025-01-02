@@ -23,14 +23,14 @@ namespace Retro {
     /**
      * @brief Struct tag to signify the usage of the `this` parameter in a functional type.
      */
-    RETROLIB_EXPORT template <typename T>
-    struct This {
+    template <typename T>
+    struct TThis {
         T Value;
 
 
-        constexpr explicit This(const T& Value) : Value(Value) {}
+        constexpr explicit TThis(const T& Value) : Value(Value) {}
 
-        constexpr explicit This(T&& Value) : Value(std::move(Value)) {}
+        constexpr explicit TThis(T&& Value) : Value(std::move(Value)) {}
     };
 
     /**
@@ -42,15 +42,15 @@ namespace Retro {
      * execution.
      */
     template <HasFunctionCallOperator F>
-    struct WrappedFunctor {
+    struct TWrappedFunctor {
         /**
          * @brief Constructs a WrappedFunctor by forwarding the given functor.
          *
          * @param Functor The functor object to be wrapped, which will be forwarded.
          */
         template <typename T>
-            requires std::constructible_from<F, T> && (!std::same_as<std::decay_t<T>, WrappedFunctor>)
-        constexpr explicit WrappedFunctor(T &&Functor) : Functor(std::forward<T>(Functor)) {
+            requires std::constructible_from<F, T> && (!std::same_as<std::decay_t<T>, TWrappedFunctor>)
+        constexpr explicit TWrappedFunctor(T &&Functor) : Functor(std::forward<T>(Functor)) {
         }
 
         /**
@@ -161,7 +161,7 @@ namespace Retro {
      * @return A WrappedFunctor object with the decayed type of the input functor.
      */
     template <HasFunctionCallOperator F>
-    WrappedFunctor(F) -> WrappedFunctor<std::decay_t<F>>;
+    TWrappedFunctor(F) -> TWrappedFunctor<std::decay_t<F>>;
 
     /**
      * @brief Creates a binding by wrapping a functor and optional arguments into a WrappedFunctor object.
@@ -179,9 +179,9 @@ namespace Retro {
         requires HasFunctionCallOperator<std::decay_t<F>>
     constexpr auto CreateBinding(F &&Functor, A &&...Args) {
         if constexpr (sizeof...(A) == 0) {
-            return WrappedFunctor(std::forward<F>(Functor));
+            return TWrappedFunctor(std::forward<F>(Functor));
         } else {
-            return WrappedFunctor(BindBack(std::forward<F>(Functor), std::forward<A>(Args)...));
+            return TWrappedFunctor(BindBack(std::forward<F>(Functor), std::forward<A>(Args)...));
         }
     }
 
@@ -199,7 +199,7 @@ namespace Retro {
     RETROLIB_EXPORT template <typename C, typename F, typename... A>
         requires Member<F>
     constexpr auto CreateBinding(C &&Obj, F &&Functor, A &&...Args) {
-        return WrappedFunctor(BindMethod(std::forward<C>(Obj), std::forward<F>(Functor), std::forward<A>(Args)...));
+        return TWrappedFunctor(BindMethod(std::forward<C>(Obj), std::forward<F>(Functor), std::forward<A>(Args)...));
     }
 
     /**
@@ -217,9 +217,9 @@ namespace Retro {
         requires HasFunctionCallOperator<decltype(Functor)>
     constexpr auto CreateBinding(A &&...Args) {
         if constexpr (sizeof...(A) == 0) {
-            return WrappedFunctor(BindFunctor<Functor>());
+            return TWrappedFunctor(BindFunctor<Functor>());
         } else {
-            return WrappedFunctor(BindBack<Functor>(std::forward<A>(Args)...));
+            return TWrappedFunctor(BindBack<Functor>(std::forward<A>(Args)...));
         }
     }
 
@@ -235,39 +235,39 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <auto Functor, typename C, typename... A>
         requires Member<decltype(Functor)>
-    constexpr auto CreateBinding(This<C> Obj, A &&...Args) {
-        return WrappedFunctor(BindMethod<Functor>(std::move(Obj.Value), std::forward<A>(Args)...));
+    constexpr auto CreateBinding(TThis<C> Obj, A &&...Args) {
+        return TWrappedFunctor(BindMethod<Functor>(std::move(Obj.Value), std::forward<A>(Args)...));
     }
 
     RETROLIB_EXPORT template <typename>
-    struct AdditionalBindingTypes : InvalidType {};
+    struct TAdditionalBindingTypes : FInvalidType {};
 
     RETROLIB_EXPORT template <typename F, typename... A>
-    concept HasExtenededBinding = AdditionalBindingTypes<std::decay_t<F>>::IsValid && requires(F&& Functor, A&&... Args) {
-        { AdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...) } -> HasFunctionCallOperator;
+    concept HasExtenededBinding = TAdditionalBindingTypes<std::decay_t<F>>::IsValid && requires(F&& Functor, A&&... Args) {
+        { TAdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...) } -> HasFunctionCallOperator;
     };
 
     RETROLIB_EXPORT template <typename F, typename... A>
         requires HasExtenededBinding<F, A...>
     constexpr auto CreateBinding(F&& Functor, A &&...Args) {
-        return AdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...);
+        return TAdditionalBindingTypes<std::decay_t<F>>::Bind(std::forward<F>(Functor), std::forward<A>(Args)...);
     }
 
     RETROLIB_EXPORT template <typename... A>
-    using BindingType = decltype(CreateBinding(std::declval<A>()...));
+    using TBindingType = decltype(CreateBinding(std::declval<A>()...));
 
     RETROLIB_EXPORT template <auto Functor, typename... A>
         requires HasFunctionCallOperator<decltype(Functor)>
-    using ConstBindingType = decltype(CreateBinding<Functor>(std::declval<A>()...));
+    using TConstBindingType = decltype(CreateBinding<Functor>(std::declval<A>()...));
 
-    struct DynamicFunctorTag {};
+    struct FDynamicFunctorTag {};
 
     /**
      * Constant tag used to signify that functional object is bounding by taking in a functor as its argument.
      */
-    RETROLIB_EXPORT constexpr DynamicFunctorTag DynamicFunctor;
+    RETROLIB_EXPORT constexpr FDynamicFunctorTag DynamicFunctor;
 
     template <auto Functor>
-    concept DynamicFunctorBinding = std::same_as<std::decay_t<decltype(Functor)>, DynamicFunctorTag>;
+    concept DynamicFunctorBinding = std::same_as<std::decay_t<decltype(Functor)>, FDynamicFunctorTag>;
 
 } // namespace retro

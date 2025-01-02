@@ -22,7 +22,7 @@
 namespace Retro {
 
     RETROLIB_EXPORT template <Class T>
-    struct InstanceChecker {
+    struct TInstanceChecker {
         /**
          * Checks if the given instance of type U is a valid instance of the desired base type T.
          *
@@ -47,7 +47,7 @@ namespace Retro {
 
 
     template <Class T>
-    static constexpr InstanceChecker<T> IsValidInstance;
+    static constexpr TInstanceChecker<T> IsValidInstance;
 
     /**
      * @struct InstanceOfFunction
@@ -100,7 +100,7 @@ namespace Retro {
          *         to the dereferenced value of the polymorphic object.
          */
         template <Class U, size_t Size>
-        constexpr bool operator()(const Polymorphic<U, Size> &Polymorphic) const {
+        constexpr bool operator()(const TPolymorphic<U, Size> &Polymorphic) const {
             return (*this)(*Polymorphic);
         }
 

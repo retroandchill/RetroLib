@@ -20,7 +20,7 @@
 
 namespace Retro::Optionals {
 
-    struct AndThenInvoker {
+    struct FAndThenInvoker {
         /**
          * Applies the provided functor to the contained value of the optional if it has a value,
          * otherwise returns the default value of the functor's return type.
@@ -33,13 +33,13 @@ namespace Retro::Optionals {
          *         if the optional has a value. Otherwise, returns the default value of the functor's result type.
          */
         template <OptionalType O, typename F>
-            requires std::invocable<F, CommonReference<O>> && OptionalType<std::invoke_result_t<F, CommonReference<O>>>
+            requires std::invocable<F, TCommonReference<O>> && OptionalType<std::invoke_result_t<F, TCommonReference<O>>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             return HasValue(std::forward<O>(Optional))
                        ? std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))
-                       : std::invoke_result_t<F, CommonReference<O>>();
+                       : std::invoke_result_t<F, TCommonReference<O>>();
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, AndThenInvoker{}, AndThen)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FAndThenInvoker{}, AndThen)
 } // namespace retro::optionals

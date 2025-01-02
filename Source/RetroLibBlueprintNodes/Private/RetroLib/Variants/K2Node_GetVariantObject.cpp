@@ -39,7 +39,7 @@ bool UK2Node_GetVariantObject::IsConnectionDisallowed(const UEdGraphPin *MyPin, 
         auto Struct = Cast<UScriptStruct>(OtherPin->PinType.PinSubCategoryObject.Get());
         // clang-format off
         auto Result = Retro::Optionals::OfNullable<TOptional>(Struct) |
-                      Retro::Optionals::AndThen<&Retro::FVariantObjectStructRegistry::GetVariantStructData>(Retro::This(&Registry)) |
+                      Retro::Optionals::AndThen<&Retro::FVariantObjectStructRegistry::GetVariantStructData>(Retro::TThis(&Registry)) |
                       Retro::Optionals::Transform<&Retro::IVariantRegistration::GetStructType>() |
                       Retro::Optionals::PtrOrNull;
         // clang-format on

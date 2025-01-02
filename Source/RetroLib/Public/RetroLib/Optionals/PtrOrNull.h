@@ -20,12 +20,12 @@
 
 namespace Retro::Optionals {
 
-    struct PtrOrNullInvoker {
+    struct FPtrOrNullInvoker {
 
         template <OptionalType O>
             requires(std::is_lvalue_reference_v<O> || OptionalReference<O>) &&
-                    (!SpecializationOf<ValueType<O>, std::reference_wrapper>)
-        constexpr std::add_pointer_t<ValueType<O>> operator()(O &&Optional) const {
+                    (!SpecializationOf<TValueType<O>, std::reference_wrapper>)
+        constexpr std::add_pointer_t<TValueType<O>> operator()(O &&Optional) const {
             return HasValue(std::forward<O>(Optional)) ? &Get(std::forward<O>(Optional)) : nullptr;
         }
 
@@ -48,6 +48,6 @@ namespace Retro::Optionals {
      * to pointers, simplifying integration with pointer-based APIs or operations
      * that accept raw or smart pointers.
      */
-    RETROLIB_EXPORT constexpr auto PtrOrNull = ExtensionMethod<PtrOrNullInvoker{}>();
+    RETROLIB_EXPORT constexpr auto PtrOrNull = ExtensionMethod<FPtrOrNullInvoker{}>();
 
 } // namespace retro::optionals

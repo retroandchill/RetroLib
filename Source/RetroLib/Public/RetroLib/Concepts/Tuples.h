@@ -29,7 +29,7 @@ namespace Retro {
      * @tparam I The index to look up
      */
     RETROLIB_EXPORT template <typename T, size_t I>
-    using ForwardedTupleType = std::conditional_t<std::is_lvalue_reference_v<std::tuple_element_t<I, std::decay_t<T>>>,
+    using TForwardedTupleType = std::conditional_t<std::is_lvalue_reference_v<std::tuple_element_t<I, std::decay_t<T>>>,
                                                   std::tuple_element_t<I, std::decay_t<T>>,
                                                   ForwardLikeType<T, std::tuple_element_t<I, std::decay_t<T>>>>;
 
@@ -82,7 +82,7 @@ namespace Retro {
      */
     template <typename F, typename T, size_t... I>
     concept CanApplyArgs = HasFunctionCallOperator<std::decay_t<F>> && TupleLike<std::decay_t<T>> &&
-                           std::invocable<F, ForwardedTupleType<T, I>...>;
+                           std::invocable<F, TForwardedTupleType<T, I>...>;
 
     /**
      * Determines if the template arguments can be applied with an index sequence.
@@ -116,7 +116,7 @@ namespace Retro {
      */
     template <typename F, typename T, size_t... I>
     concept NoThrowApplicableArgs = HasFunctionCallOperator<std::decay_t<F>> && TupleLike<std::decay_t<T>> &&
-                                    std::is_nothrow_invocable_v<F, ForwardedTupleType<T, I>...>;
+                                    std::is_nothrow_invocable_v<F, TForwardedTupleType<T, I>...>;
 
     /**
      * @brief Determines whether a given set of arguments can be applied to a callable

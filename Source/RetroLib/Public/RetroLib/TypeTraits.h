@@ -19,7 +19,7 @@
 namespace Retro {
 
     /**
-     * @struct InvalidType
+     * @struct FInvalidType
      *
      * @brief Represents an invalid type with a static validity check.
      *
@@ -35,7 +35,7 @@ namespace Retro {
      *
      * @see IsValid
      */
-    RETROLIB_EXPORT struct InvalidType {
+    RETROLIB_EXPORT struct FInvalidType {
         static constexpr bool IsValid = false;
     };
 
@@ -49,7 +49,7 @@ namespace Retro {
      * metaprogramming to conditionally compile code based on the validity
      * of the type.
      */
-    RETROLIB_EXPORT struct ValidType {
+    RETROLIB_EXPORT struct FValidType {
         static constexpr bool IsValid = true;
     };
 
@@ -71,7 +71,7 @@ namespace Retro {
      * @tparam T The dereferencable type
      */
     template <Dereferenceable T>
-    using DereferencedType = decltype(*std::declval<T>());
+    using TDereferencedType = decltype(*std::declval<T>());
 
     /**
      * @brief Concept to determine if a type can be dereferenced to a specific type reference.
@@ -90,10 +90,10 @@ namespace Retro {
     };
 
     RETROLIB_EXPORT template <typename>
-    struct TemplateSpecializationType : InvalidType {};
+    struct TTemplateSpecializationType : FInvalidType {};
 
     RETROLIB_EXPORT template <template <typename...> typename T, typename... A>
-    struct TemplateSpecializationType<T<A...>> : ValidType {
+    struct TTemplateSpecializationType<T<A...>> : FValidType {
         using Type = T<A...>;
 
         template <typename... B>
@@ -101,7 +101,7 @@ namespace Retro {
     };
 
     RETROLIB_EXPORT template <typename T>
-    concept TemplateSpecialization = TemplateSpecializationType<T>::IsValid;
+    concept TemplateSpecialization = TTemplateSpecializationType<T>::IsValid;
 
     RETROLIB_EXPORT template <typename, template <typename...> typename>
     struct IsSpecializationOf : std::false_type {};
@@ -113,6 +113,6 @@ namespace Retro {
     concept SpecializationOf = IsSpecializationOf<T, C>::value;
 
     template <bool Condition, typename T>
-    using MaybeConst = std::conditional_t<Condition, const T, T>;
+    using TMaybeConst = std::conditional_t<Condition, const T, T>;
 
 } // namespace retro

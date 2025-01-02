@@ -34,7 +34,7 @@ namespace Retro::Optionals {
     };
 
     /**
-     * @class OptionalOperations
+     * @class TOptionalOperations
      * @brief A structure representing operations that may be optionally provided.
      *
      * This class inherits from InvalidType. It is designed to represent optional
@@ -45,7 +45,7 @@ namespace Retro::Optionals {
      *
      */
     RETROLIB_EXPORT template <typename>
-    struct OptionalOperations : InvalidType {};
+    struct TOptionalOperations : FInvalidType {};
 
     /**
      * @brief The OptionalOperations struct provides utility functions to interact with objects of optional-like types.
@@ -56,7 +56,7 @@ namespace Retro::Optionals {
      * @tparam T The type of value expected to be managed by the optional-like object.
      */
     RETROLIB_EXPORT template <StlOptional T>
-    struct OptionalOperations<T> : ValidType {
+    struct TOptionalOperations<T> : FValidType {
 
         /**
          * @brief Retrieves the value from an optional object by forwarding the input object.
@@ -114,10 +114,10 @@ namespace Retro::Optionals {
      * @tparam T The type to check inside the optional
      */
     RETROLIB_EXPORT template <typename T>
-    concept OptionalType = OptionalOperations<std::decay_t<T>>::IsValid && requires(T &&Value) {
-        OptionalOperations<std::decay_t<T>>::Get(std::forward<T>(Value));
-        OptionalOperations<std::decay_t<T>>::GetValue(std::forward<T>(Value));
-        { OptionalOperations<std::decay_t<T>>::HasValue(std::forward<T>(Value)) } -> std::same_as<bool>;
+    concept OptionalType = TOptionalOperations<std::decay_t<T>>::IsValid && requires(T &&Value) {
+        TOptionalOperations<std::decay_t<T>>::Get(std::forward<T>(Value));
+        TOptionalOperations<std::decay_t<T>>::GetValue(std::forward<T>(Value));
+        { TOptionalOperations<std::decay_t<T>>::HasValue(std::forward<T>(Value)) } -> std::same_as<bool>;
     };
 
     /**
@@ -134,7 +134,7 @@ namespace Retro::Optionals {
      */
     RETROLIB_EXPORT template <OptionalType O>
     constexpr decltype(auto) Get(O &&Optional) {
-        return OptionalOperations<std::decay_t<O>>::Get(std::forward<O>(Optional));
+        return TOptionalOperations<std::decay_t<O>>::Get(std::forward<O>(Optional));
     }
 
     /**
@@ -151,7 +151,7 @@ namespace Retro::Optionals {
      */
     RETROLIB_EXPORT template <OptionalType O>
     constexpr decltype(auto) GetValue(O &&Optional) {
-        return OptionalOperations<std::decay_t<O>>::GetValue(std::forward<O>(Optional));
+        return TOptionalOperations<std::decay_t<O>>::GetValue(std::forward<O>(Optional));
     }
 
     /**
@@ -162,7 +162,7 @@ namespace Retro::Optionals {
      */
     RETROLIB_EXPORT template <OptionalType O>
     constexpr bool HasValue(const O &Optional) {
-        return OptionalOperations<std::decay_t<O>>::HasValue(Optional);
+        return TOptionalOperations<std::decay_t<O>>::HasValue(Optional);
     }
 
     /**
@@ -171,7 +171,7 @@ namespace Retro::Optionals {
      * @tparam T The optional to dereference
      */
     RETROLIB_EXPORT template <OptionalType T>
-    using CommonReference = decltype(OptionalOperations<std::decay_t<T>>::Get(std::declval<T>()));
+    using TCommonReference = decltype(TOptionalOperations<std::decay_t<T>>::Get(std::declval<T>()));
 
     /**
      * Obtain the raw value type from the optional in question.
@@ -179,7 +179,7 @@ namespace Retro::Optionals {
      * @tparam T The optional to dereference
      */
     RETROLIB_EXPORT template <OptionalType T>
-    using ValueType = std::decay_t<CommonReference<T>>;
+    using TValueType = std::decay_t<TCommonReference<T>>;
 
     /**
      * @brief Represents a structure for optional parameters.
@@ -196,10 +196,10 @@ namespace Retro::Optionals {
      * before using this structure to avoid compilation or runtime errors.
      */
     template <typename>
-    struct OptionalParameters : InvalidType {};
+    struct TOptionalParameters : FInvalidType {};
 
     /**
-     * @struct OptionalParameters
+     * @struct TOptionalParameters
      *
      * @tparam O<T>
      * Template parameter representing a container or a wrapper type that holds a type T.
@@ -209,12 +209,12 @@ namespace Retro::Optionals {
      */
     template <template <typename...> typename O, typename T>
         requires OptionalType<O<T>>
-    struct OptionalParameters<O<T>> : ValidType {
+    struct TOptionalParameters<O<T>> : FValidType {
         using ContainedType = T;
     };
 
     /**
-     * @struct OptionalParameters
+     * @struct TOptionalParameters
      * @brief A structure template specialized for std::reference_wrapper<T> that defines additional type traits.
      *
      * This specialization of OptionalParameters is used to manage optional parameters that are wrapped
@@ -227,7 +227,7 @@ namespace Retro::Optionals {
      */
     template <template <typename...> typename O, typename T>
         requires OptionalType<O<std::reference_wrapper<T>>>
-    struct OptionalParameters<O<std::reference_wrapper<T>>> : ValidType {
+    struct TOptionalParameters<O<std::reference_wrapper<T>>> : FValidType {
         using ContainedType = T &;
     };
 
@@ -238,11 +238,11 @@ namespace Retro::Optionals {
      * @tparam T The optional type in question
      */
     RETROLIB_EXPORT template <OptionalType T>
-        requires OptionalParameters<std::decay_t<T>>::IsValid
-    using TypeParam = typename OptionalParameters<std::decay_t<T>>::ContainedType;
+        requires TOptionalParameters<std::decay_t<T>>::IsValid
+    using TTypeParam = typename TOptionalParameters<std::decay_t<T>>::ContainedType;
 
     /**
-     * @struct IsOptionalReference
+     * @struct TIsOptionalReference
      *
      * @brief A type trait to determine if a type is an optional reference.
      *
@@ -254,7 +254,7 @@ namespace Retro::Optionals {
      * criteria of being an optional reference.
      */
     template <OptionalType>
-    struct IsOptionalReference : std::false_type {};
+    struct TIsOptionalReference : std::false_type {};
 
     /**
      * @brief A type trait to check if a type is an optional reference.
@@ -272,7 +272,7 @@ namespace Retro::Optionals {
      */
     template <template <typename...> typename O, typename T>
         requires OptionalType<O<T>>
-    struct IsOptionalReference<O<T &>> : std::true_type {};
+    struct TIsOptionalReference<O<T &>> : std::true_type {};
 
     /**
      * @brief Trait to determine if a type is an optional reference.
@@ -284,16 +284,16 @@ namespace Retro::Optionals {
      */
     template <template <typename...> typename O, typename T>
         requires OptionalType<O<std::reference_wrapper<T>>>
-    struct IsOptionalReference<O<std::reference_wrapper<T>>> : std::true_type {};
+    struct TIsOptionalReference<O<std::reference_wrapper<T>>> : std::true_type {};
 
     /**
      * Concept to check if a type can be converted into an optional reference type.
      */
     RETROLIB_EXPORT template <typename T>
-    concept OptionalReference = OptionalType<T> && IsOptionalReference<T>::value;
+    concept OptionalReference = OptionalType<T> && TIsOptionalReference<T>::value;
 
     /**
-     * @struct IsRawReferenceOptionalAllowed
+     * @struct TIsRawReferenceOptionalAllowed
      *
      * @brief A trait to determine if raw references can be considered as optional.
      *
@@ -307,7 +307,7 @@ namespace Retro::Optionals {
      * constraints on types or to implement conditional logic based on type traits.
      */
     RETROLIB_EXPORT template <template <typename...> typename>
-    struct IsRawReferenceOptionalAllowed : std::false_type {};
+    struct TIsRawReferenceOptionalAllowed : std::false_type {};
 
     /**
      * Concept to check if making a raw reference to an optional type is valid or not.
@@ -316,7 +316,7 @@ namespace Retro::Optionals {
      * @tparam T The contained value type
      */
     RETROLIB_EXPORT template <template <typename...> typename O, typename T>
-    concept RawReferenceOptionalValid = OptionalType<O<T>> && IsRawReferenceOptionalAllowed<O>::value;
+    concept RawReferenceOptionalValid = OptionalType<O<T>> && TIsRawReferenceOptionalAllowed<O>::value;
 
     /**
      * @brief Creates an optional reference wrapper around a given value.
@@ -414,10 +414,10 @@ namespace Retro::Optionals {
      * It inherits from the InvalidType base class.
      */
     RETROLIB_EXPORT template <typename>
-    struct NullableOptionalParam : InvalidType {};
+    struct TNullableOptionalParam : FInvalidType {};
 
     /**
-     * @struct NullableOptionalParam
+     * @struct TNullableOptionalParam
      * @brief A template structure to handle nullable pointers and transform them into optional types.
      *
      * @tparam T The base type to be wrapped and processed.
@@ -431,7 +431,7 @@ namespace Retro::Optionals {
      */
     RETROLIB_EXPORT template <typename T>
         requires std::is_pointer_v<T> && (!std::is_void_v<std::remove_pointer_t<T>>)
-    struct NullableOptionalParam<T> : ValidType {
+    struct TNullableOptionalParam<T> : FValidType {
         using RawType = std::remove_pointer_t<T>;
         using ReferenceType = std::add_lvalue_reference_t<RawType>;
 
@@ -454,21 +454,21 @@ namespace Retro::Optionals {
      * @tparam O The optional to insert into
      */
     RETROLIB_EXPORT template <typename T, template <typename...> typename O>
-    concept Nullable = NullableOptionalParam<std::remove_reference_t<T>>::IsValid && requires(T &&Value) {
+    concept Nullable = TNullableOptionalParam<std::remove_reference_t<T>>::IsValid && requires(T &&Value) {
         {
-            NullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value))
+            TNullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value))
         } -> OptionalType;
     };
 
     /**
-     * @struct OptionalSentinel
+     * @struct FOptionalSentinel
      *
      * Sentinel value for iterating through an optional value. Represents having reached the end of iteration.
      */
-    RETROLIB_EXPORT struct OptionalSentinel {};
+    RETROLIB_EXPORT struct FOptionalSentinel {};
 
     /**
-     * @struct OptionalIterator
+     * @struct TOptionalIterator
      *
      * Iterator type for iterating through an optional, as if it were a range. If the optional is empty, the range is
      * considered to be empty.
@@ -476,8 +476,8 @@ namespace Retro::Optionals {
      * @tparam O The type of optional that is contained.
      */
     RETROLIB_EXPORT template <OptionalType O>
-    struct OptionalIterator {
-        using value_type = ValueType<O>;
+    struct TOptionalIterator {
+        using value_type = TValueType<O>;
         using difference_type = std::ptrdiff_t;
 
         /**
@@ -489,7 +489,7 @@ namespace Retro::Optionals {
          *
          * @return A new `OptionalIterator` object with a default state.
          */
-        constexpr OptionalIterator() = default;
+        constexpr TOptionalIterator() = default;
 
         /**
          * @brief Constructs an `OptionalIterator` with a reference to a value.
@@ -500,7 +500,7 @@ namespace Retro::Optionals {
          *
          * @param Value A reference to the object this iterator will manage.
          */
-        constexpr explicit OptionalIterator(O &Value) : Value(&Value) {
+        constexpr explicit TOptionalIterator(O &Value) : Value(&Value) {
         }
 
         /**
@@ -527,7 +527,7 @@ namespace Retro::Optionals {
          * @return `true` if both `OptionalIterator` instances have equal values,
          *         otherwise `false`.
          */
-        constexpr bool operator==(const OptionalIterator &Other) const {
+        constexpr bool operator==(const TOptionalIterator &Other) const {
             return Value == Other.Value;
         }
 
@@ -540,7 +540,7 @@ namespace Retro::Optionals {
          *
          * @return `true` if the instances are considered equal, `false` otherwise.
          */
-        constexpr bool operator==(const OptionalSentinel &) const {
+        constexpr bool operator==(const FOptionalSentinel &) const {
             return Value == nullptr || !HasValue(*Value);
         }
 
@@ -553,7 +553,7 @@ namespace Retro::Optionals {
          *
          * @return A reference to the updated `OptionalIterator` object.
          */
-        constexpr OptionalIterator &operator++() {
+        constexpr TOptionalIterator &operator++() {
             RETROLIB_ASSERT(Value != nullptr);
             Value = nullptr;
             return *this;
@@ -568,8 +568,8 @@ namespace Retro::Optionals {
          *
          * @return A copy of the `OptionalIterator` instance before it was incremented.
          */
-        constexpr OptionalIterator operator++(int) {
-            OptionalIterator Copy = *this;
+        constexpr TOptionalIterator operator++(int) {
+            TOptionalIterator Copy = *this;
             ++*this;
             return Copy;
         }
@@ -588,10 +588,10 @@ namespace Retro::Optionals {
     };
 
     template <typename>
-    struct TUeOptional : InvalidType {};
+    struct TUeOptional : FInvalidType {};
 
     template <typename T>
-    struct TUeOptional<TOptional<T>> : ValidType {
+    struct TUeOptional<TOptional<T>> : FValidType {
         using Type = T;
     };
 
@@ -601,7 +601,7 @@ namespace Retro::Optionals {
     
 
     template <UnrealOptional T>
-    struct OptionalOperations<T> : ValidType {
+    struct TOptionalOperations<T> : FValidType {
         template <UnrealOptional O>
             requires std::same_as<T, std::decay_t<O>>
         static constexpr decltype(auto) Get(O &&Optional) {
@@ -631,7 +631,7 @@ namespace Retro::Optionals {
 
     template <typename T>
         requires std::derived_from<std::remove_cv_t<T>, UObject>
-    struct NullableOptionalParam<TObjectPtr<T>> : ValidType {
+    struct TNullableOptionalParam<TObjectPtr<T>> : FValidType {
         using RawType = T;
         using ReferenceType = std::add_lvalue_reference_t<T>;
 
@@ -648,7 +648,7 @@ namespace Retro::Optionals {
 
     template <typename T>
         requires SpecializationOf<std::decay_t<T>, TObjectPtr> && (!std::same_as<std::decay_t<T>, T>)
-    struct NullableOptionalParam<T> : NullableOptionalParam<std::decay_t<T>> {
+    struct TNullableOptionalParam<T> : TNullableOptionalParam<std::decay_t<T>> {
     };
 }
 
@@ -807,16 +807,16 @@ struct TOptional<T &> {
 };
 
 template <>
-struct Retro::Optionals::IsRawReferenceOptionalAllowed<TOptional> : std::true_type {};
+struct Retro::Optionals::TIsRawReferenceOptionalAllowed<TOptional> : std::true_type {};
 
 template <typename T>
 constexpr auto begin(TOptional<T>& Optional) {
-    return Retro::Optionals::OptionalIterator(Optional);
+    return Retro::Optionals::TOptionalIterator(Optional);
 }
 
 template <typename T>
 constexpr auto begin(const TOptional<T>& Optional) {
-    return Retro::Optionals::OptionalIterator(Optional);
+    return Retro::Optionals::TOptionalIterator(Optional);
 }
 
 template <typename T>
@@ -826,7 +826,7 @@ template <typename T>
 
 template <typename T>
 constexpr auto end(const TOptional<T>&) {
-    return Retro::Optionals::OptionalSentinel();
+    return Retro::Optionals::FOptionalSentinel();
 }
 
 template <typename T>
@@ -845,7 +845,7 @@ namespace Retro::Optionals {
      * @return An OptionalIterator instance with the deduced template type.
      */
     RETROLIB_EXPORT template <OptionalType O>
-    OptionalIterator(O &&) -> OptionalIterator<std::remove_reference_t<O>>;
+    TOptionalIterator(O &&) -> TOptionalIterator<std::remove_reference_t<O>>;
 
     /**
          * @brief Creates an object of type O by encapsulating a given value.
@@ -904,6 +904,6 @@ namespace Retro::Optionals {
         RETROLIB_EXPORT template <template <typename...> typename O = RETROLIB_DEFAULT_OPTIONAL_TYPE, typename T>
             requires Nullable<T, O>
         constexpr auto OfNullable(T &&Value) {
-            return NullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value));
+            return TNullableOptionalParam<std::remove_reference_t<T>>::template OfNullable<O>(std::forward<T>(Value));
         }
 } // namespace retro::optionals

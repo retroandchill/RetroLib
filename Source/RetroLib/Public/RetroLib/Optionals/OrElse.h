@@ -21,7 +21,7 @@
 
 namespace Retro::Optionals {
 
-    struct OrElseInvoker {
+    struct FOrElseInvoker {
         /**
          * Applies a functor to provide a fallback value if the given optional input has no value.
          * If the optional contains a value, it is returned as is.
@@ -41,6 +41,6 @@ namespace Retro::Optionals {
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseInvoker{}, OrElse)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FOrElseInvoker{}, OrElse)
 
 } // namespace retro::optionals

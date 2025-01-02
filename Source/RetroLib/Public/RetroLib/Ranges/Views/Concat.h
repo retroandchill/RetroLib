@@ -26,7 +26,7 @@
 namespace Retro::Ranges {
 
     /**
-     * @class ConcatView
+     * @class TConcatView
      * @brief A custom view that concatenates multiple ranges into a single, continuous range.
      *
      * This class models a concatenation view over the provided ranges `R...`, allowing iteration
@@ -49,46 +49,46 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <std::ranges::input_range... R>
         requires(std::ranges::view<R> && ...) && (sizeof...(R) > 0) && Concatable<R...>
-    class ConcatView : public std::ranges::view_interface<ConcatView<R...>> {
+    class TConcatView : public std::ranges::view_interface<TConcatView<R...>> {
         using DifferenceType = std::common_type_t<std::ranges::range_difference_t<R>...>;
         static constexpr size_t RangesSize = sizeof...(R);
         std::tuple<R...> Ranges;
 
         template <bool IsConst>
-        struct Iterator;
+        struct TIterator;
 
         template <bool IsConst>
-        struct Sentinel {
+        struct TSentinel {
           private:
-            friend struct Sentinel<!IsConst>;
-            friend struct Iterator<IsConst>;
+            friend struct TSentinel<!IsConst>;
+            friend struct TIterator<IsConst>;
             template <typename T>
             using ConstifyIf = std::conditional_t<IsConst, std::add_const_t<T>, T>;
-            using ConcatViewType = ConstifyIf<ConcatView>;
-            std::ranges::sentinel_t<ConstifyIf<LastInPack<R...>>> EndElement;
+            using ConcatViewType = ConstifyIf<TConcatView>;
+            std::ranges::sentinel_t<ConstifyIf<TLastInPack<R...>>> EndElement;
 
           public:
-            constexpr Sentinel() = default;
-            explicit constexpr Sentinel(ConcatViewType &View, EndTag)
+            constexpr TSentinel() = default;
+            explicit constexpr TSentinel(ConcatViewType &View, FEndTag)
                 : EndElement(std::ranges::end(std::get<RangesSize - 1>(View.ranges))) {
             }
 
             template <bool Other>
                 requires IsConst && (!Other)
-            explicit constexpr Sentinel(Sentinel<Other> Sen) : EndElement(std::move(Sen.EndElement)) {
+            explicit constexpr TSentinel(TSentinel<Other> Sen) : EndElement(std::move(Sen.EndElement)) {
             }
         };
 
         template <bool IsConst>
-        struct Iterator {
+        struct TIterator {
             using difference_type = std::common_type_t<std::ranges::range_difference_t<R>...>;
-            using value_type = ConcatValue<R...>;
+            using value_type = TConcatValue<R...>;
 
           private:
-            friend struct Iterator<!IsConst>;
+            friend struct TIterator<!IsConst>;
             template <typename T>
             using ConstifyIf = std::conditional_t<IsConst, std::add_const_t<T>, T>;
-            using ConcatViewType = ConstifyIf<ConcatView>;
+            using ConcatViewType = ConstifyIf<TConcatView>;
             ConcatViewType *View;
             std::variant<std::ranges::iterator_t<ConstifyIf<R>>...> It;
 
@@ -104,9 +104,9 @@ namespace Retro::Ranges {
             }
 
             struct Next {
-                Iterator *Pos;
+                TIterator *Pos;
                 template <std::input_iterator I, size_t N>
-                constexpr void operator()(IndexedElement<I, N> It) const {
+                constexpr void operator()(TIndexedElement<I, N> It) const {
                     RETROLIB_ASSERT(It.Get() != std::ranges::end(std::get<N>(Pos->View->Ranges)));
                     ++It.Get();
                     Pos->Satisfy<N>();
@@ -114,17 +114,17 @@ namespace Retro::Ranges {
             };
 
             struct Prev {
-                Iterator *Pos;
+                TIterator *Pos;
 
                 template <std::bidirectional_iterator I>
-                constexpr void operator()(IndexedElement<I, 0> It) const {
+                constexpr void operator()(TIndexedElement<I, 0> It) const {
                     RETROLIB_ASSERT(It.Get() != std::ranges::begin(std::get<0>(Pos->View->Ranges)));
                     --It.Get();
                 }
 
                 template <std::bidirectional_iterator I, size_t N>
                     requires(N != 0)
-                constexpr void operator()(IndexedElement<I, N> It) const {
+                constexpr void operator()(TIndexedElement<I, N> It) const {
                     if (It.Get() == std::ranges::begin(std::get<N>(Pos->View->Ranges))) {
                         auto &&Rng = std::get<N - 1>(Pos->View->Ranges);
                         Pos->It.template emplace<N - 1>(
@@ -137,16 +137,16 @@ namespace Retro::Ranges {
             };
 
             struct AdvanceForward {
-                Iterator *Pos;
+                TIterator *Pos;
                 difference_type Index;
 
                 template <std::random_access_iterator I>
-                constexpr void operator()(IndexedElement<I, RangesSize - 1> It) const {
+                constexpr void operator()(TIndexedElement<I, RangesSize - 1> It) const {
                     std::ranges::advance(It.Get(), Index);
                 }
 
                 template <std::random_access_iterator I, size_t N>
-                constexpr void operator()(IndexedElement<I, N> It) const {
+                constexpr void operator()(TIndexedElement<I, N> It) const {
                     auto Last = std::ranges::end(std::get<N>(Pos->View->Ranges));
                     auto Rest = std::ranges::advance(It.Get(), Index, std::move(Last));
                     Pos->Satisfy<N>();
@@ -158,16 +158,16 @@ namespace Retro::Ranges {
             };
 
             struct AdvanceReverse {
-                Iterator *Pos;
+                TIterator *Pos;
                 difference_type Index;
 
                 template <std::random_access_iterator I>
-                constexpr void operator()(IndexedElement<I, 0> It) const {
+                constexpr void operator()(TIndexedElement<I, 0> It) const {
                     std::ranges::advance(It.Get(), Index);
                 }
 
                 template <std::random_access_iterator I, std::size_t N>
-                constexpr void operator()(IndexedElement<I, N> It) const {
+                constexpr void operator()(TIndexedElement<I, N> It) const {
                     auto First = std::ranges::begin(std::get<N>(Pos->View->Ranges));
                     if (It.Get() == First) {
                         auto &&Rng = std::get<N - 1>(Pos->View->Ranges);
@@ -184,17 +184,17 @@ namespace Retro::Ranges {
             };
 
             [[noreturn]] static difference_type DistanceTo(std::integral_constant<size_t, RangesSize>,
-                                                            const Iterator &, const Iterator &) {
+                                                            const TIterator &, const TIterator &) {
                 RETROLIB_ASSERT(false);
                 Unreachable();
             }
 
             template <size_t N>
                 requires(N < RangesSize)
-            static difference_type DistanceTo(std::integral_constant<size_t, N>, const Iterator &From,
-                                               const Iterator &To) {
+            static difference_type DistanceTo(std::integral_constant<size_t, N>, const TIterator &From,
+                                               const TIterator &To) {
                 if (From.It.index() > N) {
-                    return Iterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
+                    return TIterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
                 }
 
                 if (From.It.index() == N) {
@@ -204,11 +204,11 @@ namespace Retro::Ranges {
 
                     return std::ranges::distance(std::get<N>(From.It),
                                                  std::ranges::end(std::get<N>(From.View->Ranges))) +
-                           Iterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
+                           TIterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
                 }
                 if (From.It.index() < N && To.It.index() > N)
                     return std::ranges::distance(std::get<N>(From.View->Ranges)) +
-                           Iterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
+                           TIterator::DistanceTo(std::integral_constant<size_t, N + 1>{}, From, To);
 
                 RETROLIB_ASSERT(To.It.index() == N);
                 return std::ranges::distance(std::ranges::begin(std::get<N>(From.View->Ranges)), std::get<N>(To.It));
@@ -218,21 +218,21 @@ namespace Retro::Ranges {
             using Reference = std::common_reference_t<std::ranges::range_reference_t<ConstifyIf<R>>...>;
             using single_pass = std::bool_constant<(SinglePassIterator<std::ranges::iterator_t<R>> || ...)>;
 
-            constexpr Iterator() = default;
+            constexpr TIterator() = default;
 
-            constexpr Iterator(ConcatViewType &View, BeginTag)
+            constexpr TIterator(ConcatViewType &View, FBeginTag)
                 : View(&View), It(std::in_place_index<0>, std::ranges::begin(std::get<0>(View.Ranges))) {
                 Satisfy<0>();
             }
 
-            constexpr Iterator(ConcatViewType &View, EndTag)
+            constexpr TIterator(ConcatViewType &View, FEndTag)
                 : View(&View),
                   It(std::in_place_index<RangesSize - 1>, std::ranges::end(std::get<RangesSize - 1>(View.Ranges))) {
             }
 
             template <bool Other>
                 requires IsConst && (!Other)
-            explicit constexpr Iterator(Iterator<Other> OtherIn) : View(OtherIn.View), It(std::move(OtherIn.It)) {
+            explicit constexpr TIterator(TIterator<Other> OtherIn) : View(OtherIn.View), It(std::move(OtherIn.It)) {
             }
 
             constexpr Reference operator*() const {
@@ -240,7 +240,7 @@ namespace Retro::Ranges {
                                              It);
             }
 
-            constexpr Iterator &operator++() {
+            constexpr TIterator &operator++() {
                 VisitIndex(Next{this}, It);
                 return *this;
             }
@@ -255,17 +255,17 @@ namespace Retro::Ranges {
                 }
             }
 
-            constexpr bool operator==(const Iterator &pos) const
+            constexpr bool operator==(const TIterator &pos) const
                 requires std::equality_comparable<std::variant<std::ranges::iterator_t<ConstifyIf<R>>...>>
             {
                 return It == pos.It;
             }
 
-            constexpr bool operator==(const Sentinel<IsConst> &Post) const {
+            constexpr bool operator==(const TSentinel<IsConst> &Post) const {
                 return It.index() == RangesSize - 1 && std::get<RangesSize - 1>(View->it) == Post.EndElement;
             }
 
-            constexpr std::partial_ordering operator<=>(const Iterator &Other) const
+            constexpr std::partial_ordering operator<=>(const TIterator &Other) const
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 auto distance = *this - Other;
@@ -280,7 +280,7 @@ namespace Retro::Ranges {
                 return std::partial_ordering::greater;
             }
 
-            constexpr Iterator &operator--()
+            constexpr TIterator &operator--()
                 requires(std::bidirectional_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 VisitIndex(Prev{this}, It);
@@ -297,21 +297,21 @@ namespace Retro::Ranges {
                 }
             }
 
-            constexpr Iterator operator+(difference_type N) const
+            constexpr TIterator operator+(difference_type N) const
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
-                Iterator Tmp(*this);
+                TIterator Tmp(*this);
                 Tmp += N;
                 return Tmp;
             }
 
-            friend Iterator operator+(difference_type N, const Iterator &It)
+            friend TIterator operator+(difference_type N, const TIterator &It)
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 return It + N;
             }
 
-            constexpr Iterator &operator+=(difference_type N)
+            constexpr TIterator &operator+=(difference_type N)
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 if (N > 0) {
@@ -322,25 +322,25 @@ namespace Retro::Ranges {
                 return *this;
             }
 
-            constexpr Iterator operator-(difference_type N) const
+            constexpr TIterator operator-(difference_type N) const
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
-                Iterator Tmp(*this);
+                TIterator Tmp(*this);
                 Tmp -= N;
                 return Tmp;
             }
 
-            constexpr difference_type operator-(const Iterator &Other) const
+            constexpr difference_type operator-(const TIterator &Other) const
                 requires(std::sized_sentinel_for<std::ranges::iterator_t<R>, std::ranges::iterator_t<R>> && ...)
             {
                 if (It.index() <= Other.It.index()) {
-                    return -Iterator::DistanceTo(std::integral_constant<size_t, 0>{}, *this, Other);
+                    return -TIterator::DistanceTo(std::integral_constant<size_t, 0>{}, *this, Other);
                 }
 
-                return Iterator::DistanceTo(std::integral_constant<size_t, 0>{}, Other, *this);
+                return TIterator::DistanceTo(std::integral_constant<size_t, 0>{}, Other, *this);
             }
 
-            constexpr Iterator &operator-=(difference_type N)
+            constexpr TIterator &operator-=(difference_type N)
                 requires(std::random_access_iterator<std::ranges::iterator_t<R>> && ...)
             {
                 return *this += -N;
@@ -363,7 +363,7 @@ namespace Retro::Ranges {
          *
          * @return A constexpr ConcatView object.
          */
-        constexpr ConcatView() = default;
+        constexpr TConcatView() = default;
 
         /**
          * @brief Constructor for the ConcatView class accepting multiple ranges.
@@ -374,7 +374,7 @@ namespace Retro::Ranges {
          *
          * @param Ranges Variadic parameter pack representing the ranges to be concatenated.
          */
-        constexpr explicit ConcatView(R... Ranges) : Ranges(std::move(Ranges)...) {
+        constexpr explicit TConcatView(R... Ranges) : Ranges(std::move(Ranges)...) {
         }
 
         /**
@@ -386,7 +386,7 @@ namespace Retro::Ranges {
          * @return An iterator to the beginning of the ConcatView.
          */
         constexpr auto begin() {
-            return Iterator<(SimpleView<R> && ...)>(*this, BeginTag{});
+            return TIterator<(SimpleView<R> && ...)>(*this, FBeginTag{});
         }
 
         /**
@@ -397,10 +397,10 @@ namespace Retro::Ranges {
          *
          * @return An iterator to the beginning of the ConcatView.
          */
-        constexpr Iterator<true> begin() const
+        constexpr TIterator<true> begin() const
             requires(std::ranges::range<const R> && ...)
         {
-            return Iterator<true>(*this, BeginTag{});
+            return TIterator<true>(*this, FBeginTag{});
         }
 
         /**
@@ -415,9 +415,9 @@ namespace Retro::Ranges {
          */
         constexpr auto end() {
             if constexpr ((std::ranges::common_range<R> && ...)) {
-                return Iterator<(SimpleView<R> && ...)>(*this, EndTag{});
+                return TIterator<(SimpleView<R> && ...)>(*this, FEndTag{});
             } else {
-                return Sentinel<(SimpleView<R> && ...)>(*this, EndTag{});
+                return TSentinel<(SimpleView<R> && ...)>(*this, FEndTag{});
             }
         }
 
@@ -435,9 +435,9 @@ namespace Retro::Ranges {
             requires(std::ranges::range<const R> && ...)
         {
             if constexpr ((std::ranges::common_range<R> && ...)) {
-                return Iterator<true>(*this, EndTag{});
+                return TIterator<true>(*this, FEndTag{});
             } else {
-                return Sentinel<true>(*this, EndTag{});
+                return TSentinel<true>(*this, FEndTag{});
             }
         }
 
@@ -465,7 +465,7 @@ namespace Retro::Ranges {
      * @return A ConcatView object that represents the concatenated view of all the input ranges.
      */
     template <typename... Rng>
-    ConcatView(Rng &&...) -> ConcatView<std::ranges::views::all_t<Rng>...>;
+    TConcatView(Rng &&...) -> TConcatView<std::ranges::views::all_t<Rng>...>;
 
     namespace Views {
         /**
@@ -486,7 +486,7 @@ namespace Retro::Ranges {
          * @return A ConcatView constructed with the provided ranges, where each range
          *         is wrapped in `std::ranges::views::all`.
          */
-        struct ConcatInvoker {
+        struct FConcatInvoker {
 
             /**
              * @brief Call operator for creating a ConcatView with the given ranges.
@@ -500,11 +500,11 @@ namespace Retro::Ranges {
              * @return A ConcatView object representing the concatenated view of the input ranges.
              */
             template <std::ranges::input_range... R>
-                requires std::constructible_from<ConcatView<std::ranges::views::all_t<R>...>,
+                requires std::constructible_from<TConcatView<std::ranges::views::all_t<R>...>,
                                                  std::ranges::views::all_t<R>...> &&
                          (sizeof...(R) > 0) && Concatable<R...>
             constexpr auto operator()(R &&...Ranges) const {
-                return ConcatView(std::ranges::views::all(std::forward<R>(Ranges))...);
+                return TConcatView(std::ranges::views::all(std::forward<R>(Ranges))...);
             }
         };
 
@@ -515,6 +515,6 @@ namespace Retro::Ranges {
          * This allows for seamless chaining of range concatenation operations
          * within the retro::ranges::views namespace.
          */
-        RETROLIB_EXPORT constexpr ConcatInvoker Concat;
+        RETROLIB_EXPORT constexpr FConcatInvoker Concat;
     } // namespace views
 } // namespace retro::ranges

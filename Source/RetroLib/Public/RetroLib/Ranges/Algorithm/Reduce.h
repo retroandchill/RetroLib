@@ -35,8 +35,8 @@ namespace Retro::Ranges {
      * @return The final aggregated result of the reduction operation.
      */
     RETROLIB_EXPORT template <std::ranges::input_range R, typename I, HasFunctionCallOperator F>
-        requires std::invocable<F, I, RangeCommonReference<R>> &&
-                 std::convertible_to<std::invoke_result_t<F, I, RangeCommonReference<R>>, I>
+        requires std::invocable<F, I, TRangeCommonReference<R>> &&
+                 std::convertible_to<std::invoke_result_t<F, I, TRangeCommonReference<R>>, I>
     constexpr auto Reduce(R &&Range, I &&Identity, F Functor) {
         auto Result = std::forward<I>(Identity);
         for (auto &&Value : std::forward<R>(Range)) {
@@ -57,8 +57,8 @@ namespace Retro::Ranges {
      * and the created binding.
      */
     RETROLIB_EXPORT template <std::ranges::input_range R, typename I, typename T, typename... A>
-        requires std::invocable<BindingType<T, A...>, I, RangeCommonReference<R>> &&
-                 std::convertible_to<std::invoke_result_t<BindingType<T, A...>, I, RangeCommonReference<R>>, I>
+        requires std::invocable<TBindingType<T, A...>, I, TRangeCommonReference<R>> &&
+                 std::convertible_to<std::invoke_result_t<TBindingType<T, A...>, I, TRangeCommonReference<R>>, I>
     constexpr auto Reduce(R &&Range, I &&Identity, T &&PrimeArg, A &&...Args) {
         return Reduce(std::forward<R>(Range), std::forward<I>(Identity),
                       CreateBinding(std::forward<T>(PrimeArg), std::forward<A>(Args)...));
@@ -79,8 +79,8 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <auto Functor, std::ranges::input_range R, typename I, typename... A>
         requires HasFunctionCallOperator<decltype(Functor)> &&
-                 std::invocable<ConstBindingType<Functor, A...>, I, RangeCommonReference<R>> &&
-                 std::convertible_to<std::invoke_result_t<ConstBindingType<Functor, A...>, I, RangeCommonReference<R>>,
+                 std::invocable<TConstBindingType<Functor, A...>, I, TRangeCommonReference<R>> &&
+                 std::convertible_to<std::invoke_result_t<TConstBindingType<Functor, A...>, I, TRangeCommonReference<R>>,
                                      I>
     constexpr auto Reduce(R &&Range, I &&Identity, A &&...Args) {
         return Reduce(std::forward<R>(Range), std::forward<I>(Identity),
@@ -88,7 +88,7 @@ namespace Retro::Ranges {
     }
 
     /**
-     * @struct ReduceInvoker
+     * @struct FReduceInvoker
      *
      * @brief A functor for invoking the `reduce` operation on a given input range.
      *
@@ -109,7 +109,7 @@ namespace Retro::Ranges {
      *   - The provided invocable conforms to `std::invocable<BindingType<A...>, I, RangeCommonReference<R>>`.
      *   - The result of the invocable is convertible to the type of the identity value.
      */
-    struct ReduceInvoker {
+    struct FReduceInvoker {
         /**
          * @brief Invokes the `reduce` operation on a given range with an identity value and additional arguments.
          *
@@ -128,8 +128,8 @@ namespace Retro::Ranges {
          * starting with the identity element, using the specified operation logic.
          */
         template <std::ranges::input_range R, typename I, typename... A>
-            requires std::invocable<BindingType<A...>, I, RangeCommonReference<R>> &&
-                     std::convertible_to<std::invoke_result_t<BindingType<A...>, I, RangeCommonReference<R>>, I>
+            requires std::invocable<TBindingType<A...>, I, TRangeCommonReference<R>> &&
+                     std::convertible_to<std::invoke_result_t<TBindingType<A...>, I, TRangeCommonReference<R>>, I>
         constexpr auto operator()(R &&Range, I &&Identity, A &&...Args) const {
             return Reduce(std::forward<R>(Range), std::forward<I>(Identity), std::forward<A>(Args)...);
         }
@@ -151,10 +151,10 @@ namespace Retro::Ranges {
      * @note The availability and usage of `reduce_invoker` depend on the constraints and requirements
      * defined by the `ReduceInvoker` struct, including the necessary operator overloading and type compatibility.
      */
-    constexpr ReduceInvoker ReduceFuction;
+    constexpr FReduceInvoker ReduceFuction;
 
     /**
-     * @struct ReduceConstInvoker
+     * @struct TReduceConstInvoker
      *
      * @brief A constant functor for invoking the `reduce` operation on a given input range.
      *
@@ -180,7 +180,7 @@ namespace Retro::Ranges {
      */
     template <auto Functor>
         requires HasFunctionCallOperator<decltype(Functor)>
-    struct ReduceConstInvoker {
+    struct TReduceConstInvoker {
         /**
          * @brief Invokes the `reduce` operation on a provided input range, identity element, and additional arguments.
          *
@@ -200,9 +200,9 @@ namespace Retro::Ranges {
          * using the specified functor. The result must be convertible to the type of the identity value.
          */
         template <std::ranges::input_range R, typename I, typename... A>
-            requires std::invocable<ConstBindingType<Functor, A...>, I, RangeCommonReference<R>> &&
+            requires std::invocable<TConstBindingType<Functor, A...>, I, TRangeCommonReference<R>> &&
                      std::convertible_to<
-                         std::invoke_result_t<ConstBindingType<Functor, A...>, I, RangeCommonReference<R>>, I>
+                         std::invoke_result_t<TConstBindingType<Functor, A...>, I, TRangeCommonReference<R>>, I>
         constexpr auto operator()(R &&Range, I &&Identity, A &&...Args) const {
             return Reduce<Functor>(std::forward<R>(Range), std::forward<I>(Identity), std::forward<A>(Args)...);
         }
@@ -232,7 +232,7 @@ namespace Retro::Ranges {
      */
     template <auto Functor>
         requires HasFunctionCallOperator<decltype(Functor)>
-    constexpr ReduceConstInvoker<Functor> ReduceConstFunction;
+    constexpr TReduceConstInvoker<Functor> ReduceConstFunction;
 
     /**
      * @fn reduce

@@ -33,13 +33,13 @@ namespace Retro {
     }
 
     /**
-     * @struct ValidPtrFunction
+     * @struct FValidPtrFunction
      * @brief A functor for checking the validity of a pointer.
      *
      * The ValidPtr struct provides a function call operator that determines
      * if a given pointer is valid, utilizing the is_valid_ptr function.
      */
-    struct ValidPtrFunction {
+    struct FValidPtrFunction {
         template <PointerType T>
         constexpr bool operator()(T &&Ptr) const {
             return IsValidPtr(std::forward<T>(Ptr));
@@ -67,17 +67,17 @@ namespace Retro {
      * ValidPtr struct, enabling the checking for pointer validity within
      * the scope it is utilized.
      */
-    RETROLIB_EXPORT constexpr ValidPtrFunction ValidPtr;
+    RETROLIB_EXPORT constexpr FValidPtrFunction ValidPtr;
 
     /**
-     * @struct InvalidPtrFunction
+     * @struct FInvalidPtrFunction
      * @brief A functor for checking the invalidity of a pointer.
      *
      * The InvalidPtr struct provides a function call operator that determines
      * if a given pointer is invalid, utilizing the is_valid_ptr function by
      * negating its result.
      */
-    struct InvalidPtrFunction {
+    struct FInvalidPtrFunction {
         template <PointerType T>
         /**
          * @brief Function call operator that checks the invalidity of a pointer.
@@ -116,6 +116,6 @@ namespace Retro {
      * The constant `invalid_ptr` is an instance of this struct, readily available
      * for use where pointer invalidity needs to be assessed.
      */
-    RETROLIB_EXPORT constexpr InvalidPtrFunction InvalidPtr;
+    RETROLIB_EXPORT constexpr FInvalidPtrFunction InvalidPtr;
 
 } // namespace retro

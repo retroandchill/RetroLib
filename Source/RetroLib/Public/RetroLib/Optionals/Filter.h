@@ -20,7 +20,7 @@
 
 namespace Retro::Optionals {
 
-    struct FilterInvoker {
+    struct FFilterInvoker {
         /**
          * @brief Applies the given functor to the value within an optional-like object and returns the optional based
          * on the functor's result.
@@ -39,7 +39,7 @@ namespace Retro::Optionals {
          * with its value preserved. Otherwise, an empty optional-like object of the same type is returned.
          */
         template <OptionalType O, typename F>
-            requires std::is_invocable_r_v<bool, F, CommonReference<O>>
+            requires std::is_invocable_r_v<bool, F, TCommonReference<O>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             if constexpr (std::is_lvalue_reference_v<O>) {
                 using FilteredType = decltype(MakeOptionalReference(std::forward<O>(Optional)));
@@ -56,6 +56,6 @@ namespace Retro::Optionals {
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FilterInvoker{}, Filter)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FFilterInvoker{}, Filter)
 
 } // namespace retro::optionals

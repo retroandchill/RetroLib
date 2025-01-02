@@ -30,8 +30,8 @@ namespace Retro {
      */
     RETROLIB_EXPORT template <typename T, typename M>
     concept CanBindMethod =
-        Method<M> && (std::convertible_to<T, RefQualifiedClassType<M>> ||
-                      (Dereferenceable<T> && std::convertible_to<DereferencedType<T>, RefQualifiedClassType<M>>));
+        Method<M> && (std::convertible_to<T, TRefQualifiedClassType<M>> ||
+                      (Dereferenceable<T> && std::convertible_to<TDereferencedType<T>, TRefQualifiedClassType<M>>));
 
     /**
      * @brief A utility structure for method binding with pre-bound arguments and invocability.
@@ -46,7 +46,7 @@ namespace Retro {
      */
     template <typename C, Method F, typename... A>
         requires CanBindMethod<C, F>
-    struct MethodBinding {
+    struct TMethodBinding {
         using ArgsTuple = std::tuple<A...>;
 
         /**
@@ -62,7 +62,7 @@ namespace Retro {
         template <typename T, typename G, typename... U>
             requires std::convertible_to<C, T> && std::constructible_from<F, G> &&
                          std::constructible_from<ArgsTuple, U...>
-        constexpr MethodBinding(T &&Object, G &&Functor, U &&...Args)
+        constexpr TMethodBinding(T &&Object, G &&Functor, U &&...Args)
             : Object(std::forward<T>(Object)), Functor(std::forward<G>(Functor)), Args(std::forward<U>(Args)...) {
         }
 
@@ -155,7 +155,7 @@ namespace Retro {
     };
 
     /**
-     * @struct MethodBinding
+     * @struct TMethodBinding
      * @brief A utility that binds an object, a callable (functor), and an additional pre-bound argument
      *        into a single callable entity.
      *
@@ -169,7 +169,7 @@ namespace Retro {
      */
     template <typename C, Method F, typename A>
         requires CanBindMethod<C, F>
-    struct MethodBinding<C, F, A> {
+    struct TMethodBinding<C, F, A> {
         /**
          * @brief Constructs a MethodBinding object with the given parameters.
          *
@@ -186,7 +186,7 @@ namespace Retro {
          */
         template <typename T, typename G, typename U>
             requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A>
-        constexpr MethodBinding(T &&Object, G &&Functor, U &&Arg)
+        constexpr TMethodBinding(T &&Object, G &&Functor, U &&Arg)
             : Object(std::forward<T>(Object)), Functor(std::forward<G>(Functor)), Arg(std::forward<U>(Arg)) {
         }
 
@@ -280,7 +280,7 @@ namespace Retro {
      */
     template <typename C, Method F, typename A, typename B>
         requires CanBindMethod<C, F>
-    struct MethodBinding<C, F, A, B> {
+    struct TMethodBinding<C, F, A, B> {
 
         /**
          * @brief Constructs a MethodBinding object with specified object, functor, and arguments.
@@ -302,7 +302,7 @@ namespace Retro {
         template <typename T, typename G, typename U, typename W>
             requires std::convertible_to<T, C> && std::constructible_from<F, G> && std::convertible_to<U, A> &&
                          std::convertible_to<W, B>
-        constexpr explicit MethodBinding(T &&Object, G &&Functor, U &&Arg1, W &&Arg2)
+        constexpr explicit TMethodBinding(T &&Object, G &&Functor, U &&Arg1, W &&Arg2)
             : Object(std::forward<T>(Object)), Functor(std::forward<G>(Functor)), Arg1(std::forward<U>(Arg1)),
               Arg2(std::forward<W>(Arg2)) {
         }
@@ -405,7 +405,7 @@ namespace Retro {
      */
     template <typename C, auto Functor, typename... A>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodConstBinding {
+    struct TMethodConstBinding {
         using F = decltype(Functor);
         using ArgsTuple = std::tuple<A...>;
 
@@ -424,8 +424,8 @@ namespace Retro {
          */
         template <typename T, typename... U>
             requires std::convertible_to<C, T> && std::constructible_from<ArgsTuple, U...> &&
-                         (!std::same_as<std::decay_t<T>, MethodConstBinding>)
-        constexpr explicit MethodConstBinding(T &&Object, U &&...Args)
+                         (!std::same_as<std::decay_t<T>, TMethodConstBinding>)
+        constexpr explicit TMethodConstBinding(T &&Object, U &&...Args)
             : Object(std::forward<T>(Object)), Args(std::forward<U>(Args)...) {
         }
 
@@ -530,7 +530,7 @@ namespace Retro {
      */
     template <typename C, auto Functor, typename A>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodConstBinding<C, Functor, A> {
+    struct TMethodConstBinding<C, Functor, A> {
         using F = decltype(Functor);
 
         /**
@@ -551,7 +551,7 @@ namespace Retro {
          */
         template <typename T, typename U>
             requires std::convertible_to<T, C> && std::convertible_to<U, A>
-        constexpr explicit MethodConstBinding(T &&Object, U &&Arg)
+        constexpr explicit TMethodConstBinding(T &&Object, U &&Arg)
             : Object(std::forward<T>(Object)), Arg(std::forward<U>(Arg)) {
         }
 
@@ -660,7 +660,7 @@ namespace Retro {
      */
     template <typename C, auto Functor, typename A, typename B>
         requires CanBindMethod<C, decltype(Functor)>
-    struct MethodConstBinding<C, Functor, A, B> {
+    struct TMethodConstBinding<C, Functor, A, B> {
         using F = decltype(Functor);
 
         /**
@@ -682,7 +682,7 @@ namespace Retro {
          */
         template <typename T, typename U, typename W>
             requires std::convertible_to<T, C> && std::convertible_to<U, A> && std::convertible_to<W, B>
-        constexpr explicit MethodConstBinding(T &&Object, U &&Arg1, W &&Arg2)
+        constexpr explicit TMethodConstBinding(T &&Object, U &&Arg1, W &&Arg2)
             : Object(std::forward<T>(Object)), Arg1(std::forward<U>(Arg1)), Arg2(std::forward<W>(Arg2)) {
         }
 
@@ -778,7 +778,7 @@ namespace Retro {
         if constexpr (sizeof...(A) == 0) {
             return std::bind_front(std::forward<F>(Functor), std::forward<C>(Object));
         } else {
-            return MethodBinding<std::decay_t<C>, std::decay_t<F>, std::decay_t<A>...>(
+            return TMethodBinding<std::decay_t<C>, std::decay_t<F>, std::decay_t<A>...>(
                 std::forward<C>(Object), std::forward<F>(Functor), std::forward<A>(Args)...);
         }
     }
@@ -820,7 +820,7 @@ namespace Retro {
         if constexpr (sizeof...(A) == 0) {
             return BindFront<Functor>(std::forward<C>(Object));
         } else {
-            return MethodConstBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(Object),
+            return TMethodConstBinding<std::decay_t<C>, Functor, std::decay_t<A>...>(std::forward<C>(Object),
                                                                                     std::forward<A>(Args)...);
         }
     }

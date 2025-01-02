@@ -18,7 +18,7 @@
 
 namespace Retro {
     template <template <typename...> typename C>
-    struct ConvertTupleFunction {
+    struct TConvertTupleFunction {
 
         template <template <typename...> typename T, typename... A>
             requires TupleLike<C<std::decay_t<A>...>> && TupleLike<T<A...>>
@@ -46,5 +46,5 @@ namespace Retro {
     };
 
     RETROLIB_EXPORT template <template <typename...> typename C>
-    constexpr ConvertTupleFunction<C> ConvertTuple;
+    constexpr TConvertTupleFunction<C> ConvertTuple;
 } // namespace retro

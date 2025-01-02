@@ -20,7 +20,7 @@
 
 namespace Retro::Optionals {
 
-    struct OrElseThrowInvoker {
+    struct FOrElseThrowInvoker {
         /**
          * Invokes the functor with the provided arguments and throws the result if the optional parameter does not have
          * a value. If the optional parameter does have a value, retrieves and returns it.
@@ -41,7 +41,7 @@ namespace Retro::Optionals {
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, OrElseThrowInvoker{}, OrElseThrow)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FOrElseThrowInvoker{}, OrElseThrow)
 
     /**
      * Creates an extension method that acts as an operator for std::optional types,

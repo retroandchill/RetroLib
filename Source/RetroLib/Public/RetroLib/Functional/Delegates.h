@@ -37,7 +37,7 @@ namespace Retro {
     }
 
     template <Delegates::UEDelegate D>
-    struct AdditionalBindingTypes<D> : ValidType {
+    struct TAdditionalBindingTypes<D> : FValidType {
         template <Delegates::UEDelegate F, typename... A>
             requires std::same_as<D, std::decay_t<F>>
         static constexpr auto Bind(F &&Delegate, A &&... Args) {

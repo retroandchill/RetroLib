@@ -22,7 +22,7 @@
 namespace Retro {
 
     /**
-     * @struct SimpleFunctorBinding
+     * @struct TSimpleFunctorBinding
      * @brief A struct that encapsulates a functor and provides an operator() to invoke it.
      *
      * SimpleFunctorBinding provides a call operator to invoke a stored callable object
@@ -39,7 +39,7 @@ namespace Retro {
      */
     template <auto Functor>
         requires HasFunctionCallOperator<decltype(Functor)>
-    struct SimpleFunctorBinding {
+    struct TSimpleFunctorBinding {
         using F = decltype(Functor);
 
         /**
@@ -67,7 +67,7 @@ namespace Retro {
     template <auto Functor>
         requires HasFunctionCallOperator<decltype(Functor)>
     constexpr auto BindFunctor() {
-        return SimpleFunctorBinding<Functor>();
+        return TSimpleFunctorBinding<Functor>();
     }
 
 } // namespace retro

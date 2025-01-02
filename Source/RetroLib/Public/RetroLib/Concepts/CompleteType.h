@@ -17,7 +17,7 @@
 
 namespace Retro {
     /**
-     * @struct IsComplete
+     * @struct TIsComplete
      * @brief A type trait structure that inherits from std::false_type.
      *
      * This structure is typically used as a base trait that indicates
@@ -29,10 +29,10 @@ namespace Retro {
      * metaprogramming techniques.
      */
     template <typename, typename = void>
-    struct IsComplete : std::false_type {};
+    struct TIsComplete : std::false_type {};
 
     /**
-     * @struct IsComplete
+     * @struct TIsComplete
      * @brief A type trait to determine if a given type T is complete.
      *
      * The IsComplete structure evaluates whether the provided type T is a
@@ -45,7 +45,7 @@ namespace Retro {
      * @note This type trait will inherit from std::true_type if T is complete.
      */
     template <typename T>
-    struct IsComplete<T, std::void_t<decltype(sizeof(T))>> : std::true_type {};
+    struct TIsComplete<T, std::void_t<decltype(sizeof(T))>> : std::true_type {};
 
     /**
      * Concept to check if a type is a complete type or not.
@@ -53,7 +53,7 @@ namespace Retro {
      * @tparam T The type to be checked for completeness.
      */
     RETROLIB_EXPORT template <typename T>
-    concept CompleteType = IsComplete<T>::value;
+    concept CompleteType = TIsComplete<T>::value;
 
     /**
      * Concept to check if a type is an incomplete (i.e. forward declared) type or not.

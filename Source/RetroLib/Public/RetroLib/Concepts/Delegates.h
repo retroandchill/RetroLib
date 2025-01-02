@@ -75,7 +75,7 @@ namespace Retro::Delegates {
     concept UEDelegate = UnicastDelegate<T> || MulticastDelegate<T>;
 
     template <NativeDelegate, typename, typename...>
-    struct TValidFreeBinding : InvalidType {};
+    struct TValidFreeBinding : FInvalidType {};
 
     template <NativeDelegate>
     struct TDelegateBindingTraits;

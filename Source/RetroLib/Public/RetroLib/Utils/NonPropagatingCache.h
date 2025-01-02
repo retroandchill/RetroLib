@@ -18,7 +18,7 @@
 
 namespace Retro {
     /**
-     * @class NonPropagatingCache
+     * @class TNonPropagatingCache
      * @brief A specialized cache class based on the Optional template.
      *
      * This class is designed to prevent propagation of its state when copied or moved.
@@ -27,7 +27,7 @@ namespace Retro {
      * @tparam T The type of the value stored in the cache.
      */
     template <typename T, typename U = void, bool Enable = true>
-    class NonPropagatingCache : public std::optional<T> {
+    class TNonPropagatingCache : public std::optional<T> {
       public:
         /**
          * @brief Constructs a NonPropagatingCache object with default initialization.
@@ -37,7 +37,7 @@ namespace Retro {
          *
          * @return A default-initialized NonPropagatingCache instance.
          */
-        constexpr NonPropagatingCache() = default;
+        constexpr TNonPropagatingCache() = default;
 
         /**
          * @brief Constructs a NonPropagatingCache object with an explicitly nullopt state.
@@ -48,7 +48,7 @@ namespace Retro {
          * @param std::nullopt_t A tag type used to initialize the cache with a nullopt state.
          * @return An instance of NonPropagatingCache initialized with nullopt.
          */
-        constexpr explicit(false) NonPropagatingCache(std::nullopt_t) noexcept {
+        constexpr explicit(false) TNonPropagatingCache(std::nullopt_t) noexcept {
         }
 
         /**
@@ -60,7 +60,7 @@ namespace Retro {
          * @param other The NonPropagatingCache instance to copy from.
          * @return A copy of the provided NonPropagatingCache instance.
          */
-        constexpr NonPropagatingCache(const NonPropagatingCache &) noexcept : std::optional<T>() {
+        constexpr TNonPropagatingCache(const TNonPropagatingCache &) noexcept : std::optional<T>() {
         }
 
         /**
@@ -72,7 +72,7 @@ namespace Retro {
          * @param other The rvalue NonPropagatingCache instance to be moved.
          * @return A new NonPropagatingCache instance initialized from the given rvalue.
          */
-        constexpr NonPropagatingCache(NonPropagatingCache &&) noexcept : std::optional<T>() {
+        constexpr TNonPropagatingCache(TNonPropagatingCache &&) noexcept : std::optional<T>() {
         }
 
         /**
@@ -81,7 +81,7 @@ namespace Retro {
          * Automatically cleans up resources used by a NonPropagatingCache object
          * without requiring explicit custom cleanup operations.
          */
-        ~NonPropagatingCache() = default;
+        ~TNonPropagatingCache() = default;
 
         /**
          * @brief Copy assignment operator for the NonPropagatingCache class.
@@ -92,7 +92,7 @@ namespace Retro {
          * @param other The NonPropagatingCache instance to copy from.
          * @return A reference to the current NonPropagatingCache instance after assignment.
          */
-        constexpr NonPropagatingCache &operator=(const NonPropagatingCache &) noexcept {
+        constexpr TNonPropagatingCache &operator=(const TNonPropagatingCache &) noexcept {
             std::optional<T>::reset();
             return *this;
         }
@@ -107,7 +107,7 @@ namespace Retro {
          * @param Other The NonPropagatingCache object to move from.
          * @return A reference to the current NonPropagatingCache object after the move.
          */
-        constexpr NonPropagatingCache &operator=(NonPropagatingCache &&Other) noexcept {
+        constexpr TNonPropagatingCache &operator=(TNonPropagatingCache &&Other) noexcept {
             Other.std::optional<T>::reset();
             std::optional<T>::reset();
             return *this;
@@ -141,5 +141,5 @@ namespace Retro {
      * @tparam U Second template parameter, representing the value or data type stored in the cache.
      */
     template <typename T, typename U>
-    struct NonPropagatingCache<T, U, false> {};
+    struct TNonPropagatingCache<T, U, false> {};
 } // namespace retro

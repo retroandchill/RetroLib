@@ -26,7 +26,7 @@
 namespace Retro {
 
     /**
-     * @class UniqueAny
+     * @class FUniqueAny
      *
      * @brief A type-safe container for any single value of any type, which ensures unique ownership of the contained
      * value.
@@ -35,7 +35,7 @@ namespace Retro {
      * It leverages small object optimization to store small objects directly inside the UniqueAny instance, and
      * dynamically allocates memory for larger objects.
      */
-    RETROLIB_EXPORT class UniqueAny final {
+    RETROLIB_EXPORT class FUniqueAny final {
         template <typename T>
         static constexpr bool FitsInSmallBuffer = sizeof(T) <= DEFAULT_SMALL_STORAGE_SIZE;
 
@@ -56,7 +56,7 @@ namespace Retro {
          * Initializes an empty UniqueAny instance. The object constructed with this constructor does not hold any
          * value.
          */
-        UniqueAny() = default;
+        FUniqueAny() = default;
 
         /**
          * @brief Constructs an UniqueAny instance with a given value of any type.
@@ -68,8 +68,8 @@ namespace Retro {
          * @param Value The value to be stored inside the UniqueAny instance.
          */
         template <typename T>
-            requires(!std::same_as<std::decay_t<T>, UniqueAny>)
-        explicit(false) UniqueAny(T &&Value) noexcept
+            requires(!std::same_as<std::decay_t<T>, FUniqueAny>)
+        explicit(false) FUniqueAny(T &&Value) noexcept
             : Storage(std::forward<T>(Value)), Vtable(&GetVtableForType<std::decay_t<T>>()) {
         }
 
@@ -87,7 +87,7 @@ namespace Retro {
          */
         template <typename T, typename... A>
             requires std::constructible_from<T, A...>
-        explicit UniqueAny(std::in_place_type_t<T>, A &&...Args) noexcept : Vtable(&GetVtableForType<T>()) {
+        explicit FUniqueAny(std::in_place_type_t<T>, A &&...Args) noexcept : Vtable(&GetVtableForType<T>()) {
             if constexpr (FitsInSmallBuffer<T>) {
                 new (std::bit_cast<T *>(Storage.SmallStorage.data())) T(std::forward<A>(Args)...);
             } else {
@@ -95,7 +95,7 @@ namespace Retro {
             }
         }
 
-        UniqueAny(const UniqueAny &) = delete;
+        FUniqueAny(const FUniqueAny &) = delete;
 
         /**
          * @brief Move constructor for UniqueAny.
@@ -106,7 +106,7 @@ namespace Retro {
          * @param Other The UniqueAny instance to move from. The state of Other will be invalidated.
          * @return An UniqueAny instance that takes ownership of the value from the Other instance.
          */
-        UniqueAny(UniqueAny &&Other) noexcept : Vtable(Other.Vtable) {
+        FUniqueAny(FUniqueAny &&Other) noexcept : Vtable(Other.Vtable) {
             Vtable->Move(Other.Storage, Storage);
             Other.Vtable = nullptr;
         }
@@ -117,13 +117,13 @@ namespace Retro {
          * Cleans up the stored value, if any, by invoking the appropriate destruction logic through the virtual table.
          * Ensures that the dynamically allocated memory, if any, is properly deallocated.
          */
-        ~UniqueAny() {
+        ~FUniqueAny() {
             if (Vtable != nullptr) {
                 Vtable->Destroy(Storage);
             }
         }
 
-        UniqueAny &operator=(const UniqueAny &) = delete;
+        FUniqueAny &operator=(const FUniqueAny &) = delete;
 
         /**
          * @brief Overloads the assignment operator to facilitate the correct transfer of ownership for the contained
@@ -135,7 +135,7 @@ namespace Retro {
          * @param Other The right-hand side UniqueAny instance from which the value is assigned.
          * @return A reference to the current UniqueAny instance after the assignment.
          */
-        UniqueAny &operator=(UniqueAny &&Other) noexcept {
+        FUniqueAny &operator=(FUniqueAny &&Other) noexcept {
             Vtable = Other.Vtable;
             Vtable->Move(Other.Storage, Storage);
             Other.Vtable = nullptr;
@@ -152,7 +152,7 @@ namespace Retro {
          * @return A reference to this instance after assignment.
          */
         template <typename T>
-        UniqueAny &operator=(T &&Other) noexcept {
+        FUniqueAny &operator=(T &&Other) noexcept {
             Emplace<std::decay_t<T>>(std::forward<T>(Other));
             return *this;
         }
@@ -314,40 +314,40 @@ namespace Retro {
             }
         }
 
-        union ValueStorage {
+        union FValueStorage {
             std::array<std::byte, DEFAULT_SMALL_STORAGE_SIZE> SmallStorage;
             void *LargeStorage;
 
-            ValueStorage() : LargeStorage(nullptr) {
+            FValueStorage() : LargeStorage(nullptr) {
             }
 
             template <typename T>
-                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, ValueStorage>)
-            explicit ValueStorage(T &&Data) noexcept {
+                requires FitsInSmallBuffer<std::decay_t<T>> && (!std::same_as<std::decay_t<T>, FValueStorage>)
+            explicit FValueStorage(T &&Data) noexcept {
                 new (std::bit_cast<std::decay_t<T> *>(SmallStorage.data())) std::decay_t<T>(std::forward<T>(Data));
             }
 
             template <typename T>
-                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, ValueStorage>)
-            explicit ValueStorage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
+                requires(!FitsInSmallBuffer<std::decay_t<T>>) && (!std::same_as<std::decay_t<T>, FValueStorage>)
+            explicit FValueStorage(T &&Data) noexcept : LargeStorage(new std::decay_t<T>(std::forward<T>(Data))) {
             }
 
             template <typename T>
                 requires(!FitsInSmallBuffer<std::decay_t<T>>)
-            explicit ValueStorage(T *Data) noexcept : LargeStorage(Data) {
+            explicit FValueStorage(T *Data) noexcept : LargeStorage(Data) {
             }
         };
 
-        struct VTable {
+        struct FVTable {
             const std::type_info *Type;
             bool IsLarge = false;
-            void (*Destroy)(ValueStorage &Storage);
-            void (*Move)(ValueStorage &Source, ValueStorage &Dest) noexcept;
+            void (*Destroy)(FValueStorage &Storage);
+            void (*Move)(FValueStorage &Source, FValueStorage &Dest) noexcept;
         };
 
         template <typename T>
         struct VTableImpl {
-            static void Destroy(ValueStorage &Storage) noexcept {
+            static void Destroy(FValueStorage &Storage) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::bit_cast<T *>(Storage.SmallStorage.data())->~T();
                 } else {
@@ -355,7 +355,7 @@ namespace Retro {
                 }
             }
 
-            static void Move(ValueStorage &Source, ValueStorage &Dest) noexcept {
+            static void Move(FValueStorage &Source, FValueStorage &Dest) noexcept {
                 if constexpr (FitsInSmallBuffer<T>) {
                     std::memcpy(&Dest.SmallStorage, &Source.SmallStorage, sizeof(T));
                 } else {
@@ -366,9 +366,9 @@ namespace Retro {
         };
 
         template <typename T>
-        static VTable &GetVtableForType() {
+        static FVTable &GetVtableForType() {
             // clang-format off
-            static VTable Vtable = {
+            static FVTable Vtable = {
                 .Type = &typeid(T),
                 .IsLarge = !FitsInSmallBuffer<T>,
                 .Destroy = VTableImpl<T>::Destroy,
@@ -378,8 +378,8 @@ namespace Retro {
             return Vtable;
         }
 
-        ValueStorage Storage;
-        VTable *Vtable = nullptr;
+        FValueStorage Storage;
+        FVTable *Vtable = nullptr;
     };
 
 } // namespace retro

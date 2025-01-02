@@ -23,5 +23,5 @@ namespace Retro {
      * @tparam R The range type to check
      */
     RETROLIB_EXPORT template <std::ranges::range R>
-    using RangeCommonReference = std::iter_common_reference_t<std::ranges::iterator_t<R>>;
+    using TRangeCommonReference = std::iter_common_reference_t<std::ranges::iterator_t<R>>;
 } // namespace retro

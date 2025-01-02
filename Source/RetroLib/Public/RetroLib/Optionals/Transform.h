@@ -34,7 +34,7 @@ namespace Retro::Optionals {
         }
     }
 
-    struct TransformInvoker {
+    struct FTransformInvoker {
         /**
          * Invokes the given functor on the value held by the optional-like object, if it has a value.
          * If the optional-like object does not contain a value, returns a default-constructed result type.
@@ -45,7 +45,7 @@ namespace Retro::Optionals {
          *         or a default-constructed result type if the optional-like object does not contain a value.
          */
         template <OptionalType O, typename F>
-            requires std::invocable<F, CommonReference<O>>
+            requires std::invocable<F, TCommonReference<O>>
         constexpr auto operator()(O &&Optional, F &&Functor) const {
             using ResultType = decltype(FromResult(
                 std::forward<O>(Optional), std::invoke(std::forward<F>(Functor), Get<O>(std::forward<O>(Optional)))));
@@ -56,5 +56,5 @@ namespace Retro::Optionals {
         }
     };
 
-    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, TransformInvoker{}, Transform)
+    RETROLIB_FUNCTIONAL_EXTENSION(RETROLIB_EXPORT, FTransformInvoker{}, Transform)
 } // namespace retro::optionals
