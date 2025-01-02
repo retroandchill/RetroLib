@@ -20,7 +20,7 @@ namespace Retro {
     /**
      * @brief Struct tag to signify the usage of the `this` parameter in a functional type.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
     struct TThis {
         T Value;
 

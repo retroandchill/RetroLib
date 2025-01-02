@@ -109,8 +109,8 @@ TEST_CASE_NAMED(FInstanceOfTest, "RetroLib::Casting::InstanceOf", "[utils]") {
     }
 
     SECTION("Can work with a polymorphic value instance") {
-        Retro::Polymorphic<Base> ValidPtr1(std::in_place_type<Derived1>);
-        Retro::Polymorphic<Base> ValidPtr2(std::in_place_type<Derived2>);
+        Retro::TPolymorphic<Base> ValidPtr1(std::in_place_type<Derived1>);
+        Retro::TPolymorphic<Base> ValidPtr2(std::in_place_type<Derived2>);
 
         CHECK(Retro::InstanceOf<Base>(ValidPtr1));
         CHECK(Retro::InstanceOf<Derived1>(ValidPtr1));
@@ -130,22 +130,22 @@ TEST_CASE_NAMED(FDynamicCastTest, "RetroLib::Casting::DynamicCast", "[utils]") {
         Base *ValidPtr1 = &Value1;
         Base *ValidPtr2 = &Value2;
 
-        CHECK_FALSE(Retro::DynamicCast<Base>(Ptr).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived1>(Ptr).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived2>(Ptr).HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(Ptr)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(Ptr)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(Ptr)));
 
-        CHECK(Retro::DynamicCast<Base>(ValidPtr1).HasValue());
-        CHECK(Retro::DynamicCast<Derived1>(ValidPtr1).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived2>(ValidPtr1).HasValue());
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(ValidPtr1)));
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(ValidPtr1)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(ValidPtr1)));
 
-        CHECK(Retro::DynamicCast<Base>(ValidPtr2).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived1>(ValidPtr2).HasValue());
-        CHECK(Retro::DynamicCast<Derived2>(ValidPtr2).HasValue());
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(ValidPtr2)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(ValidPtr2)));
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(ValidPtr2)));
     }
 
     SECTION("Handles nullptr literals") {
-        CHECK_FALSE(Retro::DynamicCast<Derived1>(nullptr).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived2>(nullptr).HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(nullptr)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(nullptr)));
     }
 
     SECTION("Can work with wrapped pointer types (smart pointers)") {
@@ -153,22 +153,22 @@ TEST_CASE_NAMED(FDynamicCastTest, "RetroLib::Casting::DynamicCast", "[utils]") {
         std::unique_ptr<Base> ValidPtr1 = std::make_unique<Derived1>();
         std::unique_ptr<Base> ValidPtr2 = std::make_unique<Derived2>();
 
-        CHECK_FALSE(Retro::DynamicCast<Base>(Ptr).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived1>(Ptr).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived2>(Ptr).HasValue());
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(Ptr)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(Ptr)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(Ptr)));
 
-        CHECK(Retro::DynamicCast<Base>(ValidPtr1).HasValue());
-        CHECK(Retro::DynamicCast<Derived1>(ValidPtr1).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived2>(ValidPtr1).HasValue());
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(ValidPtr1)));
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(ValidPtr1)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(ValidPtr1)));
 
-        CHECK(Retro::DynamicCast<Base>(ValidPtr2).HasValue());
-        CHECK_FALSE(Retro::DynamicCast<Derived1>(ValidPtr2).HasValue());
-        CHECK(Retro::DynamicCast<Derived2>(ValidPtr2).HasValue());
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Base>(ValidPtr2)));
+        CHECK_FALSE(Retro::Optionals::HasValue(Retro::DynamicCast<Derived1>(ValidPtr2)));
+        CHECK(Retro::Optionals::HasValue(Retro::DynamicCast<Derived2>(ValidPtr2)));
     }
 
     SECTION("Can work with a polymorphic value instance") {
-        Retro::Polymorphic<Base> ValidPtr1(std::in_place_type<Derived1>);
-        Retro::Polymorphic<Base> ValidPtr2(std::in_place_type<Derived2>);
+        Retro::TPolymorphic<Base> ValidPtr1(std::in_place_type<Derived1>);
+        Retro::TPolymorphic<Base> ValidPtr2(std::in_place_type<Derived2>);
 
         CHECK(Retro::InstanceOf<Base>(ValidPtr1));
         CHECK(Retro::InstanceOf<Derived1>(ValidPtr1));

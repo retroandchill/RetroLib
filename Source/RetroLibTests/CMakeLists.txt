@@ -1,7 +1,8 @@
 project(RetroLibTests)
 find_package(Catch2 3 REQUIRED)
 
-add_executable(RetroLibTests Utils/PolymorphicTest.cpp
+add_executable(RetroLibTests
+        Private/Utils/PolymorphicTest.cpp
         Private/Ranges/Views/AnyViewTest.cpp
         Private/Functional/TestExtensionMethods.cpp
         Private/Functional/TestBindings.cpp
@@ -9,7 +10,6 @@ add_executable(RetroLibTests Utils/PolymorphicTest.cpp
         Private/Optionals/TestOptionalOperations.cpp
         Private/Optionals/TestOptionalPipes.cpp
         Private/Ranges/Views/TestRangeAdapters.cpp
-        Private/Optionals/TestOptional.cpp
         Private/Utils/TestValidPtr.cpp
         Private/Casts/TestCasts.cpp
         Private/Utils/OperatorsTest.cpp
@@ -25,7 +25,8 @@ target_link_libraries(RetroLibTests
 
 target_include_directories(RetroLibTests
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR})
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public
+        ${CMAKE_CURRENT_SOURCE_DIR}/Private)
 
 
 include(CTest)
