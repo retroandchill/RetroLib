@@ -22,7 +22,7 @@
 namespace Retro::Ranges::Views {
 
     RETROLIB_EXPORT template <typename T>
-    constexpr auto Empty = std::ranges::views::empty;
+    constexpr auto Empty = std::ranges::views::empty<T>;
 
     RETROLIB_EXPORT constexpr auto Single = std::ranges::views::single;
 
