@@ -91,7 +91,7 @@ TEST_CASE_NAMED(FRangeFindFirstTest, "Retro::Ranges::Algorithm::FindFirst", "[ra
         CHECK(Retro::Optionals::Get(ValidResult) == 3);
 
         auto InvalidResult = Values | Retro::Ranges::Views::Filter<IsMultipleOf>(10) | Retro::Ranges::FindFirst();
-        CHECK_FALSE(Retro::Optionals::HasValue(ValidResult) );
+        CHECK_FALSE(Retro::Optionals::HasValue(InvalidResult) );
     }
 
     SECTION("Can reduce using an inferred template parameter") {
