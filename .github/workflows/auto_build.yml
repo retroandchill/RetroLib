@@ -67,7 +67,7 @@ jobs:
 
       - name: Merge counters from different runs and convert the result into an llvm-cov-compatible form
         run: |
-          ls ${{ runner.workspace }}/build
+          ls ${{ runner.workspace }}/build/Source
           llvm-profdata-18 merge -o merged.profdata ${{ runner.workspace }}/build/**/*.profraw
 
       - name: Collect the coverage
