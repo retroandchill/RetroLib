@@ -7,9 +7,7 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Ranges/FeatureBridge.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

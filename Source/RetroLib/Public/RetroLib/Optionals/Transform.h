@@ -8,12 +8,12 @@
 
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/FunctionTraits.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <ranges>
 #endif
 

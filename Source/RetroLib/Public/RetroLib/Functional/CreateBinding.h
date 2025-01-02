@@ -7,17 +7,14 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Tuples.h"
 #include "RetroLib/Functional/BindBack.h"
 #include "RetroLib/Functional/BindFunctor.h"
 #include "RetroLib/Functional/BindMethod.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
 #endif
-#include <RetroLib/Concepts/Tuples.h>
 
 namespace Retro {
     /**

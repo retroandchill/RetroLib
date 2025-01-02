@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Utils/Polymorphic.h"
 #include "RetroLib/Utils/ValidPtr.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <type_traits>
 #endif
 

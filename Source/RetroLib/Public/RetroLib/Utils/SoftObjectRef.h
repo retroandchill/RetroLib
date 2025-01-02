@@ -3,14 +3,21 @@
 #pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
 #include "Engine/AssetManager.h"
+#endif
+
 #include "RetroLib/Assets/AsyncLoadHandle.h"
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 /**
  * Wrapper around TSoftObjectPtr that is (almost always) guaranteed to point to a valid asset
  * @tparam T The type of object that is pointed to
  */
-template <typename T = UObject>
+RETROLIB_EXPORT template <typename T = UObject>
 	requires std::is_base_of_v<UObject, T>
 struct TSoftObjectRef {
 	static constexpr bool bHasIntrusiveUnsetOptionalState = true;

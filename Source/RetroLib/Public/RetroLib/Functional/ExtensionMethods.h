@@ -8,10 +8,8 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/BindBack.h"
 #include "RetroLib/FunctionTraits.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

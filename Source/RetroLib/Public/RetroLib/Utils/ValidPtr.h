@@ -7,9 +7,7 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Pointers.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

@@ -9,10 +9,11 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
-#include "RetroLib/Functional/ExtensionMethods.h"
-#include "RetroLib/Functional/FunctionalClosure.h"
 #include <ranges>
 #endif
+
+#include "RetroLib/Functional/ExtensionMethods.h"
+#include "RetroLib/Functional/FunctionalClosure.h"
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

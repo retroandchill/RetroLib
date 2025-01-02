@@ -3,8 +3,16 @@
 #pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
+#include "UObject/Class.h"
+#endif
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
-	template <typename T>
+	RETROLIB_EXPORT template <typename T>
 	concept CoreStructType = requires {
 		{ TBaseStructure<std::remove_cvref_t<T>>::Get() } -> std::same_as<UScriptStruct *>;
 	};
@@ -12,15 +20,15 @@ namespace Retro {
 	/**
 	 * Concept for any USTRUCT in the editor.
 	 */
-	template <typename T>
+	RETROLIB_EXPORT template <typename T>
 	concept DeclaredStruct = requires {
 		{ std::remove_cvref_t<T>::StaticStruct() } -> std::same_as<UScriptStruct *>;
 	};
 
-	template <typename T>
+	RETROLIB_EXPORT template <typename T>
 	concept UEStruct = CoreStructType<T> || DeclaredStruct<T>;
 
-	template <typename T>
+	RETROLIB_EXPORT template <typename T>
 		requires UEStruct<T>
 	constexpr UScriptStruct *GetScriptStruct() {
 		if constexpr (Retro::DeclaredStruct<T>) {

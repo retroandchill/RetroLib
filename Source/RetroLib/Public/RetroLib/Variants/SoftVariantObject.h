@@ -6,6 +6,10 @@
 #include "VariantObject.h"
 #include "RetroLib/Assets/AsyncLoadHandle.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
 	template <typename T>
         requires VariantObject<T>
@@ -23,14 +27,14 @@ namespace Retro {
      * Checks if the given type is a soft variant object.
      * @tparam T The type to check
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
     concept SoftVariantObject = Detail::TIsSoftVariantObject<T>::value;
 
     /**
      * Checks if the given type is a soft variant object type that has a valid UStruct representation..
      * @tparam T The type to check
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
     concept SoftVariantObjectStruct = UEStruct<T> && SoftVariantObject<T>;
 
     template <typename T>
@@ -41,7 +45,7 @@ namespace Retro {
      * Represents a soft (path) reference to an object of one of serveral possible types.
      * @tparam T The variant object that dictates the data for this variant
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires VariantObject<T>
     struct TSoftVariantObject {
         static constexpr bool bHasIntrusiveUnsetOptionalState = true;

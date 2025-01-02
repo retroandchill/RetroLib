@@ -8,10 +8,8 @@
 
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

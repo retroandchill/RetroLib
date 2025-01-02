@@ -7,11 +7,9 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
-#include "RetroLib/Concepts/ParameterPacks.h"
 #include "RetroLib/FunctionTraits.h"
-#include "RetroLib/Utils/ForwardLike.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <tuple>
 #endif
 

@@ -7,10 +7,10 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/FunctionTraits.h"
 #include "RetroLib/Utils/ForwardLike.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <tuple>
 #include <type_traits>
 #endif

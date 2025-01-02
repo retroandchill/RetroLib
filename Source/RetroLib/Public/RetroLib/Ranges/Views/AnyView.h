@@ -9,12 +9,13 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
-#include "RetroLib/Utils/Polymorphic.h"
 
 #include <memory>
 #include <ranges>
 #include <type_traits>
 #endif
+
+#include "RetroLib/Utils/Polymorphic.h"
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

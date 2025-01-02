@@ -1,12 +1,18 @@
 ﻿#pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
 #include <UObject/UObjectIterator.h>
+#endif
 #include "RetroLib/Concepts/Interfaces.h"
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro::Ranges {
 	
-	template <typename T>
+	RETROLIB_EXPORT template <typename T>
 		requires std::derived_from<T, UObject> || UnrealInterface<T>
 	class TClassView {
 		struct FIterator {

@@ -3,11 +3,17 @@
 #pragma once
 
 #ifdef __UNREAL__
-#include "UnrealContainers.h"
+#include "RetroLib/Ranges/Compatibility/UnrealContainers.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <Containers/Array.h>
 #include <Containers/UnrealString.h>
 #include <ranges>
+#endif
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro::Ranges {
 
@@ -123,47 +129,47 @@ namespace Retro::Ranges {
 
 } // namespace Retro::Ranges
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
     requires(!std::input_iterator<decltype(std::declval<TArray<T, A>>().begin())>)
 constexpr auto begin(TArray<T, A> &Array) {
     return Retro::Ranges::TArrayIterator<TArray<T, A>, T>(Array.GetData(), Array);
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
     requires(!std::input_iterator<decltype(std::declval<const TArray<T, A>>().begin())>)
 constexpr auto begin(const TArray<T, A> &Array) {
     return Retro::Ranges::TArrayIterator<const TArray<T, A>, const T>(Array.GetData(), Array);
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
     requires(!std::input_iterator<decltype(std::declval<TArray<T, A>>().end())>)
 constexpr auto end(TArray<T, A> &Array) {
     return Retro::Ranges::TArrayIterator<TArray<T, A>, T>(Array.GetData() + Array.Num(), Array);
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
     requires(!std::input_iterator<decltype(std::declval<const TArray<T, A>>().end())>)
 constexpr auto end(const TArray<T, A> &Array) {
     return Retro::Ranges::TArrayIterator<const TArray<T, A>, const T>(Array.GetData() + Array.Num(), Array);
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
 constexpr T* data(TArray<T, A> &Array) {
     return Array.GetData();
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
 constexpr const T* data(const TArray<T, A> &Array) {
     return Array.GetData();
 }
 
-template <typename T, typename A>
+RETROLIB_EXPORT template <typename T, typename A>
 constexpr T* data(TArray<T, A> &&Array) {
     return Array.GetData();
 }
 
 
-constexpr auto begin(FString &String) {
+RETROLIB_EXPORT constexpr auto begin(FString &String) {
     if constexpr (std::contiguous_iterator<decltype(String.begin())>) {
         return String.begin();
     } else {
@@ -171,7 +177,7 @@ constexpr auto begin(FString &String) {
     }
 }
 
-constexpr auto begin(const FString &String) {
+RETROLIB_EXPORT constexpr auto begin(const FString &String) {
     if constexpr (std::contiguous_iterator<decltype(String.begin())>) {
         return String.begin();
     } else {
@@ -179,7 +185,7 @@ constexpr auto begin(const FString &String) {
     }
 }
 
-constexpr auto end(FString &String) {
+RETROLIB_EXPORT constexpr auto end(FString &String) {
     if constexpr (std::contiguous_iterator<decltype(String.end())>) {
         return String.end();
     } else {
@@ -187,11 +193,23 @@ constexpr auto end(FString &String) {
     }
 }
 
-constexpr auto end(const FString &String) {
+RETROLIB_EXPORT constexpr auto end(const FString &String) {
     if constexpr (std::contiguous_iterator<decltype(String.end())>) {
         return String.end();
     } else {
         return Retro::Ranges::TArrayIterator(String.GetCharArray().GetData() + String.Len(), String);
     }
+}
+
+RETROLIB_EXPORT inline TCHAR* data(FString &String) {
+    return String.GetCharArray().GetData();
+}
+
+RETROLIB_EXPORT inline const TCHAR* data(const FString &String) {
+    return String.GetCharArray().GetData();
+}
+
+RETROLIB_EXPORT inline TCHAR* data(FString &&String) {
+    return String.GetCharArray().GetData();
 }
 #endif

@@ -3,14 +3,18 @@
 #pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
 #include <string>
 #include <exception>
-
 #include "Blueprint/BlueprintExceptionInfo.h"
-#include <string_view>
+#endif
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro {
-	class RETROLIB_API FBlueprintException : public std::exception {
+	RETROLIB_EXPORT class RETROLIB_API FBlueprintException : public std::exception {
 	public:
 		FBlueprintException() = default;
 

@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Iterators.h"
 #include "RetroLib/Concepts/Tuples.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
@@ -15,6 +14,7 @@
 #include "RetroLib/Ranges/RangeBasics.h"
 #include "RetroLib/Utils/NonPropagatingCache.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <ranges>
 #endif
 

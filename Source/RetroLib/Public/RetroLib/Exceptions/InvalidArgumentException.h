@@ -5,11 +5,15 @@
 #ifdef __UNREAL__
 #include "BlueprintException.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
 	/**
 	 * Exception for where there is an invalid argument in a Blueprint function.
 	 */
-	class RETROLIB_API FInvalidArgumentException : public FBlueprintException {
+	RETROLIB_EXPORT class RETROLIB_API FInvalidArgumentException : public FBlueprintException {
 	public:
 		using FBlueprintException::FBlueprintException;
 	};

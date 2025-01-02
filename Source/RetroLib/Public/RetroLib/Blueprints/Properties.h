@@ -3,11 +3,16 @@
 #pragma once
 
 #ifdef __UNREAL__
-#include <RetroLib/Utils/Unreachable.h>
-
 #include "RetroLib/Exceptions/InvalidArgumentException.h"
+#include "RetroLib/Utils/Unreachable.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <array>
+#endif
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro {
 	/**

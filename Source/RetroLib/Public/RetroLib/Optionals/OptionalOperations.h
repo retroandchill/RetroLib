@@ -9,11 +9,13 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
+#include <optional>
+#endif
+
 #include "RetroLib/TypeTraits.h"
 #include "RetroLib/Utils/ForwardLike.h"
 
-#include <optional>
-#endif
+
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
@@ -579,7 +581,7 @@ namespace Retro::Optionals {
     };
 
 #ifdef __UNREAL__
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
     concept UnrealOptional = requires(T &&Optional) {
         Optional.GetValue();
         *Optional;
@@ -600,7 +602,7 @@ namespace Retro::Optionals {
     using TUeOptionalType = typename TUeOptional<std::decay_t<T>>::Type;
     
 
-    template <UnrealOptional T>
+    RETROLIB_EXPORT template <UnrealOptional T>
     struct TOptionalOperations<T> : FValidType {
         template <UnrealOptional O>
             requires std::same_as<T, std::decay_t<O>>
@@ -629,7 +631,7 @@ namespace Retro::Optionals {
         }
     };
 
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<std::remove_cv_t<T>, UObject>
     struct TNullableOptionalParam<TObjectPtr<T>> : FValidType {
         using RawType = T;
@@ -646,7 +648,7 @@ namespace Retro::Optionals {
         }
     };
 
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires SpecializationOf<std::decay_t<T>, TObjectPtr> && (!std::same_as<std::decay_t<T>, T>)
     struct TNullableOptionalParam<T> : TNullableOptionalParam<std::decay_t<T>> {
     };
@@ -656,7 +658,7 @@ namespace Retro::Optionals {
  * Template specialization for an optional that takes in a reference.
  * @tparam T The type of the optional that was consumed.
  */
-template <typename T>
+RETROLIB_EXPORT template <typename T>
 struct TOptional<T &> {
 
     /**
@@ -806,7 +808,7 @@ struct TOptional<T &> {
     T *Data = nullptr;
 };
 
-template <>
+RETROLIB_EXPORT template <>
 struct Retro::Optionals::TIsRawReferenceOptionalAllowed<TOptional> : std::true_type {};
 
 template <typename T>

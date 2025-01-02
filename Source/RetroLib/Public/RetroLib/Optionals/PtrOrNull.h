@@ -7,16 +7,14 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
-#include "RetroLib/Functional/CreateBinding.h"
-#include "RetroLib/Functional/FunctionalClosure.h"
+#include "RetroLib/TypeTraits.h"
+#include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
-#endif
+
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
 #endif
-#include <RetroLib/TypeTraits.h>
 
 namespace Retro::Optionals {
 

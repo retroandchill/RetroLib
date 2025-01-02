@@ -3,11 +3,17 @@
 #pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
 #include <UObject/UObjectIterator.h>
+#endif
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro::Ranges {
 	
-	template <std::derived_from<UObject> T>
+	RETROLIB_EXPORT template <std::derived_from<UObject> T>
 	class TObjectView {
 		struct FIterator {
 			using value_type = T*;

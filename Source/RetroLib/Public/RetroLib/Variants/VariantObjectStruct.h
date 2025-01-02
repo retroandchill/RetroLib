@@ -12,6 +12,10 @@
 #include "RetroLib/Ranges/Compatibility/UnrealContainers.h"
 #include "RetroLib/Utils/SoftObjectRef.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
     /**
      * Abstract declaration of the definition of a registered variant struct type. This is meant to only really be used
@@ -228,7 +232,7 @@ namespace Retro {
     /**
      * Static registry for a variant struct object.
      */
-    class RETROLIB_API FVariantObjectStructRegistry {
+    RETROLIB_EXPORT class RETROLIB_API FVariantObjectStructRegistry {
         FVariantObjectStructRegistry() = default;
         ~FVariantObjectStructRegistry() = default;
 

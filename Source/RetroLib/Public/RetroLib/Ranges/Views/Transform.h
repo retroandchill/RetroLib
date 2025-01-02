@@ -8,10 +8,13 @@
 #pragma once
 
 #if !RETROLIB_WITH_MODULES
-#include "RetroLib/Functional/FunctionalClosure.h"
+#include "RetroLib/RetroLibMacros.h"
 
 #include <ranges>
 #endif
+
+#include "RetroLib/Functional/FunctionalClosure.h"
+
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

@@ -7,11 +7,11 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Ranges/Concepts/Concatable.h"
 #include "RetroLib/Ranges/RangeBasics.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <variant>
 #endif
 

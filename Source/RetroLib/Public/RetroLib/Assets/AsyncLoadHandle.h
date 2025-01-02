@@ -3,12 +3,18 @@
 #pragma once
 
 #ifdef __UNREAL__
+#if !RETROLIB_WITH_MODULES
 #include <mutex>
-
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#endif
+
 #include "RetroLib/Concepts/Delegates.h"
 #include "RetroLib/Variants/VariantObject.h"
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro {
     template <typename T>

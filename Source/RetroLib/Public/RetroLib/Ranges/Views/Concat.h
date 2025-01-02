@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Iterators.h"
 #include "RetroLib/Ranges/Concepts/Concatable.h"
 #include "RetroLib/Concepts/ParameterPacks.h"
@@ -15,6 +14,7 @@
 #include "RetroLib/Utils/Unreachable.h"
 #include "RetroLib/Utils/Variant.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <tuple>
 #include <variant>
 #endif

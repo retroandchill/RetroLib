@@ -63,5 +63,5 @@ add_subdirectory(Source/RetroLib)
 
 if (RETROLIB_WITH_TESTS)
     enable_testing()
-    add_subdirectory(Source/RetroLib/Tests)
+    add_subdirectory(Source/RetroLibTests)
 endif()

@@ -3,12 +3,16 @@
 #pragma once
 #include "BlueprintException.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 #ifdef __UNREAL__
 namespace Retro {
 	/**
 	 * 
 	 */
-	class RETROLIB_API FTypeException : public FBlueprintException {
+	RETROLIB_EXPORT class RETROLIB_API FTypeException : public FBlueprintException {
 	public:
 		using FBlueprintException::FBlueprintException;
 	};

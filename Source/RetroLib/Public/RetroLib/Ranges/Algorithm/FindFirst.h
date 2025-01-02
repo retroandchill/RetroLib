@@ -7,13 +7,13 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/Utils/ForwardLike.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <algorithm>
 #include <ranges>
 #endif

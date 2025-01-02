@@ -7,9 +7,9 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <array>
 #endif
 

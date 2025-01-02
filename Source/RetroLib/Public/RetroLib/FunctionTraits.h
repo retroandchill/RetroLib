@@ -7,9 +7,9 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "TypeTraits.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <concepts>
 #include <type_traits>
 #endif

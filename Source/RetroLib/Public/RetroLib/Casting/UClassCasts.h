@@ -3,9 +3,16 @@
 #pragma once
 
 #ifdef __UNREAL__
-#include "RetroLib/Casting/DynamicCast.h"
+#if !RETROLIB_WITH_MODULES
+#include "UObject/Object.h"
+#endif
+
 #include "RetroLib/Casting/InstanceOf.h"
 #include "RetroLib/Concepts/Interfaces.h"
+
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
 
 namespace Retro {
 	/**
@@ -15,7 +22,7 @@ namespace Retro {
      * @param Interface The interface to perform the cast on
      * @return The result of the cast.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::is_base_of_v<UObject, T>
     T *CastInterface(const FScriptInterface &Interface) {
         return Cast<T>(Interface.GetObject());
@@ -28,7 +35,7 @@ namespace Retro {
      * @param Interface The interface to perform the cast on
      * @return The result of the cast.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::is_base_of_v<UObject, T>
     T *CastInterfaceChecked(const FScriptInterface &Interface) {
         return CastChecked<T>(Interface.GetObject());
@@ -43,7 +50,7 @@ namespace Retro {
      *         If T is derived from UObject, returns whether Class is a child of T.
      *         If T conforms to UnrealInterface, returns whether Class is a child of T::UClassType.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<T, UObject> || UnrealInterface<T>
     constexpr bool TypesMatch(const UClass &Class) {
         if constexpr (std::derived_from<T, UObject>) {
@@ -63,7 +70,7 @@ namespace Retro {
      *         Returns false if the Class pointer is nullptr.
      *         Otherwise, delegates the check to the TypesMatch<T>(const UClass&) function.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<T, UObject> || UnrealInterface<T>
     constexpr bool TypesMatch(const UClass *Class) {
         if (Class == nullptr) {
@@ -79,7 +86,7 @@ namespace Retro {
      * @param Path The FSoftClassPath object representing the class path to be checked.
      * @return A boolean indicating whether the class referred to by the Path matches the specified type T.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<T, UObject> || UnrealInterface<T>
     constexpr bool TypesMatch(const FSoftClassPath &Path) {
         return TypesMatch<T>(Path.TryLoadClass<UObject>());
@@ -94,7 +101,7 @@ namespace Retro {
      *         If the Class has the CLASS_Interface flag, returns whether the Object implements the interface.
      *         Otherwise, returns whether the Object is of the specified Class type.
      */
-	inline bool TypesMatch(const UObject &Object, const UClass &Class) {
+	RETROLIB_EXPORT inline bool TypesMatch(const UObject &Object, const UClass &Class) {
     	if (Class.HasAnyClassFlags(CLASS_Interface)) {
     		return Object.GetClass()->ImplementsInterface(&Class);
     	}
@@ -113,7 +120,7 @@ namespace Retro {
      *         If T is derived from UObject, returns T::StaticClass().
      *         If T conforms to UnrealInterface, returns T::UClassType::StaticClass().
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<T, UObject> || UnrealInterface<T>
     constexpr UClass *GetClass() {
         if constexpr (std::derived_from<T, UObject>) {
@@ -131,7 +138,7 @@ namespace Retro {
      * @param Class The class to be checked.
      * @return A boolean indicating whether className is a valid subclass of superClassName.
      */
-    template <typename T>
+    RETROLIB_EXPORT template <typename T>
         requires std::derived_from<T, UObject> || UnrealInterface<T>
     constexpr bool IsValidSubclass(const UClass *Class) {
         if constexpr (std::derived_from<T, UObject>) {
@@ -153,7 +160,7 @@ namespace Retro {
      * @return A boolean indicating whether the Class is instantiable.
      *         Returns false if the ClassName starts with "SKEL_" or "REINST_".
      */
-	inline bool IsInstantiableClass(const UClass *Class) {
+	RETROLIB_EXPORT inline bool IsInstantiableClass(const UClass *Class) {
     	auto ClassName = Class->GetName();
     	ClassName.ToUpperInline();
     	// We don't want skeleton or reinstantiated classes to be loaded.
@@ -164,7 +171,7 @@ namespace Retro {
     	return true;
     }
 	
-	template <std::derived_from<UObject> T>
+	RETROLIB_EXPORT template <std::derived_from<UObject> T>
 	struct TInstanceChecker<T> {
 		/**
 		 * Checks if the given instance of type U is a valid instance of the desired base type T.
@@ -195,7 +202,7 @@ namespace Retro {
 		}
 	};
 
-	template <UnrealInterface T>
+	RETROLIB_EXPORT template <UnrealInterface T>
 	struct TInstanceChecker<T> {
 		/**
 		 * Checks if the given instance of type U is a valid instance of the desired base type T.

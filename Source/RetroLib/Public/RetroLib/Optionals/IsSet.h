@@ -7,10 +7,8 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT

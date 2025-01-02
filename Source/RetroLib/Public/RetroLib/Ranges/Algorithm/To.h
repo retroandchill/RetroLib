@@ -7,13 +7,12 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Tuples.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
-#include "RetroLib/Ranges/Concepts/Containers.h"
+#include "RetroLib/Ranges/Concepts.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
-#include "RetroLib/RetroLibMacros.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <map>
 #endif
 

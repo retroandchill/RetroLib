@@ -7,11 +7,11 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Concepts/Inheritance.h"
 #include "RetroLib/Concepts/OpaqueStorage.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <array>
 #include <bit>
 #include <typeinfo>

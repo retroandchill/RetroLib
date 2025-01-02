@@ -7,9 +7,13 @@
 #include "RetroLib/Concepts/Structs.h"
 #include "RetroLib/Optionals/OptionalOperations.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
 
-    template <typename... T>
+    RETROLIB_EXPORT template <typename... T>
         requires((std::is_base_of_v<UObject, T> || UnrealInterface<T>) && ...)
     struct TVariantObject;
     

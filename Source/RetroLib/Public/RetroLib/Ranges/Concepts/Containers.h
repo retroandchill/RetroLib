@@ -7,10 +7,10 @@
  */
 #pragma once
 
-#if !RETROLIB_WITH_MODULES
 #include "RetroLib/Ranges/FeatureBridge.h"
 #include "RetroLib/TypeTraits.h"
 
+#if !RETROLIB_WITH_MODULES
 #include <ranges>
 #endif
 
@@ -209,7 +209,7 @@ namespace Retro::Ranges {
      * a type that can facilitate appending functionality.
      */
     RETROLIB_EXPORT template <typename>
-    struct AppendableContainerType : FInvalidType {};
+    struct TAppendableContainerType : FInvalidType {};
 
     /**
      * Provides a type trait capable of adding elements to a container by leveraging
@@ -227,7 +227,7 @@ namespace Retro::Ranges {
      */
     RETROLIB_EXPORT template <typename C>
         requires std::ranges::range<C> && StlAppendable<C, std::ranges::range_value_t<C>>
-    struct AppendableContainerType<C> : FValidType {
+    struct TAppendableContainerType<C> : FValidType {
         /**
          * Appends a value to the given container using the most appropriate method
          * available, such as emplace_back, push_back, emplace, or insert.
@@ -269,8 +269,8 @@ namespace Retro::Ranges {
      * @tparam T the type of element to add
      */
     template <typename C, typename T>
-    concept AppendableContainer = AppendableContainerType<C>::IsValid && requires(C &Container, T &&Value) {
-        AppendableContainerType<C>::Append(Container, std::forward<T>(Value));
+    concept AppendableContainer = TAppendableContainerType<C>::IsValid && requires(C &Container, T &&Value) {
+        TAppendableContainerType<C>::Append(Container, std::forward<T>(Value));
     };
 
     /**
@@ -295,7 +295,7 @@ namespace Retro::Ranges {
     template <typename C, typename T>
         requires AppendableContainer<C, T>
     constexpr decltype(auto) AppendContainer(C &Container, T &&Value) {
-        return AppendableContainerType<C>::Append(Container, std::forward<T>(Value));
+        return TAppendableContainerType<C>::Append(Container, std::forward<T>(Value));
     }
 
     /**

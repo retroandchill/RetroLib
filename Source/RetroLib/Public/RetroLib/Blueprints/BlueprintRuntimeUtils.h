@@ -5,6 +5,10 @@
 #ifdef __UNREAL__
 #include "RetroLib/Exceptions/InvalidArgumentException.h"
 
+#ifndef RETROLIB_EXPORT
+#define RETROLIB_EXPORT
+#endif
+
 namespace Retro {
     class IVariantRegistration;
     class FTypeException;

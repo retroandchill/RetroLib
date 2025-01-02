@@ -28,6 +28,11 @@
 			"Name": "RetroLibEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RetroLibTests",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	]
 }

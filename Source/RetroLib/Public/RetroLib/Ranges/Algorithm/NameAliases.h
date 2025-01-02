@@ -9,14 +9,15 @@
 
 #if !RETROLIB_WITH_MODULES
 #include "RetroLib/RetroLibMacros.h"
+#include <algorithm>
+#include <ranges>
+#endif
+
 #include "RetroLib/Functional/CreateBinding.h"
 #include "RetroLib/Functional/ExtensionMethods.h"
 #include "RetroLib/Functional/FunctionalClosure.h"
 #include "RetroLib/Ranges/FeatureBridge.h"
 
-#include <algorithm>
-#include <ranges>
-#endif
 
 #ifndef RETROLIB_EXPORT
 #define RETROLIB_EXPORT
