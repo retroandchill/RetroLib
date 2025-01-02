@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #ifdef __UNREAL__
-#include "RetroLib.h"
+#include "RetroLib/Blueprints/BlueprintRuntimeUtils.h"
 
 #include "RetroLib/Exceptions/TypeException.h"
 #include "RetroLib/Exceptions/VariantException.h"

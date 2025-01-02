@@ -44,7 +44,7 @@ namespace Retro::Ranges::Testing {
         }
     };
 
-    TGenerator<int32> GenerateInts(int32 Start) {
+    TGenerator<int> GenerateInts(int Start) {
         while (true) {
             co_yield Start;
             Start++;
