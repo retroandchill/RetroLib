@@ -1,7 +1,4 @@
-﻿#if WITH_TESTS
-
-
-#include "TestAdapter.h"
+﻿#include "TestAdapter.h"
 #include "RetroLib.h"
 #include "Slate/SlateTextureAtlasInterface.h"
 
@@ -33,5 +30,3 @@ TEST_CASE_NAMED(FClassViewTest, "RetroLib::Ranges::Views::ClassView", "[RetroLib
 		CHECK(std::ranges::all_of(ActorClasses, [](const UClass* Class) { return Class->ImplementsInterface(USlateTextureAtlasInterface::StaticClass()); }));
 	}
 }
-
-#endif

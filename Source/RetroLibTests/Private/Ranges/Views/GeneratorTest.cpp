@@ -5,7 +5,7 @@
  * @author Retro & Chill
  * https://github.com/retroandchill
  */
-#if WITH_TESTS && RETROLIB_WITH_COROUTINES
+#if RETROLIB_WITH_COROUTINES
 #include "TestAdapter.h"
 
 #if RETROLIB_WITH_MODULES
@@ -19,7 +19,7 @@ import RetroLib;
 #endif
 
 namespace Retro::Ranges::Testing {
-    static Generator<int> GenerateIntegers(int Num) {
+    static TGenerator<int> GenerateIntegers(int Num) {
         for (int i = 0; i < Num; i++) {
             co_yield i;
         }
@@ -31,20 +31,20 @@ namespace Retro::Ranges::Testing {
         Tree *Left{};
         Tree* Right{};
 
-        Generator<const T &> TraverseInorder() const {
+        TGenerator<const T &> TraverseInorder() const {
             if (Left) {
-                co_yield Ranges::ElementsOf(Left->TraverseInorder());
+                co_yield Ranges::TElementsOf(Left->TraverseInorder());
             }
 
             co_yield Value;
 
             if (Right) {
-                co_yield Ranges::ElementsOf(Right->TraverseInorder());
+                co_yield Ranges::TElementsOf(Right->TraverseInorder());
             }
         }
     };
 
-    Generator<int32> GenerateInts(int32 Start) {
+    TGenerator<int32> GenerateInts(int32 Start) {
         while (true) {
             co_yield Start;
             Start++;
